@@ -121,7 +121,7 @@ export function Handset({ docked, ringing, disabled, onLift, onHangup, onPoseCha
       if (!geometry) return
       const rawX = (event.clientX - geometry.grabX - geometry.homeX) / geometry.scale
       const rawY = (event.clientY - geometry.grabY - geometry.homeY) / geometry.scale
-      const solved = solveReceiverOffset(rawX, rawY, geometry.assemblyWidth, leftCradleRef.current)
+      const solved = solveReceiverOffset(rawX, rawY, geometry.assemblyWidth, geometry.assemblyHeight, leftCradleRef.current)
       leftCradleRef.current = solved.hasLeftCradle
 
       if (solved.nearCradle) {

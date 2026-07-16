@@ -8,15 +8,16 @@ interface LcdDisplayProps {
   elapsed: number
   node: TelephoneNode | null
   fallbackMessage: string
+  coinReady?: boolean
 }
 
-export function LcdDisplay({ phase, dialedNumber, elapsed, node, fallbackMessage }: LcdDisplayProps) {
+export function LcdDisplay({ phase, dialedNumber, elapsed, node, fallbackMessage, coinReady = false }: LcdDisplayProps) {
   let primary = fallbackMessage
   let secondary = phase.toUpperCase()
 
   if (phase === 'dialing' || phase === 'offHook' || phase === 'connecting') {
     primary = dialedNumber ? formatPhoneNumber(dialedNumber) : fallbackMessage
-    secondary = phase === 'connecting' ? 'CONNECTING' : 'DIAL NUMBER'
+    secondary = phase === 'connecting' ? 'CONNECTING' : coinReady ? 'CREDIT 3d' : 'INSERT 3d'
   }
   if (['inCall', 'awaitingChoice', 'timeoutWarning', 'ending'].includes(phase) && node) {
     primary = node.telephone?.lcd ?? 'LINE OPEN'

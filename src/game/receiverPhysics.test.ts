@@ -7,7 +7,7 @@ import {
 
 describe('receiver physics', () => {
   it('keeps a freshly lifted receiver free of the cradle snap zone', () => {
-    expect(solveReceiverOffset(0, 0, 500, false)).toMatchObject({
+    expect(solveReceiverOffset(0, 0, 500, 690, false)).toMatchObject({
       x: 0,
       y: 0,
       nearCradle: false,
@@ -16,17 +16,21 @@ describe('receiver physics', () => {
   })
 
   it('arms the cradle after the receiver travels away, then snaps at home', () => {
-    const away = solveReceiverOffset(140, 30, 500, false)
+    const away = solveReceiverOffset(140, 30, 500, 690, false)
     expect(away.hasLeftCradle).toBe(true)
 
-    const home = solveReceiverOffset(RECEIVER_SNAP_DISTANCE - 1, 0, 500, away.hasLeftCradle)
+    const home = solveReceiverOffset(RECEIVER_SNAP_DISTANCE - 1, 0, 500, 690, away.hasLeftCradle)
     expect(home).toMatchObject({ x: 0, y: 0, nearCradle: true, hasLeftCradle: true })
   })
 
-  it('limits movement to the simulated cable length', () => {
-    const limit = receiverCableLength(500)
-    const pose = solveReceiverOffset(900, 600, 500, true)
-    expect(Math.hypot(pose.x, pose.y)).toBeCloseTo(limit, 5)
-    expect(pose.rotation).toBeLessThanOrEqual(9)
+  it('keeps the receiver inside a restrained upper interaction zone', () => {
+    const pose = solveReceiverOffset(900, 900, 500, 690, true)
+    expect(pose.x).toBe(120)
+    expect(pose.y).toBeCloseTo(65.55, 5)
+    expect(pose.rotation).toBeLessThanOrEqual(7)
+  })
+
+  it('keeps the legacy cable length helper available for cord tuning', () => {
+    expect(receiverCableLength(500)).toBe(430)
   })
 })

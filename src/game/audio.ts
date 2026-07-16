@@ -69,6 +69,9 @@ export class TelephoneAudio {
   playConnectNoise() { this.noise(0.72, 0.09); this.tone(1240, 0.08, 0.025, 'sine', 0.25) }
   playWhisper() { this.noise(0.6, 0.028); this.tone(180, 0.25, 0.015, 'sine', 0.08) }
   playReveal() { this.tone(420, 0.08, 0.04); this.tone(620, 0.14, 0.035, 'sine', 0.07) }
+  playCoinInsert() { this.tone(1180, 0.035, 0.05, 'square'); this.tone(690, 0.055, 0.07, 'triangle', 0.055); this.noise(0.09, 0.028, 0.03) }
+  playCoinReturn() { this.tone(380, 0.045, 0.055, 'square'); this.tone(260, 0.08, 0.075, 'triangle', 0.06); this.noise(0.12, 0.04, 0.04) }
+  playObjectMove() { this.noise(0.11, 0.018); this.tone(230, 0.06, 0.018, 'triangle') }
   playNumberUnobtainable() {
     this.tone(480, 0.11, 0.07, 'sine')
     this.tone(480, 0.11, 0.07, 'sine', 0.22)

@@ -4,8 +4,9 @@ import { CallEngine, conditionsMatch, loadStoryDefinition } from '../game/callEn
 import { elapsedSeconds } from '../game/callTimer'
 import { formatPhoneNumber, shouldConnect } from '../game/dialModel'
 import { TelephoneAudio } from '../game/audio'
+import { BOOTH_OBJECTS, canDialWithCredit, createNightCoins, returnedCoin, type ShelfCoin } from '../game/boothItems'
 import { createSessionId, loadProgress, saveRecord } from '../game/record'
-import { visibleHotspots } from '../game/sceneInteractions'
+import { hotspotById, visibleHotspots } from '../game/sceneInteractions'
 import { initialTelephoneState, telephoneReducer } from '../game/telephoneState'
 import type {
   CallRecordData,
@@ -16,6 +17,7 @@ import type {
   TranscriptEntry,
 } from '../game/types'
 import { CallTextOverlay } from './CallTextOverlay'
+import { BoothShelf } from './BoothShelf'
 import { ChoiceClouds } from './ChoiceClouds'
 import { PhoneBooth } from './PhoneBooth'
 import { SceneHotspots } from './SceneHotspots'
@@ -47,6 +49,10 @@ export function TelephoneScene() {
   const [ringLabel, setRingLabel] = useState('未知来电')
   const [startedAt, setStartedAt] = useState(0)
   const [sessionId, setSessionId] = useState(createSessionId)
+  const [coins, setCoins] = useState(() => createNightCoins(engine.state.sessionSeed))
+  const [heldItemId, setHeldItemId] = useState<string | null>(null)
+  const [coinCredit, setCoinCredit] = useState(0)
+  const [spentCoins, setSpentCoins] = useState(0)
   const recordSavedRef = useRef(false)
   const connectTimerRef = useRef<number | null>(null)
   const idleDeadlineRef = useRef<{ key: string; at: number } | null>(null)
@@ -262,10 +268,19 @@ export function TelephoneScene() {
       return
     }
     machineDispatch({ type: 'LIFT', now: Date.now() })
-    audioRef.current.startDialTone()
+    if (coinCredit) audioRef.current.startDialTone()
   }
 
   function connectNumber(number: string) {
+    if (!canDialWithCredit(machine.phase, coinCredit)) {
+      audioRef.current.playError()
+      setClueCard({ title: '需要三便士', body: '线路没有获得脉冲。先从台面拿起一枚硬币，再按下投币槽。' })
+      return
+    }
+    setCoinCredit(0)
+    setSpentCoins((value) => value + 1)
+    engine.setFlag('coinsSpent', Number(engine.state.flags.coinsSpent ?? 0) + 1)
+    setRuntime(structuredClone(engine.state))
     machineDispatch({ type: 'CONNECT' })
     audioRef.current.stopLoop('dialTone')
     audioRef.current.playConnectNoise()
@@ -280,6 +295,11 @@ export function TelephoneScene() {
 
   function handleDigit(digit: string) {
     if (!['offHook', 'dialing'].includes(machine.phase) && !(machine.phase === 'timeoutWarning' && machine.warningKind === 'dial')) return
+    if (!canDialWithCredit(machine.phase, coinCredit)) {
+      audioRef.current.playError()
+      setClueCard({ title: 'NO CREDIT', body: '转盘仍会回弹，但交换机拒绝记录数字。台面上的三便士硬币可以投入右上方槽口。' })
+      return
+    }
     const next = `${machine.dialedNumber}${digit}`
     machineDispatch({ type: 'DIGIT', digit })
     audioRef.current.playDigit()
@@ -305,6 +325,87 @@ export function TelephoneScene() {
     setRuntime(structuredClone(engine.state))
   }
 
+  function toggleCoin(coin: ShelfCoin) {
+    if (machine.phase === 'ending') return
+    audioRef.current.playObjectMove()
+    setHeldItemId((current) => current === coin.id ? null : coin.id)
+    setClueCard({
+      title: heldItemId === coin.id ? '放下硬币' : '三便士硬币',
+      body: heldItemId === coin.id ? '硬币重新落在木台上，滚了半圈才停下。' : '边缘被磨得发亮，尺寸正好能通过电话机右上方的投币槽。',
+    })
+  }
+
+  function toggleBoothObject(itemId: string) {
+    if (machine.phase === 'ending') return
+    const item = BOOTH_OBJECTS.find((candidate) => candidate.id === itemId)
+    if (!item) return
+    const puttingDown = heldItemId === itemId
+    audioRef.current.playObjectMove()
+    setHeldItemId(puttingDown ? null : itemId)
+    setClueCard({
+      title: puttingDown ? `放下${item.label}` : item.label,
+      body: puttingDown ? `${item.label}被留在台面原来的灰尘轮廓里。` : item.description,
+    })
+  }
+
+  function insertCoin() {
+    if (!['idle', 'offHook', 'dialing', 'timeoutWarning'].includes(machine.phase)) {
+      audioRef.current.playError()
+      return
+    }
+    if (coinCredit) {
+      audioRef.current.playError()
+      setClueCard({ title: '投币槽已占用', body: '信用窗已经亮起。先完成拨号，或按下退币键取回硬币。' })
+      return
+    }
+    const coin = coins.find((candidate) => candidate.id === heldItemId)
+    if (!coin) {
+      audioRef.current.playError()
+      setClueCard({ title: '投币槽', body: '槽口只接受三便士硬币。先点击台面上的硬币将它拿起。' })
+      return
+    }
+    setCoins((items) => items.filter((item) => item.id !== coin.id))
+    setHeldItemId(null)
+    setCoinCredit(1)
+    engine.setFlag('coinsInserted', Number(engine.state.flags.coinsInserted ?? 0) + 1)
+    setRuntime(structuredClone(engine.state))
+    audioRef.current.playCoinInsert()
+    if (['offHook', 'dialing', 'timeoutWarning'].includes(machine.phase)) audioRef.current.startDialTone()
+    setClueCard({ title: 'CREDIT 3d', body: '硬币经过检验闸，绿色信用窗亮起。现在可以拨出一通电话。' })
+  }
+
+  function returnCoinFromPhone() {
+    if (coinCredit) {
+      const coin = returnedCoin(`returned-${Date.now()}`, coins.length + spentCoins)
+      setCoins((items) => [...items, coin])
+      setCoinCredit(0)
+      audioRef.current.stopLoop('dialTone')
+      audioRef.current.playCoinReturn()
+      setClueCard({ title: '退回三便士', body: '机械闸门松开，硬币从下方槽口滚回台面。' })
+      return
+    }
+    const hotspot = hotspotById(story, 'coin-return')
+    if (hotspot && machine.phase === 'idle') inspect(hotspot)
+    else {
+      audioRef.current.playCoinReturn()
+      setClueCard({ title: '退币槽', body: '金属托盘空空作响。里面没有可以退回的信用。' })
+    }
+  }
+
+  function testLine() {
+    void audioRef.current.unlock().catch(() => undefined)
+    audioRef.current.playDigit()
+    window.setTimeout(() => audioRef.current.playDigit(), 115)
+    setClueCard({
+      title: 'LINE TEST',
+      body: machine.phase === 'ringing'
+        ? '测试键被铃流锁住。先拿起听筒接听；来电不会消耗硬币。'
+        : coinCredit
+          ? '检验脉冲返回两声短响：CREDIT 3d，线路可以外拨。'
+          : '检验脉冲只有一声空响：NO CREDIT。台面上的硬币可以解除拨号锁。',
+    })
+  }
+
   function toggleMute() {
     const next = !muted
     setMuted(next)
@@ -327,13 +428,17 @@ export function TelephoneScene() {
     const nextProgress = loadProgress()
     setProgress(nextProgress)
     setSessionId(createSessionId())
+    setCoins(createNightCoins(nextEngine.state.sessionSeed))
+    setHeldItemId(null)
+    setCoinCredit(0)
+    setSpentCoins(0)
     setStartedAt(Date.now())
     recordSavedRef.current = false
     machineDispatch({ type: 'RESTART' })
     void audioRef.current.unlock().then(() => audioRef.current.startRain()).catch(() => undefined)
   }
 
-  const hotspots = visibleHotspots(story, runtime, progress)
+  const hotspots = visibleHotspots(story, runtime, progress).filter((hotspot) => hotspot.id !== 'coin-return')
   const handsetDocked = ['intro', 'idle', 'ringing', 'hungUp'].includes(machine.phase)
   const callVisible = ['inCall', 'awaitingChoice', 'timeoutWarning', 'ending'].includes(machine.phase)
   const ending = runtime.ending ? story.extensions.telephone.endings[runtime.ending] : null
@@ -348,7 +453,7 @@ export function TelephoneScene() {
   }
 
   return (
-    <main ref={sceneRef} className={`telephone-scene phase-${machine.phase}`} onPointerMove={moveAmbientLight}>
+    <main ref={sceneRef} className={`telephone-scene phase-${machine.phase} ${heldItemId ? 'has-held-item' : ''}`} onPointerMove={moveAmbientLight}>
       <div className="rain-layer rain-far" aria-hidden="true" />
       <div className="rain-layer rain-near" aria-hidden="true" />
       <div className="booth-glass" aria-hidden="true"><i /><i /><i /></div>
@@ -385,6 +490,14 @@ export function TelephoneScene() {
       />
 
       <div className="game-stage">
+        <BoothShelf
+          coins={coins}
+          heldItemId={heldItemId}
+          coinCredit={coinCredit}
+          disabled={machine.phase === 'ending'}
+          onToggleCoin={toggleCoin}
+          onToggleObject={toggleBoothObject}
+        />
         <PhoneBooth
           phase={machine.phase}
           dialWarning={machine.phase === 'timeoutWarning' && machine.warningKind === 'dial'}
@@ -392,8 +505,13 @@ export function TelephoneScene() {
           elapsed={elapsed}
           node={node}
           handsetDocked={handsetDocked}
+          coinCredit={coinCredit}
+          heldCoin={coins.some((coin) => coin.id === heldItemId)}
           onLift={liftHandset}
           onHangup={hangUp}
+          onInsertCoin={insertCoin}
+          onReturnCoin={returnCoinFromPhone}
+          onLineTest={testLine}
           onDigit={handleDigit}
           onDialTick={() => audioRef.current.playRotaryTick()}
           onDialReturn={(digit) => audioRef.current.playRotaryReturn(digit)}
@@ -405,7 +523,7 @@ export function TelephoneScene() {
       <footer className="game-status">
         <span className={`status-light status-${machine.phase}`} />
         <strong>{machine.phase === 'ringing' ? ringLabel : node.label}</strong>
-        <span>{machine.phase === 'idle' ? '查看亭内线索，或点击听筒拿起' : machine.phase === 'offHook' ? '移动鼠标携带听筒 · 再次点击挂回' : machine.phase === 'dialing' ? `已拨 ${formatPhoneNumber(machine.dialedNumber)}` : machine.phase === 'awaitingChoice' ? '线路等待回应' : '伦敦 · 雨夜 · 线路开放'}</span>
+        <span>{machine.phase === 'idle' ? `台面 ${coins.length} 枚硬币 · ${coinCredit ? '信用已就绪' : '拿起硬币后点击投币槽'}` : machine.phase === 'offHook' ? coinCredit ? '信用 3d · 可以拨号' : '请投入三便士硬币 · 来电无需投币' : machine.phase === 'dialing' ? `已拨 ${formatPhoneNumber(machine.dialedNumber)}` : machine.phase === 'awaitingChoice' ? '线路等待回应' : '伦敦 · 雨夜 · 线路开放'}</span>
       </footer>
 
       {numberBookOpen && (
@@ -434,7 +552,7 @@ export function TelephoneScene() {
             <h1>TELEPHONE</h1>
             <p className="intro-subtitle">子午礼仪交换所</p>
             <blockquote>“如果电话先响了，别让它听出你在害怕。”</blockquote>
-            <p>伦敦的雨夜。一个不在地图上的公共电话亭。<br />接听、拨号、留意墙上的数字——但别重复它要你说的话。</p>
+            <p>伦敦的雨夜。一个不在地图上的公共电话亭。<br />台面每晚会留下 1–3 枚硬币：拿起硬币、投入三便士、再提起听筒拨号。来电可以直接接听。</p>
             <button type="button" className="enter-booth" onClick={startExperience}><span>进入电话亭</span><small>建议开启声音 · 支持鼠标、触摸与数字键</small></button>
             <div className="intro-progress">第 {loadProgress().attempts + 1} 次夜班</div>
           </div>

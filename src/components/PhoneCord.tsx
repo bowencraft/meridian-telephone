@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { useEffect, useRef } from 'react'
+import { createRope, stepRope, type RopeCollision, type RopePoint, type RopeVector } from '../game/ropePhysics'
 import type { HandsetPose } from './Handset'
 
 interface PhoneCordProps {
@@ -6,63 +7,176 @@ interface PhoneCordProps {
   pose: HandsetPose
 }
 
-interface Point { x: number; y: number }
-
-function quadratic(start: Point, control: Point, end: Point, t: number) {
-  const inverse = 1 - t
+function handsetAnchor(width: number, height: number, pose: HandsetPose): RopeVector {
   return {
-    x: inverse * inverse * start.x + 2 * inverse * t * control.x + t * t * end.x,
-    y: inverse * inverse * start.y + 2 * inverse * t * control.y + t * t * end.y,
+    x: width * 0.155 + pose.x,
+    y: height * 0.265 + pose.y,
   }
 }
 
-function quadraticTangent(start: Point, control: Point, end: Point, t: number) {
-  return {
-    x: 2 * (1 - t) * (control.x - start.x) + 2 * t * (end.x - control.x),
-    y: 2 * (1 - t) * (control.y - start.y) + 2 * t * (end.y - control.y),
-  }
+function phoneAnchor(width: number, height: number): RopeVector {
+  return { x: width * 0.183, y: height * 0.768 }
 }
 
-function buildCoilPath(start: Point, end: Point, lifted: boolean) {
-  const distance = Math.hypot(end.x - start.x, end.y - start.y)
-  const control = {
-    x: start.x + (end.x - start.x) * 0.42 - (lifted ? 8 : 4),
-    y: Math.max(start.y, end.y) + Math.max(7, 20 - distance * 0.08),
+function traceCable(context: CanvasRenderingContext2D, points: RopePoint[]) {
+  context.beginPath()
+  context.moveTo(points[0].x, points[0].y)
+  for (let index = 1; index < points.length - 1; index += 1) {
+    const point = points[index]
+    const next = points[index + 1]
+    context.quadraticCurveTo(point.x, point.y, (point.x + next.x) / 2, (point.y + next.y) / 2)
   }
-  const loops = lifted ? Math.max(10, 24 - distance * 0.12) : 27
-  const radius = lifted ? Math.max(0.55, 2.35 - distance * 0.018) : 2.45
-  const points: string[] = []
-
-  for (let index = 0; index <= 210; index += 1) {
-    const t = index / 210
-    const center = quadratic(start, control, end, t)
-    const tangent = quadraticTangent(start, control, end, t)
-    const tangentLength = Math.hypot(tangent.x, tangent.y) || 1
-    const normal = { x: -tangent.y / tangentLength, y: tangent.x / tangentLength }
-    const envelope = Math.pow(Math.sin(Math.PI * t), 0.5)
-    const wave = Math.sin(t * loops * Math.PI * 2) * radius * envelope
-    const x = center.x + normal.x * wave
-    const y = center.y + normal.y * wave
-    points.push(`${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`)
-  }
-  return points.join(' ')
+  const end = points[points.length - 1]
+  context.lineTo(end.x, end.y)
 }
 
 export function PhoneCord({ lifted, pose }: PhoneCordProps) {
-  const cordPath = useMemo(() => buildCoilPath(
-    { x: 18, y: 78 },
-    { x: 12.5 + pose.xPercent, y: 29 + pose.yPercent },
-    lifted,
-  ), [lifted, pose.xPercent, pose.yPercent])
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const poseRef = useRef(pose)
+  const liftedRef = useRef(lifted)
+
+  useEffect(() => { poseRef.current = pose }, [pose])
+  useEffect(() => { liftedRef.current = lifted }, [lifted])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const assembly = canvas?.closest<HTMLElement>('.phone-assembly')
+    const context = canvas?.getContext('2d')
+    if (!canvas || !assembly || !context) return
+
+    let width = 0
+    let height = 0
+    let points: RopePoint[] = []
+    let segmentLength = 0
+    let animationFrame = 0
+    let lastInteraction = performance.now()
+    let collision: RopeCollision | null = null
+
+    const resize = () => {
+      const rect = assembly.getBoundingClientRect()
+      width = assembly.offsetWidth
+      height = assembly.offsetHeight
+      const pixelRatio = Math.min(2, window.devicePixelRatio || 1)
+      canvas.width = Math.max(1, Math.round(rect.width * pixelRatio))
+      canvas.height = Math.max(1, Math.round(rect.height * pixelRatio))
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+      const start = phoneAnchor(width, height)
+      const end = handsetAnchor(width, height, poseRef.current)
+      const cableLength = Math.max(Math.hypot(end.x - start.x, end.y - start.y) * 1.07, height * 0.64)
+      points = createRope(start, end, 22, height * 0.16)
+      points.forEach((point, index) => {
+        const t = index / (points.length - 1)
+        const outwardBow = Math.sin(Math.PI * t) * width * 0.205
+        point.x -= outwardBow
+        point.previousX = point.x
+      })
+      segmentLength = cableLength / (points.length - 1)
+      lastInteraction = performance.now()
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(draw)
+    }
+
+    const pointer = (event: globalThis.PointerEvent) => {
+      const rect = canvas.getBoundingClientRect()
+      const scaleX = width / rect.width
+      const scaleY = height / rect.height
+      const x = (event.clientX - rect.left) * scaleX
+      const y = (event.clientY - rect.top) * scaleY
+      const inside = x > -30 && x < width + 30 && y > -30 && y < height + 30
+      collision = inside ? { x, y, radius: liftedRef.current ? 31 : 25, strength: 0.82 } : null
+      lastInteraction = performance.now()
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(draw)
+    }
+
+    const draw = (timestamp: number) => {
+      const start = phoneAnchor(width, height)
+      const end = handsetAnchor(width, height, poseRef.current)
+      for (let index = 1; index < points.length - 1; index += 1) {
+        const t = index / (points.length - 1)
+        const lateralWeight = Math.sin(Math.PI * t) * 0.055
+        points[index].x -= lateralWeight
+        points[index].previousX -= lateralWeight
+      }
+      stepRope(points, {
+        start,
+        end,
+        segmentLength,
+        gravity: liftedRef.current ? 0.42 : 0.5,
+        damping: 0.984,
+        iterations: 8,
+        collision,
+      })
+      for (let index = 1; index < points.length - 1; index += 1) {
+        if (points[index].x < 7) {
+          points[index].x = 7
+          points[index].previousX = Math.min(points[index].previousX, 7)
+        }
+      }
+
+      context.clearRect(0, 0, width, height)
+      context.save()
+      context.lineCap = 'round'
+      context.lineJoin = 'round'
+
+      traceCable(context, points)
+      context.strokeStyle = 'rgba(0, 0, 0, .76)'
+      context.lineWidth = 11
+      context.shadowColor = 'rgba(0, 0, 0, .72)'
+      context.shadowBlur = 7
+      context.shadowOffsetX = 3
+      context.shadowOffsetY = 5
+      context.stroke()
+
+      context.shadowColor = 'transparent'
+      traceCable(context, points)
+      const rubber = context.createLinearGradient(0, 0, width, height)
+      rubber.addColorStop(0, '#4a4a42')
+      rubber.addColorStop(0.34, '#181916')
+      rubber.addColorStop(0.72, '#34352e')
+      rubber.addColorStop(1, '#090a08')
+      context.strokeStyle = rubber
+      context.lineWidth = 8.2
+      context.stroke()
+
+      traceCable(context, points)
+      context.strokeStyle = 'rgba(218, 213, 187, .44)'
+      context.lineWidth = 1.45
+      context.setLineDash([2.2, 5.4])
+      context.lineDashOffset = -timestamp * 0.004
+      context.stroke()
+      context.restore()
+
+      if (timestamp - lastInteraction < 460) animationFrame = window.requestAnimationFrame(draw)
+      else {
+        collision = null
+        animationFrame = 0
+      }
+    }
+
+    resize()
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(assembly)
+    window.addEventListener('pointermove', pointer, { passive: true })
+    if (!animationFrame) animationFrame = window.requestAnimationFrame(draw)
+
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener('pointermove', pointer)
+      window.cancelAnimationFrame(animationFrame)
+    }
+  }, [lifted])
 
   return (
     <>
-      <span className="cord-grommet" aria-hidden="true" />
-      <svg className={`phone-cord ${lifted ? 'is-stretched' : ''} ${pose.nearCradle ? 'is-snapping' : ''}`} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <path className="cord-shadow" d={cordPath} vectorEffect="non-scaling-stroke" />
-        <path className="cord-body" d={cordPath} vectorEffect="non-scaling-stroke" />
-        <path className="cord-highlight" d={cordPath} vectorEffect="non-scaling-stroke" />
-      </svg>
+      <span className="cord-grommet cord-grommet-phone" aria-hidden="true" />
+      <canvas
+        ref={canvasRef}
+        className={`phone-cord-canvas ${lifted ? 'is-stretched' : ''} ${pose.nearCradle ? 'is-snapping' : ''}`}
+        data-cord-start="phone"
+        data-cord-end="handset"
+        aria-hidden="true"
+      />
     </>
   )
 }

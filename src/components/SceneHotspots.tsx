@@ -19,7 +19,7 @@ export function SceneHotspots({ hotspots, inspected, disabled, onInspect }: Scen
           aria-label={hotspot.ariaLabel}
           disabled={disabled}
           onClick={() => onInspect(hotspot)}
-        ><span>{inspected.includes(hotspot.id) ? '已查看' : hotspot.label}</span></button>
+        ><span>{hotspot.label}</span></button>
       ))}
     </div>
   )
