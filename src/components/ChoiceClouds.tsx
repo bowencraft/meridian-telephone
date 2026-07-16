@@ -7,6 +7,7 @@ export function ChoiceClouds({ choices, onChoose, disabled }: ChoiceCloudsProps)
   if (!visible.length) return null
   return (
     <div className="choice-clouds" aria-label="回应选项">
+      <div className="response-bank-chassis" aria-hidden="true"><i /><i /><i /><i /></div>
       <div className="response-bank-label"><span>SELECT RESPONSE</span><small>PRESS ONE SPEAKING KEY</small></div>
       {visible.map((choice, index) => (
         <button

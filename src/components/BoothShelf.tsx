@@ -23,6 +23,7 @@ export function BoothShelf({
       <div className="counter-back-rail" aria-hidden="true"><i /><i /><i /></div>
       <div className="counter-surface" aria-hidden="true" />
       <div className="counter-light-pool" aria-hidden="true" />
+      <div className="counter-wear" aria-hidden="true"><i /><i /><i /><i /></div>
       <div className="counter-front" aria-hidden="true"><span>GPO PROPERTY · KEEP CLEAR</span></div>
 
       <div className="counter-items">

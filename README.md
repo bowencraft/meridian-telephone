@@ -86,8 +86,10 @@ docs/
   TELEPHONE_ACCEPTANCE.md
   TELEPHONE_VISUAL_POLISH_ACCEPTANCE.md
   TELEPHONE_PHYSICAL_INTERACTIONS_ACCEPTANCE.md
+  TELEPHONE_ADDITIONAL_THREE_PASSES.md
   screenshots/          分阶段浏览器实机截图
   screenshots-physical/ 电话物理交互与三轮美术迭代截图
+  screenshots-physical-final3/ 追加三轮独立迭代与跨尺寸通话截图
 ```
 
 ## 持久化

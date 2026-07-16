@@ -14,6 +14,7 @@ interface PhoneBoothProps {
   handsetDocked: boolean
   coinCredit: number
   heldCoin: boolean
+  mechanicalPulse: 'coin-in' | 'coin-out' | 'line-test' | null
   onLift: () => void
   onHangup: () => void
   onInsertCoin: () => void
@@ -34,6 +35,7 @@ export function PhoneBooth({
   handsetDocked,
   coinCredit,
   heldCoin,
+  mechanicalPulse,
   onLift,
   onHangup,
   onInsertCoin,
@@ -52,7 +54,8 @@ export function PhoneBooth({
     : handsetPose
 
   return (
-    <section className={`phone-assembly phase-${phase}`} aria-label="GPO 公共电话机">
+    <section className={`phone-assembly phase-${phase} ${mechanicalPulse ? `mechanical-${mechanicalPulse}` : ''}`} aria-label="GPO 公共电话机">
+      <div className="wall-mount-plate" aria-hidden="true"><i /><i /><i /><i /></div>
       <div className="booth-backlight" />
       <div className="phone-shadow" />
       <div className="phone-wall-shadow" />
@@ -66,6 +69,7 @@ export function PhoneBooth({
         </div>
         <div className="phone-face">
           <div className="phone-case-shine" aria-hidden="true" />
+          <div className="mechanical-feedback" aria-hidden="true"><i className="mechanical-coin" /><i className="mechanical-pulse-ring" /></div>
           <LcdDisplay
             phase={phase}
             dialedNumber={dialedNumber}

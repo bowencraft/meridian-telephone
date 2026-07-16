@@ -30,6 +30,11 @@ export const BOOTH_OBJECTS: BoothObjectDefinition[] = [
     label: '黄铜钥匙',
     description: '细小的黄铜钥匙挂着 19 号牌，齿槽里有黑色电话线胶皮留下的碎屑。',
   },
+  {
+    id: 'operator-docket',
+    label: '交换台回执',
+    description: '一张从交换台撕下的蓝灰色回执。接线员姓名被水浸开，只剩一句铅笔字：不要相信第三次转接。',
+  },
 ]
 
 function seededFraction(seed: number, offset: number) {

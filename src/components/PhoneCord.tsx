@@ -84,7 +84,10 @@ export function PhoneCord({ lifted, pose }: PhoneCordProps) {
       const x = (event.clientX - rect.left) * scaleX
       const y = (event.clientY - rect.top) * scaleY
       const inside = x > -30 && x < width + 30 && y > -30 && y < height + 30
-      collision = inside ? { x, y, radius: liftedRef.current ? 31 : 25, strength: 0.82 } : null
+      const nearestPoint = points.reduce((nearest, point) => Math.min(nearest, Math.hypot(point.x - x, point.y - y)), Number.POSITIVE_INFINITY)
+      const touchingCable = inside && nearestPoint < (liftedRef.current ? 46 : 38)
+      collision = touchingCable ? { x, y, radius: liftedRef.current ? 31 : 25, strength: 0.82 } : null
+      canvas.dataset.collision = touchingCable ? 'active' : 'idle'
       lastInteraction = performance.now()
       if (!animationFrame) animationFrame = window.requestAnimationFrame(draw)
     }
@@ -150,6 +153,7 @@ export function PhoneCord({ lifted, pose }: PhoneCordProps) {
       if (timestamp - lastInteraction < 460) animationFrame = window.requestAnimationFrame(draw)
       else {
         collision = null
+        canvas.dataset.collision = 'idle'
         animationFrame = 0
       }
     }

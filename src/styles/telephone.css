@@ -841,6 +841,7 @@
 
 .shelf-coin {
   position: absolute;
+  z-index: 6;
   left: var(--coin-x);
   top: var(--coin-y);
   display: grid;
@@ -907,4 +908,129 @@
   .shelf-object-locker-key { right:18%; transform:scale(.82) rotate(-13deg); }
   .shelf-coin { width:34px; }
   .credit-witness { display:none; }
+}
+
+/* Additional art pass 1: booth depth, installation hardware and lived-in shelf */
+.wall-mount-plate {
+  position:absolute;
+  left:7.5%;
+  right:7.5%;
+  top:15%;
+  bottom:2%;
+  z-index:0;
+  border:1px solid rgba(91,86,73,.42);
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.025),transparent 8% 91%,rgba(0,0,0,.22)),
+    linear-gradient(180deg,#242620,#0c0e0b 76%);
+  box-shadow:0 22px 48px rgba(0,0,0,.78),0 0 0 8px rgba(4,5,4,.2),inset 0 1px rgba(255,255,255,.045);
+}
+.phone-assembly { isolation:isolate; }
+.booth-backlight { z-index:0; }
+.phone-wall-shadow,.phone-shadow { z-index:1; }
+.phone-case { z-index:5; }
+.wall-mount-plate::before,.wall-mount-plate::after {
+  position:absolute;
+  top:5%;
+  bottom:5%;
+  width:5px;
+  content:"";
+  opacity:.42;
+  background:repeating-linear-gradient(180deg,#0a0b09 0 7px,#494a40 8px,#151612 10px);
+  box-shadow:0 0 8px #000;
+}
+.wall-mount-plate::before{left:-9px}.wall-mount-plate::after{right:-9px}
+.wall-mount-plate i { position:absolute; width:8px; height:8px; border-radius:50%; background:radial-gradient(circle at 34% 30%,#9a927a,#3b3a32 45%,#0b0c0a 72%); box-shadow:0 2px 3px #000; }
+.wall-mount-plate i:nth-child(1){left:3%;top:3%}.wall-mount-plate i:nth-child(2){right:3%;top:3%}.wall-mount-plate i:nth-child(3){left:3%;bottom:3%}.wall-mount-plate i:nth-child(4){right:3%;bottom:3%}
+
+.counter-wear { position:absolute; left:3%; right:3%; top:35%; height:46%; z-index:3; overflow:hidden; pointer-events:none; transform:perspective(520px) rotateX(59deg); transform-origin:top; }
+.counter-wear::before { position:absolute; left:24%; top:18%; width:90px; height:38px; border:2px solid rgba(27,14,7,.27); border-radius:50%; content:""; filter:blur(.4px); transform:rotate(-8deg); }
+.counter-wear::after { position:absolute; right:20%; top:20%; width:62px; height:28px; border:1px solid rgba(231,205,151,.09); border-radius:50%; content:""; box-shadow:0 0 0 4px rgba(35,18,8,.11); transform:rotate(12deg); }
+.counter-wear i { position:absolute; height:1px; opacity:.36; background:linear-gradient(90deg,transparent,#130a05 18% 79%,transparent); box-shadow:0 1px rgba(255,233,190,.07); transform-origin:left; }
+.counter-wear i:nth-child(1){left:7%;top:42%;width:24%;transform:rotate(-7deg)}
+.counter-wear i:nth-child(2){left:31%;top:65%;width:18%;transform:rotate(4deg)}
+.counter-wear i:nth-child(3){right:9%;top:53%;width:22%;transform:rotate(-3deg)}
+.counter-wear i:nth-child(4){right:34%;top:29%;width:13%;transform:rotate(9deg)}
+
+.counter-front::before { position:absolute; left:5%; top:23%; width:27%; height:42%; border:1px solid rgba(13,9,6,.72); content:""; background:linear-gradient(180deg,rgba(83,58,35,.54),rgba(28,19,12,.55)); box-shadow:inset 0 2px 6px rgba(0,0,0,.5),0 1px rgba(255,255,255,.04); }
+.counter-front::after { position:absolute; left:16.5%; top:39%; width:13px; height:4px; border:1px solid #17100a; border-radius:4px; content:""; background:linear-gradient(#766044,#302417); box-shadow:0 2px 3px #000; }
+
+.shelf-object-operator-docket { right:23%; top:22%; width:82px; height:42px; border:1px solid #38474b; background:linear-gradient(154deg,#819195,#495b60 70%,#2c3b3f); clip-path:polygon(2% 0,100% 4%,97% 94%,4% 100%); transform:rotate(4deg); }
+.shelf-object-operator-docket::before { position:absolute; inset:6px 8px; content:"GPO  TOLL  DESK\A TRANSFER  03\A INITIAL ______"; color:rgba(22,29,30,.78); border-top:1px solid rgba(19,26,27,.38); border-bottom:1px solid rgba(214,229,225,.15); font:5px/1.5 "Courier New",monospace; white-space:pre; }
+.shelf-object-operator-docket::after { position:absolute; right:8px; top:7px; width:14px; height:14px; border:1px solid rgba(35,44,45,.48); border-radius:50%; content:"03"; color:rgba(29,38,39,.7); font:5px/14px "Courier New",monospace; text-align:center; }
+
+@media (max-width:760px) {
+  .wall-mount-plate { left:5%; right:5%; }
+  .shelf-object-operator-docket { right:28%; transform:scale(.8) rotate(4deg); }
+  .counter-front::before,.counter-front::after { opacity:.65; }
+}
+
+/* Additional art pass 2: visible mechanical pulses and tactile cord response */
+.mechanical-feedback { position:absolute; inset:0; z-index:22; overflow:visible; pointer-events:none; }
+.mechanical-coin { position:absolute; right:11.4%; top:8%; width:8.5%; aspect-ratio:1; opacity:0; border:1px solid #342710; border-radius:50%; background:radial-gradient(circle at 34% 28%,#ddc783 0 9%,#9e7b3d 27%,#4a3518 69%,#c0a15d 74%,#2b1f11 100%); box-shadow:inset 0 0 0 2px rgba(54,39,17,.55),0 4px 8px #000; }
+.mechanical-coin::before { position:absolute; inset:19%; display:grid; place-items:center; border:1px dashed rgba(54,39,17,.7); border-radius:50%; content:"3"; color:#493718; font:700 11px/1 Georgia,serif; }
+.mechanical-pulse-ring { position:absolute; right:16.6%; top:4.2%; width:9%; aspect-ratio:1; opacity:0; border:1px solid rgba(173,204,130,.72); border-radius:50%; box-shadow:0 0 11px rgba(142,188,103,.42),inset 0 0 8px rgba(142,188,103,.25); }
+
+.mechanical-coin-in .mechanical-coin { animation:mechanical-coin-in 760ms cubic-bezier(.2,.72,.2,1) both; }
+.mechanical-coin-out .mechanical-coin { right:8%; top:72%; animation:mechanical-coin-out 760ms cubic-bezier(.18,.76,.24,1) both; }
+.mechanical-line-test .mechanical-pulse-ring { animation:mechanical-test-ring 520ms ease-out both; }
+.mechanical-line-test .line-test-button i { animation:mechanical-test-key 520ms ease-out both; }
+.mechanical-coin-in .coin-check-window { animation:mechanical-credit-flash 760ms ease-out; }
+.mechanical-coin-out .coin-return-physical i { animation:mechanical-return-gate 760ms ease-out; }
+
+@keyframes mechanical-coin-in {
+  0%{opacity:.95;transform:translate(-18px,-42px) rotate(-24deg) scale(1.08)}
+  42%{opacity:1;transform:translate(0,0) rotate(18deg) scale(.86)}
+  66%{opacity:.78;transform:translate(0,19px) rotate(52deg) scale(.67)}
+  100%{opacity:0;transform:translate(-7px,44px) rotate(96deg) scale(.34)}
+}
+@keyframes mechanical-coin-out {
+  0%{opacity:0;transform:translate(0,-26px) rotate(-38deg) scale(.48)}
+  34%{opacity:1;transform:translate(0,0) rotate(9deg) scale(.82)}
+  72%{opacity:.95;transform:translate(16px,35px) rotate(92deg) scale(1)}
+  100%{opacity:0;transform:translate(26px,67px) rotate(145deg) scale(.92)}
+}
+@keyframes mechanical-test-ring { 0%{opacity:0;transform:scale(.55)} 25%{opacity:1} 100%{opacity:0;transform:scale(2.2)} }
+@keyframes mechanical-test-key { 0%,100%{transform:none;filter:none} 18%{transform:translateY(2px);filter:brightness(1.8)} 44%{transform:none;filter:brightness(1.35)} }
+@keyframes mechanical-credit-flash { 0%,38%{filter:none} 54%{filter:brightness(2.5) drop-shadow(0 0 5px #a4d477)} 100%{filter:none} }
+@keyframes mechanical-return-gate { 0%,100%{transform:none} 24%{transform:translateY(3px)} 52%{transform:translateY(-1px)} }
+
+.phone-cord-canvas { transition:filter 150ms ease-out; }
+.phone-cord-canvas[data-collision="active"] { filter:saturate(.92) contrast(1.18) brightness(1.16) drop-shadow(-3px 6px 4px rgba(0,0,0,.78)); }
+
+/* Additional art pass 3: exchange-paper transcript, speaking-key bank and call focus */
+.telephone-scene:is(.phase-inCall,.phase-awaitingChoice,.phase-timeoutWarning) .booth-copy,
+.telephone-scene:is(.phase-inCall,.phase-awaitingChoice,.phase-timeoutWarning) .scene-hotspot { opacity:.3; filter:brightness(.55); }
+.telephone-scene:is(.phase-inCall,.phase-awaitingChoice,.phase-timeoutWarning) .booth-counter { filter:brightness(.72) saturate(.78); }
+.telephone-scene:is(.phase-inCall,.phase-awaitingChoice,.phase-timeoutWarning) .phone-assembly { filter:none; }
+.telephone-scene:is(.phase-inCall,.phase-awaitingChoice,.phase-timeoutWarning) .street-bokeh { opacity:.46; filter:blur(3px); }
+
+.transcript-feed-edge { position:absolute; inset:8px -5px 9px; z-index:-1; pointer-events:none; }
+.transcript-feed-edge i { position:absolute; top:0; bottom:0; width:9px; opacity:.52; background:radial-gradient(circle,#554933 0 1.4px,transparent 1.7px) center top/8px 14px repeat-y; }
+.transcript-feed-edge i:first-child{left:0}.transcript-feed-edge i:last-child{right:0}
+.transcript-routing { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:8px; margin:9px 0 -3px; color:#7b6a4f; font:5px/1 "Courier New",monospace; letter-spacing:.13em; }
+.transcript-routing i { height:1px; background:repeating-linear-gradient(90deg,rgba(79,65,43,.46) 0 4px,transparent 4px 7px); }
+.transcript-routing small { color:#66553d; font:inherit; }
+.call-text-overlay { box-shadow:18px 26px 52px rgba(0,0,0,.64),-3px 0 0 rgba(67,52,31,.18),inset 0 0 0 2px rgba(255,255,255,.18); }
+.call-text-overlay p { position:relative; }
+.call-text-overlay p::after { position:absolute; left:0; right:0; bottom:-9px; height:1px; content:""; opacity:.28; background:repeating-linear-gradient(90deg,#51452f 0 2px,transparent 2px 6px); }
+
+.choice-clouds { left:auto; right:4%; box-sizing:border-box; width:min(29vw,380px); padding:12px 12px 13px; isolation:isolate; }
+.response-bank-chassis { position:absolute; inset:0; z-index:-1; border:1px solid #090a08; border-radius:5px; background:
+  radial-gradient(circle at 20% 8%,rgba(255,255,255,.055) 0 .6px,transparent .9px) 0 0/9px 13px,
+  linear-gradient(145deg,#393a33 0,#171814 43%,#070806 100%); box-shadow:inset 0 1px rgba(255,255,255,.08),inset 0 -8px 15px #050604,0 18px 32px rgba(0,0,0,.64),0 0 0 3px rgba(44,44,37,.38); }
+.response-bank-chassis::before { position:absolute; left:-68px; bottom:19px; width:70px; height:15px; border-bottom:3px double #191a16; border-radius:0 0 0 100%; content:""; opacity:.72; filter:drop-shadow(0 3px 2px #000); transform:rotate(8deg); transform-origin:right; }
+.response-bank-chassis::after { position:absolute; left:9px; right:9px; top:40px; height:1px; content:""; background:linear-gradient(90deg,transparent,rgba(185,159,103,.3),transparent); }
+.response-bank-chassis i { position:absolute; width:6px; height:6px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#838176,#23241f 67%); box-shadow:0 1px 2px #000; }
+.response-bank-chassis i:nth-child(1){left:6px;top:6px}.response-bank-chassis i:nth-child(2){right:6px;top:6px}.response-bank-chassis i:nth-child(3){left:6px;bottom:6px}.response-bank-chassis i:nth-child(4){right:6px;bottom:6px}
+.response-bank-label { position:relative; z-index:1; padding:2px 6px 10px; }
+.choice-cloud { position:relative; z-index:1; }
+.choice-cloud::after { position:absolute; left:-8px; top:50%; display:block; width:4px; height:18px; border:0; border-radius:1px; content:""; background:#090a08; box-shadow:inset 0 1px rgba(255,255,255,.06),0 1px 2px #000; transform:translateY(-50%); }
+.choice-cloud:hover:not(:disabled)::after,.choice-cloud:focus-visible::after { background:#8d743d; box-shadow:0 0 7px rgba(202,163,80,.5); }
+.choice-rivet { transition:background .15s,box-shadow .15s; }
+.choice-cloud:hover:not(:disabled) .choice-rivet,.choice-cloud:focus-visible .choice-rivet { background:#91a973; box-shadow:0 0 7px rgba(152,190,111,.7); }
+
+@media (max-width:760px) {
+  .choice-clouds { left:18px; right:18px; top:auto; bottom:58px; width:auto; padding:10px; }
+  .response-bank-chassis::before { display:none; }
+  .transcript-routing { margin-top:7px; }
 }

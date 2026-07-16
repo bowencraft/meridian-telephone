@@ -53,9 +53,25 @@ export function TelephoneScene() {
   const [heldItemId, setHeldItemId] = useState<string | null>(null)
   const [coinCredit, setCoinCredit] = useState(0)
   const [spentCoins, setSpentCoins] = useState(0)
+  const [mechanicalPulse, setMechanicalPulse] = useState<'coin-in' | 'coin-out' | 'line-test' | null>(null)
   const recordSavedRef = useRef(false)
   const connectTimerRef = useRef<number | null>(null)
   const idleDeadlineRef = useRef<{ key: string; at: number } | null>(null)
+  const mechanicalTimerRef = useRef<number | null>(null)
+
+  const triggerMechanicalPulse = useCallback((pulse: 'coin-in' | 'coin-out' | 'line-test') => {
+    if (mechanicalTimerRef.current) window.clearTimeout(mechanicalTimerRef.current)
+    setMechanicalPulse(null)
+    window.requestAnimationFrame(() => setMechanicalPulse(pulse))
+    mechanicalTimerRef.current = window.setTimeout(() => {
+      setMechanicalPulse(null)
+      mechanicalTimerRef.current = null
+    }, pulse === 'line-test' ? 520 : 760)
+  }, [])
+
+  useEffect(() => () => {
+    if (mechanicalTimerRef.current) window.clearTimeout(mechanicalTimerRef.current)
+  }, [])
 
   const appendTranscript = useCallback((transition: EngineTransition, number?: string) => {
     const speaker = transition.node.telephone?.speaker ?? 'system'
@@ -367,6 +383,7 @@ export function TelephoneScene() {
     setCoins((items) => items.filter((item) => item.id !== coin.id))
     setHeldItemId(null)
     setCoinCredit(1)
+    triggerMechanicalPulse('coin-in')
     engine.setFlag('coinsInserted', Number(engine.state.flags.coinsInserted ?? 0) + 1)
     setRuntime(structuredClone(engine.state))
     audioRef.current.playCoinInsert()
@@ -379,6 +396,7 @@ export function TelephoneScene() {
       const coin = returnedCoin(`returned-${Date.now()}`, coins.length + spentCoins)
       setCoins((items) => [...items, coin])
       setCoinCredit(0)
+      triggerMechanicalPulse('coin-out')
       audioRef.current.stopLoop('dialTone')
       audioRef.current.playCoinReturn()
       setClueCard({ title: '退回三便士', body: '机械闸门松开，硬币从下方槽口滚回台面。' })
@@ -393,6 +411,7 @@ export function TelephoneScene() {
   }
 
   function testLine() {
+    triggerMechanicalPulse('line-test')
     void audioRef.current.unlock().catch(() => undefined)
     audioRef.current.playDigit()
     window.setTimeout(() => audioRef.current.playDigit(), 115)
@@ -432,6 +451,7 @@ export function TelephoneScene() {
     setHeldItemId(null)
     setCoinCredit(0)
     setSpentCoins(0)
+    setMechanicalPulse(null)
     setStartedAt(Date.now())
     recordSavedRef.current = false
     machineDispatch({ type: 'RESTART' })
@@ -507,6 +527,7 @@ export function TelephoneScene() {
           handsetDocked={handsetDocked}
           coinCredit={coinCredit}
           heldCoin={coins.some((coin) => coin.id === heldItemId)}
+          mechanicalPulse={mechanicalPulse}
           onLift={liftHandset}
           onHangup={hangUp}
           onInsertCoin={insertCoin}
