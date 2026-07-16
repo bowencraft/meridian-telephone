@@ -48,6 +48,7 @@ export function TelephoneScene() {
   const [sessionId, setSessionId] = useState(createSessionId)
   const recordSavedRef = useRef(false)
   const connectTimerRef = useRef<number | null>(null)
+  const idleDeadlineRef = useRef<{ key: string; at: number } | null>(null)
 
   const appendTranscript = useCallback((transition: EngineTransition, number?: string) => {
     const speaker = transition.node.telephone?.speaker ?? 'system'
@@ -71,6 +72,8 @@ export function TelephoneScene() {
     setChoices(nextChoices)
     appendTranscript(transition, number)
     audioRef.current.playWhisper()
+    if (transition.node.id === story.globals.phone.busyNumberNodeId) audioRef.current.startBusy()
+    if (transition.node.id === story.globals.phone.wrongNumberNodeId) audioRef.current.playNumberUnobtainable()
     machineDispatch({
       type: 'CONNECTED',
       nodeId: transition.node.id,
@@ -82,7 +85,7 @@ export function TelephoneScene() {
       audioRef.current.stopAll()
       audioRef.current.playReveal()
     }
-  }, [appendTranscript, engine])
+  }, [appendTranscript, engine, story.globals.phone.busyNumberNodeId, story.globals.phone.wrongNumberNodeId])
 
   const hangUp = useCallback(() => {
     if (machine.phase === 'idle' || machine.phase === 'intro' || machine.phase === 'ending') return
@@ -91,7 +94,7 @@ export function TelephoneScene() {
       return
     }
     if (connectTimerRef.current) window.clearTimeout(connectTimerRef.current)
-    audioRef.current.stopAll()
+    audioRef.current.stopCallLoops()
     audioRef.current.playHangup()
     engine.setFlag('hangups', Number(engine.state.flags.hangups ?? 0) + 1)
     const hangupEdges = engine.availableEdges({ type: 'hangUp' })
@@ -163,20 +166,55 @@ export function TelephoneScene() {
   }, [engine, machine.incomingEventId, machine.phase, ringLabel])
 
   useEffect(() => {
-    if (machine.phase !== 'awaitingChoice') return
-    const warningAt = story.globals.timeout.choiceIdleMs - story.globals.timeout.warningMs
-    const warning = window.setTimeout(() => machineDispatch({ type: 'WARNING', reason: '线路正在等待您的回答。' }), warningAt)
-    const timeout = window.setTimeout(() => handleTimeout('choice'), story.globals.timeout.choiceIdleMs)
-    return () => { window.clearTimeout(warning); window.clearTimeout(timeout) }
-  }, [handleTimeout, machine.phase, node.id, story.globals.timeout.choiceIdleMs, story.globals.timeout.warningMs])
+    let kind: 'dial' | 'choice' | 'call' | null = null
+    if (machine.phase === 'offHook' || machine.phase === 'dialing') kind = 'dial'
+    else if (machine.phase === 'awaitingChoice') kind = 'choice'
+    else if (machine.phase === 'inCall' && !choices.some((choice) => !choice.hidden) && !node.telephone?.ending) kind = 'call'
+    else if (machine.phase === 'timeoutWarning') kind = machine.warningKind
+
+    if (!kind) {
+      idleDeadlineRef.current = null
+      return
+    }
+
+    const totalMs = kind === 'dial'
+      ? story.globals.timeout.dialIdleMs
+      : kind === 'choice'
+        ? story.globals.timeout.choiceIdleMs
+        : node.telephone?.autoAdvanceMs ?? (['wrong_number', 'busy_line'].includes(node.id) ? 7000 : 14500)
+    const activityKey = `${kind}:${kind === 'dial' ? machine.dialedNumber : `${node.id}:${runtime.turn}`}`
+    if (idleDeadlineRef.current?.key !== activityKey) {
+      idleDeadlineRef.current = { key: activityKey, at: Date.now() + totalMs }
+    }
+    const deadline = idleDeadlineRef.current.at
+    const remaining = Math.max(0, deadline - Date.now())
+    const warningDelay = Math.max(0, remaining - Math.min(story.globals.timeout.warningMs, Math.floor(totalMs * 0.45)))
+    const reason = kind === 'dial' ? '线路等待拨号，听筒即将断开。' : kind === 'choice' ? '线路正在等待您的回答。' : '线路即将自动断开。'
+    const warning = machine.phase === 'timeoutWarning' ? null : window.setTimeout(() => {
+      const current = idleDeadlineRef.current
+      if (current?.key === activityKey && current.at === deadline) {
+        machineDispatch({ type: 'WARNING', reason, kind })
+      }
+    }, warningDelay)
+    const timeout = window.setTimeout(() => {
+      const current = idleDeadlineRef.current
+      if (current?.key !== activityKey || current.at !== deadline) return
+      idleDeadlineRef.current = null
+      if (kind === 'dial') hangUp()
+      else handleTimeout(kind)
+    }, remaining)
+    return () => {
+      if (warning !== null) window.clearTimeout(warning)
+      window.clearTimeout(timeout)
+    }
+  }, [choices, handleTimeout, hangUp, machine.dialedNumber, machine.phase, machine.warningKind, node, runtime.turn, story.globals.timeout.choiceIdleMs, story.globals.timeout.dialIdleMs, story.globals.timeout.warningMs])
 
   useEffect(() => {
-    if (machine.phase !== 'inCall' || choices.some((choice) => !choice.hidden) || node.telephone?.ending) return
-    const delay = node.telephone?.autoAdvanceMs ?? (['wrong_number', 'busy_line'].includes(node.id) ? 7000 : 14500)
-    const warning = window.setTimeout(() => machineDispatch({ type: 'WARNING', reason: '线路即将自动断开。' }), Math.max(2500, delay - 3500))
-    const timeout = window.setTimeout(() => handleTimeout('call'), delay)
-    return () => { window.clearTimeout(warning); window.clearTimeout(timeout) }
-  }, [choices, handleTimeout, machine.phase, node])
+    if (!machine.callStartedAt || !['inCall', 'awaitingChoice', 'timeoutWarning'].includes(machine.phase) || node.telephone?.ending) return
+    const remaining = Math.max(0, story.globals.timeout.callMaxMs - (Date.now() - machine.callStartedAt))
+    const timeout = window.setTimeout(() => handleTimeout('call'), remaining)
+    return () => window.clearTimeout(timeout)
+  }, [handleTimeout, machine.callStartedAt, machine.phase, node.telephone?.ending, story.globals.timeout.callMaxMs])
 
   useEffect(() => {
     if (!runtime.ending || recordSavedRef.current) return
@@ -202,7 +240,10 @@ export function TelephoneScene() {
     setStartedAt(Date.now())
     machineDispatch({ type: 'START' })
     setTranscript([{ id: nowId('system'), speaker: 'system', speakerLabel: '电话亭', text: engine.opening().text, createdAt: Date.now() }])
-    void audioRef.current.unlock().then(() => audioRef.current.setMuted(muted)).catch(() => undefined)
+    void audioRef.current.unlock().then(() => {
+      audioRef.current.setMuted(muted)
+      audioRef.current.startRain()
+    }).catch(() => undefined)
   }
 
   function liftHandset() {
@@ -237,7 +278,7 @@ export function TelephoneScene() {
   }
 
   function handleDigit(digit: string) {
-    if (!['offHook', 'dialing'].includes(machine.phase)) return
+    if (!['offHook', 'dialing'].includes(machine.phase) && !(machine.phase === 'timeoutWarning' && machine.warningKind === 'dial')) return
     const next = `${machine.dialedNumber}${digit}`
     machineDispatch({ type: 'DIGIT', digit })
     audioRef.current.playDigit()
@@ -288,6 +329,7 @@ export function TelephoneScene() {
     setStartedAt(Date.now())
     recordSavedRef.current = false
     machineDispatch({ type: 'RESTART' })
+    void audioRef.current.unlock().then(() => audioRef.current.startRain()).catch(() => undefined)
   }
 
   const hotspots = visibleHotspots(story, runtime, progress)
@@ -332,6 +374,7 @@ export function TelephoneScene() {
       <div className="game-stage">
         <PhoneBooth
           phase={machine.phase}
+          dialWarning={machine.phase === 'timeoutWarning' && machine.warningKind === 'dial'}
           dialedNumber={machine.dialedNumber}
           elapsed={elapsed}
           node={node}

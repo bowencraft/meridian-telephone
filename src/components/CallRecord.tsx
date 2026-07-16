@@ -10,13 +10,14 @@ function formatDate(timestamp: number) {
 
 export function CallRecord() {
   const story = loadStoryDefinition()
-  const [record] = useState(loadLastRecord)
+  const [record, setRecord] = useState(loadLastRecord)
   const [archive, setArchive] = useState(loadRecordArchive)
   const [progress, setProgress] = useState(loadProgress)
 
   function clearAll() {
     if (!window.confirm('清除所有通话档案、已发现号码与多周目结局？此操作无法撤销。')) return
     clearProgress()
+    setRecord(null)
     setArchive([])
     setProgress(loadProgress())
   }

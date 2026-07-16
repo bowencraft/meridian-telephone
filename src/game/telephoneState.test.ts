@@ -31,4 +31,30 @@ describe('telephone state machine', () => {
     state = telephoneReducer(state, { type: 'RESET_IDLE' })
     expect(state.phase).toBe('idle')
   })
+
+  it('keeps the dial usable during its timeout warning and resets the deadline state', () => {
+    let state = telephoneReducer(initialTelephoneState, { type: 'START' })
+    state = telephoneReducer(state, { type: 'LIFT', now: 100 })
+    state = telephoneReducer(state, { type: 'WARNING', reason: '即将断开', kind: 'dial' })
+    expect(state).toMatchObject({ phase: 'timeoutWarning', warningKind: 'dial' })
+
+    state = telephoneReducer(state, { type: 'DIGIT', digit: '9' })
+    expect(state).toMatchObject({
+      phase: 'dialing',
+      dialedNumber: '9',
+      warningReason: null,
+      warningKind: null,
+    })
+  })
+
+  it('preserves the warning kind while waiting for a choice', () => {
+    const warned = telephoneReducer(
+      { ...initialTelephoneState, phase: 'awaitingChoice', activeNodeId: 'weather_intro', callStartedAt: 100 },
+      { type: 'WARNING', reason: '线路正在等待您的回答。', kind: 'choice' },
+    )
+    expect(warned).toMatchObject({ phase: 'timeoutWarning', warningKind: 'choice' })
+
+    const advanced = telephoneReducer(warned, { type: 'CONNECTED', nodeId: 'weather_repeat', now: 200, hasChoices: false })
+    expect(advanced).toMatchObject({ phase: 'inCall', warningReason: null, warningKind: null })
+  })
 })

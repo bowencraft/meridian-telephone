@@ -6,6 +6,7 @@ import { RotaryDial } from './RotaryDial'
 
 interface PhoneBoothProps {
   phase: TelephonePhase
+  dialWarning: boolean
   dialedNumber: string
   elapsed: number
   node: TelephoneNode | null
@@ -20,6 +21,7 @@ interface PhoneBoothProps {
 
 export function PhoneBooth({
   phase,
+  dialWarning,
   dialedNumber,
   elapsed,
   node,
@@ -31,7 +33,7 @@ export function PhoneBooth({
   onDialReturn,
   onDialError,
 }: PhoneBoothProps) {
-  const dialEnabled = !handsetDocked && ['offHook', 'dialing'].includes(phase)
+  const dialEnabled = !handsetDocked && (['offHook', 'dialing'].includes(phase) || dialWarning)
   const handsetLocked = phase === 'ending' || (!handsetDocked && node?.telephone?.canHangUp === false)
 
   return (

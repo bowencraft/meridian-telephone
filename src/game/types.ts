@@ -22,6 +22,7 @@ export type TriggerType =
   | 'hangUp'
   | 'timeout'
   | 'sceneInspect'
+  | 'keywordAny'
   | 'auto'
 
 export type GraphCondition =
@@ -197,6 +198,7 @@ export interface TelephoneMachineState {
   activeNodeId: string | null
   callStartedAt: number | null
   warningReason: string | null
+  warningKind: 'dial' | 'choice' | 'call' | null
 }
 
 export interface TranscriptEntry {

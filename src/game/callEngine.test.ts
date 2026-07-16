@@ -66,4 +66,66 @@ describe('Telephone event graph engine', () => {
     const second = new CallEngine(defaultTelephoneStory(), undefined, 99).opening().text
     expect(first).toBe(second)
   })
+
+  it('matches keywordAny edges against authored keywords and sample inputs', () => {
+    const story = defaultTelephoneStory()
+    story.edges.push({
+      id: 'keyword_weather_probe',
+      label: '文本式天气测试',
+      from: 'global',
+      to: 'weather_intro',
+      priority: 999,
+      trigger: { type: 'keywordAny', value: 'weather|天气' },
+      samples: ['Is it still raining?'],
+    })
+    const engine = new CallEngine(story, undefined, 101)
+
+    expect(engine.dispatch({ type: 'keywordAny', value: 'Could you tell me the WEATHER?' }).node.id).toBe('weather_intro')
+    engine.returnToIdleNode()
+    expect(engine.dispatch({ type: 'keywordAny', value: 'IS IT STILL RAINING?' }).node.id).toBe('weather_intro')
+  })
+
+  it('keeps every shipped ending reachable through authored event routes', () => {
+    const seen = new Set<string>()
+
+    const recruited = new CallEngine(defaultTelephoneStory(), undefined, 21)
+    recruited.dispatch({ type: 'dialNumber', value: '8714000' })
+    recruited.dispatch({ type: 'choice', value: 'continue' })
+    recruited.dispatch({ type: 'choice', value: 'representative' })
+    seen.add(recruited.dispatch({ type: 'choice', value: 'apply_accept' }).state.ending ?? '')
+
+    const transfer = new CallEngine(defaultTelephoneStory(), undefined, 22)
+    transfer.dispatch({ type: 'dialNumber', value: '8714127' })
+    seen.add(transfer.dispatch({ type: 'choice', value: 'keep_waiting' }).state.ending ?? '')
+
+    const weather = new CallEngine(defaultTelephoneStory(), undefined, 23)
+    weather.dispatch({ type: 'dialNumber', value: '9460264' })
+    seen.add(weather.dispatch({ type: 'timeout', value: 'choice' }).state.ending ?? '')
+
+    const counterfeitProgress: ProgressData = { attempts: 1, clues: [], discoveredNumbers: [], seenEndings: ['recruited'] }
+    const counterfeit = new CallEngine(defaultTelephoneStory(), counterfeitProgress, 24)
+    counterfeit.dispatch({ type: 'dialNumber', value: '8714000' })
+    counterfeit.dispatch({ type: 'choice', value: 'continue' })
+    counterfeit.dispatch({ type: 'choice', value: 'representative' })
+    seen.add(counterfeit.dispatch({ type: 'choice', value: 'apply_counterfeit' }).state.ending ?? '')
+
+    const operatorProgress: ProgressData = {
+      attempts: 3,
+      clues: [],
+      discoveredNumbers: ['7941966', '8714019'],
+      seenEndings: ['disconnected', 'recruited'],
+    }
+    const operator = new CallEngine(defaultTelephoneStory(), operatorProgress, 25)
+    operator.dispatch({ type: 'dialNumber', value: '8714000' })
+    operator.dispatch({ type: 'choice', value: 'identity' })
+    operator.dispatch({ type: 'choice', value: 'voice_fault' })
+    operator.dispatch({ type: 'choice', value: 'scratched_plate' })
+    operator.dispatch({ type: 'choice', value: 'use_code' })
+    operator.dispatch({ type: 'choice', value: 'fault_auth' })
+    seen.add(operator.dispatch({ type: 'choice', value: 'takeover' }).state.ending ?? '')
+
+    seen.add('disconnected')
+    seen.add('worn')
+    expect(seen).toEqual(new Set(['disconnected', 'recruited', 'transfer', 'worn', 'weather', 'counterfeit', 'operator']))
+  })
 })

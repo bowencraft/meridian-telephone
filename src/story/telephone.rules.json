@@ -9,17 +9,35 @@
       "id": "global",
       "label": "全局电话网",
       "kind": "global",
-      "position": { "x": 40, "y": 840 },
-      "tags": ["system"],
-      "body": { "variants": ["线路在伦敦地下交错。"], "notes": "任意状态下可触发的拨号、来电与场景事件。" },
-      "telephone": { "speaker": "system", "lcd": "LINE MAP" }
+      "position": {
+        "x": 40,
+        "y": 840
+      },
+      "tags": [
+        "system"
+      ],
+      "body": {
+        "variants": [
+          "线路在伦敦地下交错。"
+        ],
+        "notes": "任意状态下可触发的拨号、来电与场景事件。"
+      },
+      "telephone": {
+        "speaker": "system",
+        "lcd": "LINE MAP"
+      }
     },
     {
       "id": "booth_idle",
       "label": "雨夜电话亭",
       "kind": "idle",
-      "position": { "x": 40, "y": 220 },
-      "tags": ["act-1"],
+      "position": {
+        "x": 40,
+        "y": 220
+      },
+      "tags": [
+        "act-1"
+      ],
       "body": {
         "variants": [
           "雨顺着红色玻璃往下爬。听筒沉默地卧在叉簧上。",
@@ -28,31 +46,53 @@
         ],
         "notes": "开局与每次挂断后的安全节点。"
       },
-      "telephone": { "speaker": "system", "lcd": "INSERT COIN", "canHangUp": true }
+      "telephone": {
+        "speaker": "system",
+        "lcd": "INSERT COIN",
+        "canHangUp": true
+      }
     },
     {
       "id": "wrong_number",
       "label": "号码无法接通",
       "kind": "call",
-      "position": { "x": 330, "y": 720 },
-      "tags": ["fallback"],
+      "position": {
+        "x": 330,
+        "y": 720
+      },
+      "tags": [
+        "fallback"
+      ],
       "body": {
         "variants": [
           "您所拨打的号码无法接通。请检查号码，然后——微笑——重试。",
           "NUMBER UNOBTAINABLE。一个很轻的声音在提示音后补充：再试一次，我们有耐心。",
           "三声短音。第四声像有人在远处说：不对，但很接近。"
         ],
-        "fallbackVariants": ["空号音规律地切割着线路。"],
+        "fallbackVariants": [
+          "空号音规律地切割着线路。"
+        ],
         "notes": "错误号码也逐渐泄露 Meridian 的存在。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "线路录音", "lcd": "NO LINE", "canHangUp": true, "corruption": 0.35 }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "线路录音",
+        "lcd": "NO LINE",
+        "canHangUp": true,
+        "corruption": 0.35
+      }
     },
     {
       "id": "busy_line",
       "label": "线路占用",
       "kind": "call",
-      "position": { "x": 330, "y": 820 },
-      "tags": ["fallback"],
+      "position": {
+        "x": 330,
+        "y": 820
+      },
+      "tags": [
+        "fallback"
+      ],
       "body": {
         "variants": [
           "忙音后面挤着几十个人的呼吸。他们像是在同一时刻翻动同一页稿纸。",
@@ -60,30 +100,54 @@
         ],
         "notes": "已登记但暂不可达的号码。"
       },
-      "telephone": { "speaker": "system", "speakerLabel": "占用线路", "lcd": "LINE BUSY", "canHangUp": true, "corruption": 0.5 }
+      "telephone": {
+        "speaker": "system",
+        "speakerLabel": "占用线路",
+        "lcd": "LINE BUSY",
+        "canHangUp": true,
+        "corruption": 0.5
+      }
     },
     {
       "id": "weather_intro",
       "label": "伦敦自动天气服务",
       "kind": "dial_target",
-      "position": { "x": 330, "y": 100 },
-      "tags": ["act-1", "weather"],
+      "position": {
+        "x": 330,
+        "y": 100
+      },
+      "tags": [
+        "act-1",
+        "weather"
+      ],
       "body": {
         "variants": [
           "伦敦自动天气服务。降雨概率百分之九十八。请确认：您所在的位置正在下雨吗？",
           "今晚伦敦：低云，持续降雨，能见度差。为了改善服务，请告诉我——您看见雨了吗？"
         ],
-        "fallbackVariants": ["天气服务等待您的口头确认。雨声突然比刚才近了一点。"],
+        "fallbackVariants": [
+          "天气服务等待您的口头确认。雨声突然比刚才近了一点。"
+        ],
         "notes": "表层正常服务，实际采集顺从度。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "天气服务", "lcd": "RAIN 98%", "canHangUp": true }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "天气服务",
+        "lcd": "RAIN 98%",
+        "canHangUp": true
+      }
     },
     {
       "id": "weather_agree",
       "label": "确认天气",
       "kind": "call",
-      "position": { "x": 620, "y": 40 },
-      "tags": ["weather"],
+      "position": {
+        "x": 620,
+        "y": 40
+      },
+      "tags": [
+        "weather"
+      ],
       "body": {
         "variants": [
           "谢谢。礼貌的确认让所有天气都更准确。请跟我说：我愿意听取更好的选择。",
@@ -91,14 +155,25 @@
         ],
         "notes": "第一次明确诱导重复话术。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "天气服务", "lcd": "VOICE CHECK", "canHangUp": true, "corruption": 0.25 }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "天气服务",
+        "lcd": "VOICE CHECK",
+        "canHangUp": true,
+        "corruption": 0.25
+      }
     },
     {
       "id": "weather_deny",
       "label": "否认天气",
       "kind": "call",
-      "position": { "x": 620, "y": 160 },
-      "tags": ["weather"],
+      "position": {
+        "x": 620,
+        "y": 160
+      },
+      "tags": [
+        "weather"
+      ],
       "body": {
         "variants": [
           "系统记录：接听者与天气不一致。请勿担心，我们可以修正您的观察。",
@@ -106,14 +181,26 @@
         ],
         "notes": "增加怀疑值并暗示系统能影响观察。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "天气服务", "lcd": "CALIBRATE", "canHangUp": true, "corruption": 0.45 }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "天气服务",
+        "lcd": "CALIBRATE",
+        "canHangUp": true,
+        "corruption": 0.45
+      }
     },
     {
       "id": "weather_trace",
       "label": "追问服务来源",
       "kind": "call",
-      "position": { "x": 620, "y": 280 },
-      "tags": ["weather", "clue"],
+      "position": {
+        "x": 620,
+        "y": 280
+      },
+      "tags": [
+        "weather",
+        "clue"
+      ],
       "body": {
         "variants": [
           "本服务由 Meridian Courtesy Exchange 提供。礼貌是城市最可靠的气候。咨询请拨 871 4000。",
@@ -121,14 +208,26 @@
         ],
         "notes": "揭露公司并给出主号码。"
       },
-      "telephone": { "speaker": "operator", "speakerLabel": "天气值班员", "lcd": "MCE 8714000", "canHangUp": true, "corruption": 0.3 }
+      "telephone": {
+        "speaker": "operator",
+        "speakerLabel": "天气值班员",
+        "lcd": "MCE 8714000",
+        "canHangUp": true,
+        "corruption": 0.3
+      }
     },
     {
       "id": "meridian_welcome",
       "label": "Meridian 欢迎台",
       "kind": "dial_target",
-      "position": { "x": 330, "y": 400 },
-      "tags": ["act-2", "meridian"],
+      "position": {
+        "x": 330,
+        "y": 400
+      },
+      "tags": [
+        "act-2",
+        "meridian"
+      ],
       "body": {
         "variants": [
           "感谢致电 Meridian Courtesy Exchange。礼貌让陌生人成为客户，让客户成为家人。",
@@ -136,30 +235,56 @@
         ],
         "notes": "核心自动菜单入口。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "Meridian 接待录音", "lcd": "MERIDIAN", "canHangUp": true, "corruption": 0.2 }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "Meridian 接待录音",
+        "lcd": "MERIDIAN",
+        "canHangUp": true,
+        "corruption": 0.2
+      }
     },
     {
       "id": "menu_main",
       "label": "四项服务菜单",
       "kind": "menu",
-      "position": { "x": 620, "y": 400 },
-      "tags": ["act-2", "menu"],
+      "position": {
+        "x": 620,
+        "y": 400
+      },
+      "tags": [
+        "act-2",
+        "menu"
+      ],
       "body": {
         "variants": [
           "产品介绍、代表申请、线路投诉、天气查询。请选择最符合您声音的服务。",
           "四条线路都空着。奇怪的是，每条线路后面传来的都是同一个人的呼吸。"
         ],
-        "fallbackVariants": ["菜单耐心地重复四个选项，重音每次都落在“代表”上。"],
+        "fallbackVariants": [
+          "菜单耐心地重复四个选项，重音每次都落在“代表”上。"
+        ],
         "notes": "主要分支枢纽。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "自动转接", "lcd": "SELECT 1–4", "canHangUp": true, "corruption": 0.35 }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "自动转接",
+        "lcd": "SELECT 1–4",
+        "canHangUp": true,
+        "corruption": 0.35
+      }
     },
     {
       "id": "product_pitch",
       "label": "更好的选择",
       "kind": "call",
-      "position": { "x": 910, "y": 180 },
-      "tags": ["act-2", "product"],
+      "position": {
+        "x": 910,
+        "y": 180
+      },
+      "tags": [
+        "act-2",
+        "product"
+      ],
       "body": {
         "variants": [
           "我们的产品不是物品，而是一种更容易被接受的说话方式。第一课免费：永远不要问对方是否有空。",
@@ -167,30 +292,56 @@
         ],
         "notes": "揭露产品其实是推销人格训练。"
       },
-      "telephone": { "speaker": "operator", "speakerLabel": "礼仪顾问", "lcd": "LESSON 01", "canHangUp": true, "corruption": 0.45 }
+      "telephone": {
+        "speaker": "operator",
+        "speakerLabel": "礼仪顾问",
+        "lcd": "LESSON 01",
+        "canHangUp": true,
+        "corruption": 0.45
+      }
     },
     {
       "id": "product_repeat",
       "label": "重复练习",
       "kind": "call",
-      "position": { "x": 1200, "y": 160 },
-      "tags": ["act-2", "training"],
+      "position": {
+        "x": 1200,
+        "y": 160
+      },
+      "tags": [
+        "act-2",
+        "training"
+      ],
       "body": {
         "variants": [
           "请重复：我愿意听取更好的选择。说得越像您自己的话，效果越好。",
           "把手指放在听筒的小孔上。现在说：陌生人的一分钟属于我。"
         ],
-        "fallbackVariants": ["录音没有催促。它用您的呼吸节奏替您念了一遍。"],
+        "fallbackVariants": [
+          "录音没有催促。它用您的呼吸节奏替您念了一遍。"
+        ],
         "notes": "顺从路线的关键选择。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "礼仪训练", "lcd": "REPEAT AFTER ME", "canHangUp": true, "corruption": 0.75 }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "礼仪训练",
+        "lcd": "REPEAT AFTER ME",
+        "canHangUp": true,
+        "corruption": 0.75
+      }
     },
     {
       "id": "representative_apply",
       "label": "代表申请处",
       "kind": "call",
-      "position": { "x": 910, "y": 330 },
-      "tags": ["act-2", "recruitment"],
+      "position": {
+        "x": 910,
+        "y": 330
+      },
+      "tags": [
+        "act-2",
+        "recruitment"
+      ],
       "body": {
         "variants": [
           "代表不需要姓名，只需要一段可以重复的开场白。请告诉我，您愿意被怎样称呼？",
@@ -198,14 +349,26 @@
         ],
         "notes": "直接通向入职或伪装路线。"
       },
-      "telephone": { "speaker": "operator", "speakerLabel": "人事交换员", "lcd": "APPLICANT 1", "canHangUp": true, "corruption": 0.65 }
+      "telephone": {
+        "speaker": "operator",
+        "speakerLabel": "人事交换员",
+        "lcd": "APPLICANT 1",
+        "canHangUp": true,
+        "corruption": 0.65
+      }
     },
     {
       "id": "complaints_desk",
       "label": "线路投诉处",
       "kind": "call",
-      "position": { "x": 910, "y": 470 },
-      "tags": ["act-3", "complaint"],
+      "position": {
+        "x": 910,
+        "y": 470
+      },
+      "tags": [
+        "act-3",
+        "complaint"
+      ],
       "body": {
         "variants": [
           "线路投诉。请描述问题：听见不属于您的声音，记住未拨过的号码，还是对天气产生异议？",
@@ -213,14 +376,26 @@
         ],
         "notes": "正确主线入口。"
       },
-      "telephone": { "speaker": "operator", "speakerLabel": "投诉录音员", "lcd": "FAULT REPORT", "canHangUp": true, "corruption": 0.4 }
+      "telephone": {
+        "speaker": "operator",
+        "speakerLabel": "投诉录音员",
+        "lcd": "FAULT REPORT",
+        "canHangUp": true,
+        "corruption": 0.4
+      }
     },
     {
       "id": "complaints_human",
       "label": "疲惫的线路员",
       "kind": "call",
-      "position": { "x": 1200, "y": 430 },
-      "tags": ["act-3", "human"],
+      "position": {
+        "x": 1200,
+        "y": 430
+      },
+      "tags": [
+        "act-3",
+        "human"
+      ],
       "body": {
         "variants": [
           "终于是个活人。听着，别报名字。你从哪里拿到这条投诉线的？",
@@ -228,14 +403,26 @@
         ],
         "notes": "人工转接，验证场景发现。"
       },
-      "telephone": { "speaker": "stranger", "speakerLabel": "线路员 E. Vale", "lcd": "MANUAL LINE", "canHangUp": true, "corruption": 0.15 }
+      "telephone": {
+        "speaker": "stranger",
+        "speakerLabel": "线路员 E. Vale",
+        "lcd": "MANUAL LINE",
+        "canHangUp": true,
+        "corruption": 0.15
+      }
     },
     {
       "id": "internal_directory",
       "label": "内部转接目录",
       "kind": "dial_target",
-      "position": { "x": 910, "y": 650 },
-      "tags": ["act-3", "internal"],
+      "position": {
+        "x": 910,
+        "y": 650
+      },
+      "tags": [
+        "act-3",
+        "internal"
+      ],
       "body": {
         "variants": [
           "内部目录。一九号席位已注销。若您仍能听见，请不要说话。",
@@ -243,14 +430,26 @@
         ],
         "notes": "被划掉的号码，通往旧接线员。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "内部目录", "lcd": "EXT. 19 DEAD", "canHangUp": true, "corruption": 0.55 }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "内部目录",
+        "lcd": "EXT. 19 DEAD",
+        "canHangUp": true,
+        "corruption": 0.55
+      }
     },
     {
       "id": "old_operator",
       "label": "旧接线员的回路",
       "kind": "call",
-      "position": { "x": 1490, "y": 500 },
-      "tags": ["act-3", "clue"],
+      "position": {
+        "x": 1490,
+        "y": 500
+      },
+      "tags": [
+        "act-3",
+        "clue"
+      ],
       "body": {
         "variants": [
           "如果你听得见，我的席位还没被完全擦掉。总机是 871 4127。记住顺序：投诉、静音、切断训练线。",
@@ -258,14 +457,26 @@
         ],
         "notes": "核心总机号码与解法提示。"
       },
-      "telephone": { "speaker": "stranger", "speakerLabel": "旧接线员", "lcd": "871 4127", "canHangUp": true, "corruption": 0.25 }
+      "telephone": {
+        "speaker": "stranger",
+        "speakerLabel": "旧接线员",
+        "lcd": "871 4127",
+        "canHangUp": true,
+        "corruption": 0.25
+      }
     },
     {
       "id": "switchboard_gate",
       "label": "总机身份门",
       "kind": "dial_target",
-      "position": { "x": 1490, "y": 280 },
-      "tags": ["act-4", "switchboard"],
+      "position": {
+        "x": 1490,
+        "y": 280
+      },
+      "tags": [
+        "act-4",
+        "switchboard"
+      ],
       "body": {
         "variants": [
           "Meridian 中央交换机。请陈述您的席位、投诉编号与礼貌等级。",
@@ -273,14 +484,26 @@
         ],
         "notes": "必须从投诉线取得权限，否则进入转接陷阱。"
       },
-      "telephone": { "speaker": "operator", "speakerLabel": "中央验证员", "lcd": "AUTH REQUIRED", "canHangUp": true, "corruption": 0.7 }
+      "telephone": {
+        "speaker": "operator",
+        "speakerLabel": "中央验证员",
+        "lcd": "AUTH REQUIRED",
+        "canHangUp": true,
+        "corruption": 0.7
+      }
     },
     {
       "id": "switchboard_core",
       "label": "交换机核心",
       "kind": "menu",
-      "position": { "x": 1780, "y": 280 },
-      "tags": ["act-4", "switchboard"],
+      "position": {
+        "x": 1780,
+        "y": 280
+      },
+      "tags": [
+        "act-4",
+        "switchboard"
+      ],
       "body": {
         "variants": [
           "验证通过。天气线、训练线、招募线和你手中的听筒，都在同一块面板上发光。",
@@ -288,30 +511,56 @@
         ],
         "notes": "最终决策枢纽。"
       },
-      "telephone": { "speaker": "system", "speakerLabel": "中央交换机", "lcd": "ROOT ACCESS", "canHangUp": false, "corruption": 0.85 }
+      "telephone": {
+        "speaker": "system",
+        "speakerLabel": "中央交换机",
+        "lcd": "ROOT ACCESS",
+        "canHangUp": false,
+        "corruption": 0.85
+      }
     },
     {
       "id": "transfer_loop",
       "label": "礼貌转接循环",
       "kind": "menu",
-      "position": { "x": 1780, "y": 520 },
-      "tags": ["act-4", "trap"],
+      "position": {
+        "x": 1780,
+        "y": 520
+      },
+      "tags": [
+        "act-4",
+        "trap"
+      ],
       "body": {
         "variants": [
           "请稍候，您的通话对我们非常重要。您被转接给了另一个正在等待转接的自己。",
           "线路一转过来，你听见自己几秒前说过的话。菜单再次从第一项开始。"
         ],
-        "fallbackVariants": ["等待音乐少了一拍，又从头开始。通话计时仍在增长。"],
+        "fallbackVariants": [
+          "等待音乐少了一拍，又从头开始。通话计时仍在增长。"
+        ],
         "notes": "无限转接结局前的最后挣扎。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "等待录音", "lcd": "PLEASE HOLD", "canHangUp": false, "corruption": 1 }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "等待录音",
+        "lcd": "PLEASE HOLD",
+        "canHangUp": false,
+        "corruption": 1
+      }
     },
     {
       "id": "lost_found",
       "label": "失物招领热线",
       "kind": "dial_target",
-      "position": { "x": 620, "y": 760 },
-      "tags": ["side", "identity"],
+      "position": {
+        "x": 620,
+        "y": 760
+      },
+      "tags": [
+        "side",
+        "identity"
+      ],
       "body": {
         "variants": [
           "伦敦交通失物招领。今晚有人交来一个姓名、一段童年和一把公用电话钥匙。您丢的是哪一件？",
@@ -319,14 +568,26 @@
         ],
         "notes": "身份主题支线，提供反制线索。"
       },
-      "telephone": { "speaker": "operator", "speakerLabel": "失物管理员", "lcd": "LOST / FOUND", "canHangUp": true, "corruption": 0.2 }
+      "telephone": {
+        "speaker": "operator",
+        "speakerLabel": "失物管理员",
+        "lcd": "LOST / FOUND",
+        "canHangUp": true,
+        "corruption": 0.2
+      }
     },
     {
       "id": "lost_key",
       "label": "公用电话钥匙",
       "kind": "call",
-      "position": { "x": 910, "y": 790 },
-      "tags": ["side", "clue"],
+      "position": {
+        "x": 910,
+        "y": 790
+      },
+      "tags": [
+        "side",
+        "clue"
+      ],
       "body": {
         "variants": [
           "钥匙编号 MCE-0。备注写着：总机不识别人名，只识别被投诉过的线路。",
@@ -334,14 +595,25 @@
         ],
         "notes": "提示投诉权限是总机验证方式。"
       },
-      "telephone": { "speaker": "operator", "speakerLabel": "失物管理员", "lcd": "KEY MCE-0", "canHangUp": true }
+      "telephone": {
+        "speaker": "operator",
+        "speakerLabel": "失物管理员",
+        "lcd": "KEY MCE-0",
+        "canHangUp": true
+      }
     },
     {
       "id": "night_radio",
       "label": "午夜广播点歌线",
       "kind": "dial_target",
-      "position": { "x": 620, "y": 930 },
-      "tags": ["side", "numbers"],
+      "position": {
+        "x": 620,
+        "y": 930
+      },
+      "tags": [
+        "side",
+        "numbers"
+      ],
       "body": {
         "variants": [
           "这里是 Radio Nocturne。今晚没有音乐，只有听众来信：八、七、一、四、一、二、七。",
@@ -349,14 +621,26 @@
         ],
         "notes": "可提前发现总机号码，但不提供投诉权限。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "午夜广播", "lcd": "ON AIR", "canHangUp": true, "corruption": 0.6 }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "午夜广播",
+        "lcd": "ON AIR",
+        "canHangUp": true,
+        "corruption": 0.6
+      }
     },
     {
       "id": "emergency_operator",
       "label": "紧急接线员",
       "kind": "dial_target",
-      "position": { "x": 330, "y": 980 },
-      "tags": ["side", "emergency"],
+      "position": {
+        "x": 330,
+        "y": 980
+      },
+      "tags": [
+        "side",
+        "emergency"
+      ],
       "body": {
         "variants": [
           "紧急服务。请说出您的位置……等等，这个电话亭在我们的地图上不存在。不要挂断。",
@@ -364,14 +648,26 @@
         ],
         "notes": "暗示电话亭空间异常。"
       },
-      "telephone": { "speaker": "operator", "speakerLabel": "紧急接线员", "lcd": "LOCATION?", "canHangUp": true, "corruption": 0.1 }
+      "telephone": {
+        "speaker": "operator",
+        "speakerLabel": "紧急接线员",
+        "lcd": "LOCATION?",
+        "canHangUp": true,
+        "corruption": 0.1
+      }
     },
     {
       "id": "incoming_weather",
       "label": "来电：雨况确认",
       "kind": "incoming_call",
-      "position": { "x": 330, "y": -120 },
-      "tags": ["incoming", "act-1"],
+      "position": {
+        "x": 330,
+        "y": -120
+      },
+      "tags": [
+        "incoming",
+        "act-1"
+      ],
       "body": {
         "variants": [
           "陌生人：请问……你那里也在下雨吗？我拨的每个号码都有人这么问我。",
@@ -379,14 +675,25 @@
         ],
         "notes": "第一通主动来电。"
       },
-      "telephone": { "speaker": "stranger", "speakerLabel": "未知来电", "lcd": "INCOMING 01", "canHangUp": true }
+      "telephone": {
+        "speaker": "stranger",
+        "speakerLabel": "未知来电",
+        "lcd": "INCOMING 01",
+        "canHangUp": true
+      }
     },
     {
       "id": "incoming_automaton",
       "label": "来电：Meridian 欢迎词",
       "kind": "incoming_call",
-      "position": { "x": 620, "y": -120 },
-      "tags": ["incoming", "act-2"],
+      "position": {
+        "x": 620,
+        "y": -120
+      },
+      "tags": [
+        "incoming",
+        "act-2"
+      ],
       "body": {
         "variants": [
           "感谢您选择 Meridian Courtesy Exchange。您没有致电我们，是我们替未来的您致电。",
@@ -394,14 +701,26 @@
         ],
         "notes": "第二通主动来电。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "Meridian 主动服务", "lcd": "COURTESY CALL", "canHangUp": true, "corruption": 0.55 }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "Meridian 主动服务",
+        "lcd": "COURTESY CALL",
+        "canHangUp": true,
+        "corruption": 0.55
+      }
     },
     {
       "id": "incoming_salesman",
       "label": "来电：疲惫的推销员",
       "kind": "incoming_call",
-      "position": { "x": 910, "y": -120 },
-      "tags": ["incoming", "act-3"],
+      "position": {
+        "x": 910,
+        "y": -120
+      },
+      "tags": [
+        "incoming",
+        "act-3"
+      ],
       "body": {
         "variants": [
           "别重复它要你说的话。我叫——不，名字不重要。找投诉线，再找被刮掉的十九号。",
@@ -409,250 +728,2064 @@
         ],
         "notes": "第三通主动来电，直给内部号码。"
       },
-      "telephone": { "speaker": "stranger", "speakerLabel": "疲惫的推销员", "lcd": "CALLER WITHHELD", "canHangUp": true, "corruption": 0.25 }
+      "telephone": {
+        "speaker": "stranger",
+        "speakerLabel": "疲惫的推销员",
+        "lcd": "CALLER WITHHELD",
+        "canHangUp": true,
+        "corruption": 0.25
+      }
     },
     {
       "id": "scene_weather_card",
       "label": "天气卡片",
       "kind": "scene",
-      "position": { "x": 40, "y": 1100 },
-      "tags": ["scene"],
-      "body": { "variants": ["卡片背面印着：LONDON AUTOMATIC WEATHER — 946 0264。下面有人写：它从不预报，只提问。"] },
-      "telephone": { "speaker": "system", "lcd": "NUMBER FOUND" }
+      "position": {
+        "x": 40,
+        "y": 1100
+      },
+      "tags": [
+        "scene"
+      ],
+      "body": {
+        "variants": [
+          "卡片背面印着：LONDON AUTOMATIC WEATHER — 946 0264。下面有人写：它从不预报，只提问。"
+        ]
+      },
+      "telephone": {
+        "speaker": "system",
+        "lcd": "NUMBER FOUND"
+      }
     },
     {
       "id": "scene_meridian_ad",
       "label": "Meridian 广告",
       "kind": "scene",
-      "position": { "x": 330, "y": 1100 },
-      "tags": ["scene"],
-      "body": { "variants": ["烫金小字写着：更好的谈话，从 871 4000 开始。免费咨询，永不占线。"] },
-      "telephone": { "speaker": "system", "lcd": "NUMBER FOUND" }
+      "position": {
+        "x": 330,
+        "y": 1100
+      },
+      "tags": [
+        "scene"
+      ],
+      "body": {
+        "variants": [
+          "烫金小字写着：更好的谈话，从 871 4000 开始。免费咨询，永不占线。"
+        ]
+      },
+      "telephone": {
+        "speaker": "system",
+        "lcd": "NUMBER FOUND"
+      }
     },
     {
       "id": "scene_scratched_plate",
       "label": "被划掉的铭牌",
       "kind": "scene",
-      "position": { "x": 620, "y": 1100 },
-      "tags": ["scene", "clue"],
-      "body": { "variants": ["铜牌原本写着“维修转接 871 4019”。数字被人用钥匙刮过，但刮痕太浅。"] },
-      "telephone": { "speaker": "system", "lcd": "EXT. 19" }
+      "position": {
+        "x": 620,
+        "y": 1100
+      },
+      "tags": [
+        "scene",
+        "clue"
+      ],
+      "body": {
+        "variants": [
+          "铜牌原本写着“维修转接 871 4019”。数字被人用钥匙刮过，但刮痕太浅。"
+        ]
+      },
+      "telephone": {
+        "speaker": "system",
+        "lcd": "EXT. 19"
+      }
     },
     {
       "id": "scene_newspaper",
       "label": "报纸剪角",
       "kind": "scene",
-      "position": { "x": 910, "y": 1100 },
-      "tags": ["scene", "side"],
-      "body": { "variants": ["节目表上圈着午夜广播点歌线 794 1966。旁边批注：听七个数字，不要听歌。"] },
-      "telephone": { "speaker": "system", "lcd": "RADIO 7941966" }
+      "position": {
+        "x": 910,
+        "y": 1100
+      },
+      "tags": [
+        "scene",
+        "side"
+      ],
+      "body": {
+        "variants": [
+          "节目表上圈着午夜广播点歌线 794 1966。旁边批注：听七个数字，不要听歌。"
+        ]
+      },
+      "telephone": {
+        "speaker": "system",
+        "lcd": "RADIO 7941966"
+      }
     },
     {
       "id": "scene_phonebook",
       "label": "发霉的电话簿",
       "kind": "scene",
-      "position": { "x": 1200, "y": 1100 },
-      "tags": ["scene", "side"],
-      "body": { "variants": ["“失物招领”一栏被红笔圈住：301 1968。夹页里是一张没有姓名的认领单。"] },
-      "telephone": { "speaker": "system", "lcd": "FOUND 3011968" }
+      "position": {
+        "x": 1200,
+        "y": 1100
+      },
+      "tags": [
+        "scene",
+        "side"
+      ],
+      "body": {
+        "variants": [
+          "“失物招领”一栏被红笔圈住：301 1968。夹页里是一张没有姓名的认领单。"
+        ]
+      },
+      "telephone": {
+        "speaker": "system",
+        "lcd": "FOUND 3011968"
+      }
     },
     {
       "id": "scene_coin_return",
       "label": "退币槽留言",
       "kind": "scene",
-      "position": { "x": 1490, "y": 1100 },
-      "tags": ["scene", "secret"],
-      "body": { "variants": ["退币槽里没有硬币，只有卷成细条的纸：如果你已经“入职”，下次就用他们的声音撒谎。"] },
-      "telephone": { "speaker": "system", "lcd": "TRY AGAIN" }
+      "position": {
+        "x": 1490,
+        "y": 1100
+      },
+      "tags": [
+        "scene",
+        "secret"
+      ],
+      "body": {
+        "variants": [
+          "退币槽里没有硬币，只有卷成细条的纸：如果你已经“入职”，下次就用他们的声音撒谎。"
+        ]
+      },
+      "telephone": {
+        "speaker": "system",
+        "lcd": "TRY AGAIN"
+      }
     },
     {
       "id": "ending_disconnected",
       "label": "结局：断线",
       "kind": "end",
-      "position": { "x": 2070, "y": 80 },
-      "tags": ["ending", "success"],
+      "position": {
+        "x": 2070,
+        "y": 80
+      },
+      "tags": [
+        "ending",
+        "success"
+      ],
       "body": {
-        "variants": ["你拔下训练线。整座城市的电话同时安静了四秒。雨声第一次听起来只像雨。"],
+        "variants": [
+          "你拔下训练线。整座城市的电话同时安静了四秒。雨声第一次听起来只像雨。"
+        ],
         "notes": "主成功结局。"
       },
-      "telephone": { "speaker": "system", "speakerLabel": "线路终止", "lcd": "NETWORK DOWN", "ending": "disconnected", "canHangUp": false }
+      "telephone": {
+        "speaker": "system",
+        "speakerLabel": "线路终止",
+        "lcd": "NETWORK DOWN",
+        "ending": "disconnected",
+        "canHangUp": false
+      }
     },
     {
       "id": "ending_recruited",
       "label": "结局：入职",
       "kind": "fail",
-      "position": { "x": 2070, "y": 210 },
-      "tags": ["ending", "fail"],
+      "position": {
+        "x": 2070,
+        "y": 210
+      },
+      "tags": [
+        "ending",
+        "fail"
+      ],
       "body": {
-        "variants": ["欢迎加入 Meridian。听筒里传来拨号音——不是等你拨号，而是在拨你。你的第一位客户已经接起。"],
+        "variants": [
+          "欢迎加入 Meridian。听筒里传来拨号音——不是等你拨号，而是在拨你。你的第一位客户已经接起。"
+        ],
         "notes": "高顺从结局。"
       },
-      "telephone": { "speaker": "operator", "speakerLabel": "人事交换员", "lcd": "WELCOME, AGENT", "ending": "recruited", "canHangUp": false, "corruption": 1 }
+      "telephone": {
+        "speaker": "operator",
+        "speakerLabel": "人事交换员",
+        "lcd": "WELCOME, AGENT",
+        "ending": "recruited",
+        "canHangUp": false,
+        "corruption": 1
+      }
     },
     {
       "id": "ending_transfer",
       "label": "结局：永远转接",
       "kind": "fail",
-      "position": { "x": 2070, "y": 340 },
-      "tags": ["ending", "fail"],
+      "position": {
+        "x": 2070,
+        "y": 340
+      },
+      "tags": [
+        "ending",
+        "fail"
+      ],
       "body": {
-        "variants": ["通话计时越过 99:59 后归零。等待音乐没有停止。玻璃外的雨一遍又一遍落下同一滴。"],
+        "variants": [
+          "通话计时越过 99:59 后归零。等待音乐没有停止。玻璃外的雨一遍又一遍落下同一滴。"
+        ],
         "notes": "自动菜单循环结局。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "等待录音", "lcd": "PLEASE HOLD", "ending": "transfer", "canHangUp": false, "corruption": 1 }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "等待录音",
+        "lcd": "PLEASE HOLD",
+        "ending": "transfer",
+        "canHangUp": false,
+        "corruption": 1
+      }
     },
     {
       "id": "ending_worn",
       "label": "结局：号码磨损",
       "kind": "fail",
-      "position": { "x": 2070, "y": 470 },
-      "tags": ["ending", "fail"],
+      "position": {
+        "x": 2070,
+        "y": 470
+      },
+      "tags": [
+        "ending",
+        "fail"
+      ],
       "body": {
-        "variants": ["转盘上的数字被指尖磨平。无论拨什么，录音都回答：这个号码从未属于任何人。"],
+        "variants": [
+          "转盘上的数字被指尖磨平。无论拨什么，录音都回答：这个号码从未属于任何人。"
+        ],
         "notes": "多次错误拨号和挂断。"
       },
-      "telephone": { "speaker": "recording", "speakerLabel": "空号服务", "lcd": "NUMBER WORN", "ending": "worn", "canHangUp": false, "corruption": 0.9 }
+      "telephone": {
+        "speaker": "recording",
+        "speakerLabel": "空号服务",
+        "lcd": "NUMBER WORN",
+        "ending": "worn",
+        "canHangUp": false,
+        "corruption": 0.9
+      }
     },
     {
       "id": "ending_weather",
       "label": "结局：天气很好",
       "kind": "fail",
-      "position": { "x": 2070, "y": 600 },
-      "tags": ["ending", "ambiguous"],
+      "position": {
+        "x": 2070,
+        "y": 600
+      },
+      "tags": [
+        "ending",
+        "ambiguous"
+      ],
       "body": {
-        "variants": ["最后一通电话问伦敦是否在下雨。你望着被雨覆盖的玻璃，听见自己回答：天气很好。"],
+        "variants": [
+          "最后一通电话问伦敦是否在下雨。你望着被雨覆盖的玻璃，听见自己回答：天气很好。"
+        ],
         "notes": "模糊洗脑结局。"
       },
-      "telephone": { "speaker": "player", "speakerLabel": "您的声音", "lcd": "WEATHER: FINE", "ending": "weather", "canHangUp": false, "corruption": 0.8 }
+      "telephone": {
+        "speaker": "player",
+        "speakerLabel": "您的声音",
+        "lcd": "WEATHER: FINE",
+        "ending": "weather",
+        "canHangUp": false,
+        "corruption": 0.8
+      }
     },
     {
       "id": "ending_counterfeit",
       "label": "结局：假代表",
       "kind": "end",
-      "position": { "x": 2070, "y": 730 },
-      "tags": ["ending", "hidden"],
+      "position": {
+        "x": 2070,
+        "y": 730
+      },
+      "tags": [
+        "ending",
+        "hidden"
+      ],
       "body": {
-        "variants": ["你用 Meridian 教给你的声音通过验证，再把所有来电转接到无人接听的清晨。系统称你为优秀代表。它没有发现你在撒谎。"],
+        "variants": [
+          "你用 Meridian 教给你的声音通过验证，再把所有来电转接到无人接听的清晨。系统称你为优秀代表。它没有发现你在撒谎。"
+        ],
         "notes": "见过入职结局后可达的跨周目反制。"
       },
-      "telephone": { "speaker": "system", "speakerLabel": "伪造席位", "lcd": "AGENT UNKNOWN", "ending": "counterfeit", "canHangUp": false, "corruption": 0.5 }
+      "telephone": {
+        "speaker": "system",
+        "speakerLabel": "伪造席位",
+        "lcd": "AGENT UNKNOWN",
+        "ending": "counterfeit",
+        "canHangUp": false,
+        "corruption": 0.5
+      }
     },
     {
       "id": "ending_operator",
       "label": "结局：夜班接线员",
       "kind": "end",
-      "position": { "x": 2070, "y": 860 },
-      "tags": ["ending", "secret"],
+      "position": {
+        "x": 2070,
+        "y": 860
+      },
+      "tags": [
+        "ending",
+        "secret"
+      ],
       "body": {
-        "variants": ["你没有切断交换机，而是接管它。每当 Meridian 拨向新的陌生人，你先一步接通，只说一句：不要重复它说的话。"],
+        "variants": [
+          "你没有切断交换机，而是接管它。每当 Meridian 拨向新的陌生人，你先一步接通，只说一句：不要重复它说的话。"
+        ],
         "notes": "高探索隐藏结局。"
       },
-      "telephone": { "speaker": "player", "speakerLabel": "夜班接线员", "lcd": "NIGHT OPERATOR", "ending": "operator", "canHangUp": false, "corruption": 0.35 }
+      "telephone": {
+        "speaker": "player",
+        "speakerLabel": "夜班接线员",
+        "lcd": "NIGHT OPERATOR",
+        "ending": "operator",
+        "canHangUp": false,
+        "corruption": 0.35
+      }
     }
   ],
   "edges": [
-    { "id": "dial_weather", "label": "拨打天气服务", "from": "global", "to": "weather_intro", "priority": 90, "trigger": { "type": "dialNumber", "value": "9460264" }, "effects": [{ "type": "setState", "values": { "calledWeather": true } }], "samples": ["946 0264"] },
-    { "id": "dial_meridian", "label": "拨打 Meridian", "from": "global", "to": "meridian_welcome", "priority": 90, "trigger": { "type": "dialNumber", "value": "8714000" }, "effects": [{ "type": "setState", "values": { "calledMeridian": true } }], "samples": ["871 4000"] },
-    { "id": "dial_complaints", "label": "直拨投诉线", "from": "global", "to": "complaints_desk", "priority": 90, "trigger": { "type": "dialNumber", "value": "8714003" }, "effects": [{ "type": "setState", "values": { "complaintAccess": true } }], "samples": ["871 4003"] },
-    { "id": "dial_internal", "label": "拨打十九号", "from": "global", "to": "internal_directory", "priority": 90, "trigger": { "type": "dialNumber", "value": "8714019" }, "effects": [{ "type": "setState", "values": { "internalAccess": true } }], "samples": ["871 4019"] },
-    { "id": "dial_switchboard_authorized", "label": "带投诉权限进入总机", "from": "global", "to": "switchboard_gate", "priority": 120, "trigger": { "type": "dialNumber", "value": "8714127" }, "conditions": [{ "type": "stateEquals", "key": "complaintAccess", "value": true }], "effects": [{ "type": "setState", "values": { "switchboardAuthorized": true } }], "samples": ["871 4127"] },
-    { "id": "dial_switchboard_unauthorized", "label": "未经授权拨入总机", "from": "global", "to": "transfer_loop", "priority": 80, "trigger": { "type": "dialNumber", "value": "8714127" }, "effects": [{ "type": "increment", "key": "transferDepth", "amount": 1 }], "samples": ["871 4127"] },
-    { "id": "dial_lost_found", "label": "拨打失物招领", "from": "global", "to": "lost_found", "priority": 90, "trigger": { "type": "dialNumber", "value": "3011968" }, "samples": ["301 1968"] },
-    { "id": "dial_radio", "label": "拨打午夜广播", "from": "global", "to": "night_radio", "priority": 90, "trigger": { "type": "dialNumber", "value": "7941966" }, "effects": [{ "type": "discoverNumber", "number": "8714127" }, { "type": "addClue", "clue": "广播中的七个数字与 Meridian 总机一致。" }], "samples": ["794 1966"] },
-    { "id": "dial_emergency", "label": "拨打紧急服务", "from": "global", "to": "emergency_operator", "priority": 100, "trigger": { "type": "dialNumber", "value": "999" }, "samples": ["999"] },
-
-    { "id": "weather_yes", "label": "承认正在下雨", "from": "weather_intro", "to": "weather_agree", "priority": 80, "trigger": { "type": "choice", "value": "weather_yes" }, "choice": { "text": "是的。伦敦正在下雨。", "tone": "compliant" }, "effects": [{ "type": "increment", "key": "compliance", "amount": 1 }] },
-    { "id": "weather_no", "label": "否认下雨", "from": "weather_intro", "to": "weather_deny", "priority": 80, "trigger": { "type": "choice", "value": "weather_no" }, "choice": { "text": "没有。至少这里没有。", "tone": "defiant" }, "effects": [{ "type": "increment", "key": "suspicion", "amount": 1 }] },
-    { "id": "weather_who", "label": "追问是谁", "from": "weather_intro", "to": "weather_trace", "priority": 90, "trigger": { "type": "choice", "value": "weather_who" }, "choice": { "text": "谁在收集这些回答？", "tone": "plain" }, "effects": [{ "type": "increment", "key": "suspicion", "amount": 1 }, { "type": "discoverNumber", "number": "8714000" }] },
-    { "id": "weather_repeat", "label": "重复训练句", "from": "weather_agree", "to": "product_repeat", "priority": 90, "trigger": { "type": "choice", "value": "repeat_choice" }, "choice": { "text": "我愿意听取更好的选择。", "tone": "compliant" }, "effects": [{ "type": "increment", "key": "compliance", "amount": 2 }] },
-    { "id": "weather_refuse", "label": "拒绝校准", "from": "weather_agree", "to": "weather_trace", "priority": 80, "trigger": { "type": "choice", "value": "refuse_weather" }, "choice": { "text": "天气不需要我的许可。", "tone": "defiant" }, "effects": [{ "type": "increment", "key": "suspicion", "amount": 1 }] },
-    { "id": "deny_insist", "label": "坚持看到的天气", "from": "weather_deny", "to": "weather_trace", "priority": 80, "trigger": { "type": "choice", "value": "deny_insist" }, "choice": { "text": "先告诉我你是谁。", "tone": "defiant" }, "effects": [{ "type": "increment", "key": "suspicion", "amount": 1 }, { "type": "discoverNumber", "number": "8714000" }] },
-    { "id": "deny_yield", "label": "接受校准", "from": "weather_deny", "to": "weather_agree", "priority": 70, "trigger": { "type": "choice", "value": "deny_yield" }, "choice": { "text": "也许是我看错了。", "tone": "compliant" }, "effects": [{ "type": "increment", "key": "compliance", "amount": 2 }] },
-
-    { "id": "meridian_continue", "label": "进入主菜单", "from": "meridian_welcome", "to": "menu_main", "priority": 80, "trigger": { "type": "choice", "value": "continue" }, "choice": { "text": "继续。", "tone": "plain" } },
-    { "id": "meridian_identity", "label": "质问公司", "from": "meridian_welcome", "to": "complaints_desk", "priority": 90, "trigger": { "type": "choice", "value": "identity" }, "choice": { "text": "你们为什么接管天气服务？", "tone": "defiant" }, "effects": [{ "type": "increment", "key": "suspicion", "amount": 1 }, { "type": "setState", "values": { "complaintAccess": true } }] },
-    { "id": "menu_product", "label": "产品介绍", "from": "menu_main", "to": "product_pitch", "priority": 80, "trigger": { "type": "choice", "value": "product" }, "choice": { "text": "听取产品介绍", "tone": "plain" } },
-    { "id": "menu_representative", "label": "申请代表", "from": "menu_main", "to": "representative_apply", "priority": 80, "trigger": { "type": "choice", "value": "representative" }, "choice": { "text": "申请成为代表", "tone": "compliant" }, "effects": [{ "type": "increment", "key": "compliance", "amount": 1 }] },
-    { "id": "menu_complaint", "label": "投诉线路", "from": "menu_main", "to": "complaints_desk", "priority": 90, "trigger": { "type": "choice", "value": "complaint" }, "choice": { "text": "投诉线路问题", "tone": "defiant" }, "effects": [{ "type": "setState", "values": { "complaintAccess": true } }] },
-    { "id": "menu_weather", "label": "查询天气", "from": "menu_main", "to": "weather_intro", "priority": 70, "trigger": { "type": "choice", "value": "weather" }, "choice": { "text": "查询天气", "tone": "warm" }, "effects": [{ "type": "increment", "key": "compliance", "amount": 1 }] },
-    { "id": "pitch_lesson", "label": "接受免费课程", "from": "product_pitch", "to": "product_repeat", "priority": 80, "trigger": { "type": "choice", "value": "lesson" }, "choice": { "text": "我愿意听第一课。", "tone": "compliant" }, "effects": [{ "type": "increment", "key": "compliance", "amount": 1 }] },
-    { "id": "pitch_price", "label": "追问代价", "from": "product_pitch", "to": "complaints_desk", "priority": 80, "trigger": { "type": "choice", "value": "price" }, "choice": { "text": "代价是什么？", "tone": "defiant" }, "effects": [{ "type": "increment", "key": "suspicion", "amount": 1 }, { "type": "setState", "values": { "complaintAccess": true } }] },
-    { "id": "repeat_submit_final", "label": "顺从并入职", "from": "product_repeat", "to": "ending_recruited", "priority": 120, "trigger": { "type": "choice", "value": "repeat_final" }, "conditions": [{ "type": "stateGte", "key": "compliance", "value": 3 }], "choice": { "text": "陌生人的一分钟属于我。", "tone": "compliant" }, "effects": [{ "type": "increment", "key": "compliance", "amount": 2 }] },
-    { "id": "repeat_submit", "label": "完成训练", "from": "product_repeat", "to": "representative_apply", "priority": 80, "trigger": { "type": "choice", "value": "repeat_final" }, "choice": { "text": "陌生人的一分钟属于我。", "tone": "compliant" }, "effects": [{ "type": "increment", "key": "compliance", "amount": 2 }] },
-    { "id": "repeat_refuse", "label": "拒绝复述", "from": "product_repeat", "to": "complaints_desk", "priority": 90, "trigger": { "type": "choice", "value": "refuse_repeat" }, "choice": { "text": "不。这不是我的话。", "tone": "defiant" }, "effects": [{ "type": "increment", "key": "suspicion", "amount": 2 }, { "type": "setState", "values": { "complaintAccess": true } }] },
-    { "id": "apply_accept", "label": "提交原身份", "from": "representative_apply", "to": "ending_recruited", "priority": 90, "trigger": { "type": "choice", "value": "apply_accept" }, "choice": { "text": "把原来的身份留空。", "tone": "compliant" }, "effects": [{ "type": "increment", "key": "compliance", "amount": 2 }] },
-    { "id": "apply_counterfeit", "label": "伪造代表身份", "from": "representative_apply", "to": "ending_counterfeit", "priority": 130, "trigger": { "type": "choice", "value": "apply_counterfeit" }, "conditions": [{ "type": "endingSeen", "value": "recruited" }], "choice": { "text": "工号 MCE-0，夜班外勤。", "tone": "plain" }, "effects": [{ "type": "setState", "values": { "counterfeitAgent": true } }] },
-    { "id": "apply_escape", "label": "转向投诉", "from": "representative_apply", "to": "complaints_desk", "priority": 80, "trigger": { "type": "choice", "value": "apply_escape" }, "choice": { "text": "我的申请表有线路故障。", "tone": "defiant" }, "effects": [{ "type": "setState", "values": { "complaintAccess": true } }] },
-
-    { "id": "complaint_voice", "label": "投诉听见自己的声音", "from": "complaints_desk", "to": "complaints_human", "priority": 90, "trigger": { "type": "choice", "value": "voice_fault" }, "choice": { "text": "我听见了不属于我的声音。", "tone": "plain" }, "effects": [{ "type": "setState", "values": { "complaintAccess": true, "faultCode": "VOICE" } }] },
-    { "id": "complaint_number", "label": "报出十九号", "from": "complaints_desk", "to": "internal_directory", "priority": 120, "trigger": { "type": "choice", "value": "old_extension" }, "conditions": [{ "type": "hasNumber", "value": "8714019" }], "choice": { "text": "故障来自被注销的十九号席位。", "tone": "plain" }, "effects": [{ "type": "setState", "values": { "complaintAccess": true, "internalAccess": true } }] },
-    { "id": "complaint_weather", "label": "投诉天气", "from": "complaints_desk", "to": "weather_deny", "priority": 70, "trigger": { "type": "choice", "value": "weather_fault" }, "choice": { "text": "天气服务正在改写回答。", "tone": "defiant" }, "effects": [{ "type": "increment", "key": "suspicion", "amount": 1 }] },
-    { "id": "human_scratched", "label": "提到被划铭牌", "from": "complaints_human", "to": "old_operator", "priority": 120, "trigger": { "type": "choice", "value": "scratched_plate" }, "conditions": [{ "type": "hasNumber", "value": "8714019" }], "choice": { "text": "铭牌上还有 871 4019。", "tone": "plain" }, "effects": [{ "type": "discoverNumber", "number": "8714127" }, { "type": "addClue", "clue": "总机解法：从投诉线获得权限，再拨 871 4127 切断训练线。" }, { "type": "setState", "values": { "operatorCode": true } }] },
-    { "id": "human_ad", "label": "承认来自广告", "from": "complaints_human", "to": "transfer_loop", "priority": 70, "trigger": { "type": "choice", "value": "from_ad" }, "choice": { "text": "我从 Meridian 的广告打来。", "tone": "compliant" }, "effects": [{ "type": "increment", "key": "transferDepth", "amount": 1 }] },
-    { "id": "human_trust", "label": "请求线路员帮助", "from": "complaints_human", "to": "old_operator", "priority": 80, "trigger": { "type": "choice", "value": "trust_human" }, "choice": { "text": "告诉我怎么切断它。", "tone": "warm" }, "effects": [{ "type": "discoverNumber", "number": "8714127" }, { "type": "addClue", "clue": "871 4127 是 Meridian 中央交换机。" }, { "type": "setState", "values": { "operatorCode": true } }] },
-    { "id": "directory_silence", "label": "保持沉默", "from": "internal_directory", "to": "old_operator", "priority": 100, "trigger": { "type": "choice", "value": "stay_silent" }, "choice": { "text": "保持沉默。", "tone": "plain" }, "effects": [{ "type": "discoverNumber", "number": "8714127" }, { "type": "addClue", "clue": "旧接线员要求从投诉线路进入总机。" }, { "type": "setState", "values": { "operatorCode": true } }] },
-    { "id": "directory_announce", "label": "向目录报到", "from": "internal_directory", "to": "transfer_loop", "priority": 70, "trigger": { "type": "choice", "value": "announce" }, "choice": { "text": "我是来维修十九号席位的。", "tone": "compliant" }, "effects": [{ "type": "increment", "key": "transferDepth", "amount": 1 }] },
-    { "id": "operator_repeat_code", "label": "确认总机解法", "from": "old_operator", "to": "switchboard_gate", "priority": 80, "trigger": { "type": "choice", "value": "use_code" }, "choice": { "text": "投诉、静音、切断训练线。", "tone": "plain" }, "effects": [{ "type": "setState", "values": { "complaintAccess": true, "operatorCode": true, "switchboardAuthorized": true } }] },
-    { "id": "operator_wait", "label": "先挂断再拨", "from": "old_operator", "to": "booth_idle", "priority": 70, "trigger": { "type": "choice", "value": "remember" }, "choice": { "text": "我记住了。", "tone": "warm" }, "effects": [{ "type": "setState", "values": { "complaintAccess": true, "operatorCode": true } }] },
-    { "id": "gate_fault", "label": "以故障编号验证", "from": "switchboard_gate", "to": "switchboard_core", "priority": 110, "trigger": { "type": "choice", "value": "fault_auth" }, "conditions": [{ "type": "stateEquals", "key": "complaintAccess", "value": true }], "choice": { "text": "投诉线路，VOICE 故障，十九号席位。", "tone": "plain" }, "effects": [{ "type": "setState", "values": { "rootAccess": true } }] },
-    { "id": "gate_name", "label": "用姓名验证", "from": "switchboard_gate", "to": "transfer_loop", "priority": 70, "trigger": { "type": "choice", "value": "name_auth" }, "choice": { "text": "报出自己的姓名。", "tone": "compliant" }, "effects": [{ "type": "increment", "key": "transferDepth", "amount": 1 }] },
-    { "id": "core_cut_training", "label": "切断训练线", "from": "switchboard_core", "to": "ending_disconnected", "priority": 120, "trigger": { "type": "choice", "value": "cut_training" }, "conditions": [{ "type": "stateEquals", "key": "operatorCode", "value": true }], "choice": { "text": "拔下礼仪训练线。", "tone": "defiant" } },
-    { "id": "core_cut_weather", "label": "误切天气线", "from": "switchboard_core", "to": "ending_weather", "priority": 80, "trigger": { "type": "choice", "value": "cut_weather" }, "choice": { "text": "拔下天气服务线。", "tone": "plain" } },
-    { "id": "core_listen", "label": "监听全部线路", "from": "switchboard_core", "to": "transfer_loop", "priority": 70, "trigger": { "type": "choice", "value": "listen_all" }, "choice": { "text": "先听听每条线路。", "tone": "warm" }, "effects": [{ "type": "increment", "key": "transferDepth", "amount": 2 }] },
-    { "id": "core_takeover", "label": "接管夜班总机", "from": "switchboard_core", "to": "ending_operator", "priority": 140, "trigger": { "type": "choice", "value": "takeover" }, "conditions": [{ "type": "endingSeen", "value": "disconnected" }, { "type": "endingSeen", "value": "recruited" }, { "type": "hasNumber", "value": "7941966" }], "choice": { "text": "把所有招募来电转到我的听筒。", "tone": "defiant" } },
-    { "id": "transfer_wait", "label": "继续等待", "from": "transfer_loop", "to": "ending_transfer", "priority": 80, "trigger": { "type": "choice", "value": "keep_waiting" }, "choice": { "text": "继续等待转接。", "tone": "compliant" } },
-    { "id": "transfer_break", "label": "尝试强行断开", "from": "transfer_loop", "to": "ending_transfer", "priority": 70, "trigger": { "type": "choice", "value": "break_loop" }, "choice": { "text": "把听筒砸回去。", "tone": "defiant" } },
-
-    { "id": "lost_which", "label": "询问公用电话钥匙", "from": "lost_found", "to": "lost_key", "priority": 80, "trigger": { "type": "choice", "value": "lost_key" }, "choice": { "text": "那把公用电话钥匙。", "tone": "plain" }, "effects": [{ "type": "addClue", "clue": "总机不识别人名，只识别被投诉过的线路。" }] },
-    { "id": "lost_identity", "label": "询问身份", "from": "lost_found", "to": "representative_apply", "priority": 70, "trigger": { "type": "choice", "value": "lost_identity" }, "choice": { "text": "那个姓名是谁的？", "tone": "warm" }, "effects": [{ "type": "increment", "key": "compliance", "amount": 1 }] },
-    { "id": "emergency_location", "label": "描述电话亭", "from": "emergency_operator", "to": "weather_trace", "priority": 80, "trigger": { "type": "choice", "value": "describe_booth" }, "choice": { "text": "红色电话亭，玻璃外一直下雨。", "tone": "plain" }, "effects": [{ "type": "addClue", "clue": "紧急服务地图上不存在这座电话亭。" }, { "type": "increment", "key": "suspicion", "amount": 1 }] },
-    { "id": "emergency_help", "label": "请求切断线路", "from": "emergency_operator", "to": "complaints_desk", "priority": 80, "trigger": { "type": "choice", "value": "ask_help" }, "choice": { "text": "有人在通过电话改写我的声音。", "tone": "defiant" }, "effects": [{ "type": "setState", "values": { "complaintAccess": true } }] },
-
-    { "id": "answer_rain_query", "label": "接听雨况来电", "from": "global", "to": "incoming_weather", "priority": 100, "trigger": { "type": "incomingAnswer", "value": "rain_query" } },
-    { "id": "answer_courtesy_call", "label": "接听 Meridian 主动服务", "from": "global", "to": "incoming_automaton", "priority": 100, "trigger": { "type": "incomingAnswer", "value": "courtesy_call" } },
-    { "id": "answer_salesman_warning", "label": "接听推销员警告", "from": "global", "to": "incoming_salesman", "priority": 100, "trigger": { "type": "incomingAnswer", "value": "salesman_warning" }, "effects": [{ "type": "discoverNumber", "number": "8714019" }, { "type": "addClue", "clue": "疲惫的推销员警告：不要重复训练句，找十九号投诉线。" }] },
-    { "id": "incoming_weather_same", "label": "回答同样下雨", "from": "incoming_weather", "to": "weather_intro", "priority": 80, "trigger": { "type": "choice", "value": "same_rain" }, "choice": { "text": "是的，这里也在下雨。", "tone": "warm" }, "effects": [{ "type": "increment", "key": "compliance", "amount": 1 }] },
-    { "id": "incoming_weather_warn", "label": "警告陌生人", "from": "incoming_weather", "to": "weather_trace", "priority": 90, "trigger": { "type": "choice", "value": "warn_stranger" }, "choice": { "text": "别回答它的问题。先问是谁在听。", "tone": "defiant" }, "effects": [{ "type": "increment", "key": "suspicion", "amount": 1 }, { "type": "discoverNumber", "number": "8714000" }] },
-    { "id": "automaton_accept", "label": "接受主动服务", "from": "incoming_automaton", "to": "menu_main", "priority": 80, "trigger": { "type": "choice", "value": "accept_service" }, "choice": { "text": "我愿意听取更好的选择。", "tone": "compliant" }, "effects": [{ "type": "increment", "key": "compliance", "amount": 2 }] },
-    { "id": "automaton_refuse", "label": "拒绝主动服务", "from": "incoming_automaton", "to": "complaints_desk", "priority": 90, "trigger": { "type": "choice", "value": "reject_service" }, "choice": { "text": "我没有选择你们。", "tone": "defiant" }, "effects": [{ "type": "increment", "key": "suspicion", "amount": 1 }, { "type": "setState", "values": { "complaintAccess": true } }] },
-    { "id": "salesman_trust", "label": "相信疲惫推销员", "from": "incoming_salesman", "to": "internal_directory", "priority": 90, "trigger": { "type": "choice", "value": "trust_salesman" }, "choice": { "text": "我记住 871 4019 了。", "tone": "warm" }, "effects": [{ "type": "discoverNumber", "number": "8714019" }, { "type": "setState", "values": { "complaintAccess": true } }] },
-    { "id": "salesman_doubt", "label": "怀疑推销员", "from": "incoming_salesman", "to": "meridian_welcome", "priority": 70, "trigger": { "type": "choice", "value": "doubt_salesman" }, "choice": { "text": "你也是他们的脚本。", "tone": "defiant" }, "effects": [{ "type": "increment", "key": "suspicion", "amount": 1 }] },
-
-    { "id": "inspect_weather_card", "label": "检查天气卡", "from": "global", "to": "scene_weather_card", "priority": 100, "trigger": { "type": "sceneInspect", "value": "weather-card" }, "effects": [{ "type": "discoverNumber", "number": "9460264" }, { "type": "increment", "key": "inspected", "amount": 1 }] },
-    { "id": "inspect_meridian_ad", "label": "检查 Meridian 广告", "from": "global", "to": "scene_meridian_ad", "priority": 100, "trigger": { "type": "sceneInspect", "value": "meridian-ad" }, "effects": [{ "type": "discoverNumber", "number": "8714000" }, { "type": "increment", "key": "inspected", "amount": 1 }] },
-    { "id": "inspect_scratched_plate", "label": "检查被划铭牌", "from": "global", "to": "scene_scratched_plate", "priority": 100, "trigger": { "type": "sceneInspect", "value": "scratched-plate" }, "effects": [{ "type": "discoverNumber", "number": "8714019" }, { "type": "addClue", "clue": "铜牌上的维修转接号是 871 4019。" }, { "type": "increment", "key": "inspected", "amount": 1 }] },
-    { "id": "inspect_newspaper", "label": "检查报纸", "from": "global", "to": "scene_newspaper", "priority": 100, "trigger": { "type": "sceneInspect", "value": "newspaper" }, "effects": [{ "type": "discoverNumber", "number": "7941966" }, { "type": "increment", "key": "inspected", "amount": 1 }] },
-    { "id": "inspect_phonebook", "label": "检查电话簿", "from": "global", "to": "scene_phonebook", "priority": 100, "trigger": { "type": "sceneInspect", "value": "phonebook" }, "effects": [{ "type": "discoverNumber", "number": "3011968" }, { "type": "increment", "key": "inspected", "amount": 1 }] },
-    { "id": "inspect_coin_return", "label": "检查退币槽", "from": "global", "to": "scene_coin_return", "priority": 100, "trigger": { "type": "sceneInspect", "value": "coin-return" }, "effects": [{ "type": "addClue", "clue": "见过“入职”结局后，可以用 Meridian 的身份反骗系统。" }, { "type": "increment", "key": "inspected", "amount": 1 }] },
-
-    { "id": "worn_after_hangups", "label": "错号与挂断磨损转盘", "from": "global", "to": "ending_worn", "priority": 150, "trigger": { "type": "hangUp", "value": "*" }, "conditions": [{ "type": "stateGte", "key": "wrongDials", "value": 2 }, { "type": "stateGte", "key": "hangups", "value": 3 }] },
-    { "id": "timeout_weather", "label": "天气沉默超时", "from": "weather_intro", "to": "ending_weather", "priority": 80, "trigger": { "type": "timeout", "value": "choice" } },
-    { "id": "timeout_training", "label": "训练沉默超时", "from": "product_repeat", "to": "transfer_loop", "priority": 80, "trigger": { "type": "timeout", "value": "choice" } },
-    { "id": "timeout_transfer", "label": "转接等待超时", "from": "transfer_loop", "to": "ending_transfer", "priority": 100, "trigger": { "type": "timeout", "value": "call" } },
-    { "id": "worn_after_wrong_dials", "label": "错误拨号过多", "from": "wrong_number", "to": "ending_worn", "priority": 130, "trigger": { "type": "timeout", "value": "call" }, "conditions": [{ "type": "stateGte", "key": "wrongDials", "value": 4 }] },
-    { "id": "wrong_timeout_idle", "label": "空号自动结束", "from": "wrong_number", "to": "booth_idle", "priority": 70, "trigger": { "type": "timeout", "value": "call" } },
-    { "id": "busy_timeout_idle", "label": "忙音自动结束", "from": "busy_line", "to": "booth_idle", "priority": 70, "trigger": { "type": "timeout", "value": "call" } }
+    {
+      "id": "dial_weather",
+      "label": "拨打天气服务",
+      "from": "global",
+      "to": "weather_intro",
+      "priority": 90,
+      "trigger": {
+        "type": "dialNumber",
+        "value": "9460264"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "calledWeather": true
+          }
+        }
+      ],
+      "samples": [
+        "946 0264"
+      ]
+    },
+    {
+      "id": "dial_meridian",
+      "label": "拨打 Meridian",
+      "from": "global",
+      "to": "meridian_welcome",
+      "priority": 90,
+      "trigger": {
+        "type": "dialNumber",
+        "value": "8714000"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "calledMeridian": true
+          }
+        }
+      ],
+      "samples": [
+        "871 4000"
+      ]
+    },
+    {
+      "id": "dial_complaints",
+      "label": "直拨投诉线",
+      "from": "global",
+      "to": "complaints_desk",
+      "priority": 90,
+      "trigger": {
+        "type": "dialNumber",
+        "value": "8714003"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true
+          }
+        }
+      ],
+      "samples": [
+        "871 4003"
+      ]
+    },
+    {
+      "id": "dial_internal",
+      "label": "拨打十九号",
+      "from": "global",
+      "to": "internal_directory",
+      "priority": 90,
+      "trigger": {
+        "type": "dialNumber",
+        "value": "8714019"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "internalAccess": true
+          }
+        }
+      ],
+      "samples": [
+        "871 4019"
+      ]
+    },
+    {
+      "id": "dial_switchboard_authorized",
+      "label": "带投诉权限进入总机",
+      "from": "global",
+      "to": "switchboard_gate",
+      "priority": 120,
+      "trigger": {
+        "type": "dialNumber",
+        "value": "8714127"
+      },
+      "conditions": [
+        {
+          "type": "stateEquals",
+          "key": "complaintAccess",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "switchboardAuthorized": true
+          }
+        }
+      ],
+      "samples": [
+        "871 4127"
+      ]
+    },
+    {
+      "id": "dial_switchboard_unauthorized",
+      "label": "未经授权拨入总机",
+      "from": "global",
+      "to": "transfer_loop",
+      "priority": 80,
+      "trigger": {
+        "type": "dialNumber",
+        "value": "8714127"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "transferDepth",
+          "amount": 1
+        }
+      ],
+      "samples": [
+        "871 4127"
+      ]
+    },
+    {
+      "id": "dial_lost_found",
+      "label": "拨打失物招领",
+      "from": "global",
+      "to": "lost_found",
+      "priority": 90,
+      "trigger": {
+        "type": "dialNumber",
+        "value": "3011968"
+      },
+      "samples": [
+        "301 1968"
+      ]
+    },
+    {
+      "id": "dial_radio",
+      "label": "拨打午夜广播",
+      "from": "global",
+      "to": "night_radio",
+      "priority": 90,
+      "trigger": {
+        "type": "dialNumber",
+        "value": "7941966"
+      },
+      "effects": [
+        {
+          "type": "discoverNumber",
+          "number": "8714127"
+        },
+        {
+          "type": "addClue",
+          "clue": "广播中的七个数字与 Meridian 总机一致。"
+        }
+      ],
+      "samples": [
+        "794 1966"
+      ]
+    },
+    {
+      "id": "dial_emergency",
+      "label": "拨打紧急服务",
+      "from": "global",
+      "to": "emergency_operator",
+      "priority": 100,
+      "trigger": {
+        "type": "dialNumber",
+        "value": "999"
+      },
+      "samples": [
+        "999"
+      ]
+    },
+    {
+      "id": "weather_yes",
+      "label": "承认正在下雨",
+      "from": "weather_intro",
+      "to": "weather_agree",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "weather_yes"
+      },
+      "choice": {
+        "text": "是的。伦敦正在下雨。",
+        "tone": "compliant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "compliance",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "weather_no",
+      "label": "否认下雨",
+      "from": "weather_intro",
+      "to": "weather_deny",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "weather_no"
+      },
+      "choice": {
+        "text": "没有。至少这里没有。",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "suspicion",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "weather_who",
+      "label": "追问是谁",
+      "from": "weather_intro",
+      "to": "weather_trace",
+      "priority": 90,
+      "trigger": {
+        "type": "choice",
+        "value": "weather_who"
+      },
+      "choice": {
+        "text": "谁在收集这些回答？",
+        "tone": "plain"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "suspicion",
+          "amount": 1
+        },
+        {
+          "type": "discoverNumber",
+          "number": "8714000"
+        }
+      ]
+    },
+    {
+      "id": "weather_repeat",
+      "label": "重复训练句",
+      "from": "weather_agree",
+      "to": "product_repeat",
+      "priority": 90,
+      "trigger": {
+        "type": "choice",
+        "value": "repeat_choice"
+      },
+      "choice": {
+        "text": "我愿意听取更好的选择。",
+        "tone": "compliant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "compliance",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "weather_refuse",
+      "label": "拒绝校准",
+      "from": "weather_agree",
+      "to": "weather_trace",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "refuse_weather"
+      },
+      "choice": {
+        "text": "天气不需要我的许可。",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "suspicion",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "deny_insist",
+      "label": "坚持看到的天气",
+      "from": "weather_deny",
+      "to": "weather_trace",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "deny_insist"
+      },
+      "choice": {
+        "text": "先告诉我你是谁。",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "suspicion",
+          "amount": 1
+        },
+        {
+          "type": "discoverNumber",
+          "number": "8714000"
+        }
+      ]
+    },
+    {
+      "id": "deny_yield",
+      "label": "接受校准",
+      "from": "weather_deny",
+      "to": "weather_agree",
+      "priority": 70,
+      "trigger": {
+        "type": "choice",
+        "value": "deny_yield"
+      },
+      "choice": {
+        "text": "也许是我看错了。",
+        "tone": "compliant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "compliance",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "meridian_continue",
+      "label": "进入主菜单",
+      "from": "meridian_welcome",
+      "to": "menu_main",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "continue"
+      },
+      "choice": {
+        "text": "继续。",
+        "tone": "plain"
+      }
+    },
+    {
+      "id": "meridian_identity",
+      "label": "质问公司",
+      "from": "meridian_welcome",
+      "to": "complaints_desk",
+      "priority": 90,
+      "trigger": {
+        "type": "choice",
+        "value": "identity"
+      },
+      "choice": {
+        "text": "你们为什么接管天气服务？",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "suspicion",
+          "amount": 1
+        },
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "menu_product",
+      "label": "产品介绍",
+      "from": "menu_main",
+      "to": "product_pitch",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "product"
+      },
+      "choice": {
+        "text": "听取产品介绍",
+        "tone": "plain"
+      }
+    },
+    {
+      "id": "menu_representative",
+      "label": "申请代表",
+      "from": "menu_main",
+      "to": "representative_apply",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "representative"
+      },
+      "choice": {
+        "text": "申请成为代表",
+        "tone": "compliant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "compliance",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "menu_complaint",
+      "label": "投诉线路",
+      "from": "menu_main",
+      "to": "complaints_desk",
+      "priority": 90,
+      "trigger": {
+        "type": "choice",
+        "value": "complaint"
+      },
+      "choice": {
+        "text": "投诉线路问题",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "menu_weather",
+      "label": "查询天气",
+      "from": "menu_main",
+      "to": "weather_intro",
+      "priority": 70,
+      "trigger": {
+        "type": "choice",
+        "value": "weather"
+      },
+      "choice": {
+        "text": "查询天气",
+        "tone": "warm"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "compliance",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "pitch_lesson",
+      "label": "接受免费课程",
+      "from": "product_pitch",
+      "to": "product_repeat",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "lesson"
+      },
+      "choice": {
+        "text": "我愿意听第一课。",
+        "tone": "compliant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "compliance",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "pitch_price",
+      "label": "追问代价",
+      "from": "product_pitch",
+      "to": "complaints_desk",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "price"
+      },
+      "choice": {
+        "text": "代价是什么？",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "suspicion",
+          "amount": 1
+        },
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "repeat_submit_final",
+      "label": "顺从并入职",
+      "from": "product_repeat",
+      "to": "ending_recruited",
+      "priority": 120,
+      "trigger": {
+        "type": "choice",
+        "value": "repeat_final"
+      },
+      "conditions": [
+        {
+          "type": "stateGte",
+          "key": "compliance",
+          "value": 3
+        }
+      ],
+      "choice": {
+        "text": "陌生人的一分钟属于我。",
+        "tone": "compliant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "compliance",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "repeat_submit",
+      "label": "完成训练",
+      "from": "product_repeat",
+      "to": "representative_apply",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "repeat_final"
+      },
+      "choice": {
+        "text": "陌生人的一分钟属于我。",
+        "tone": "compliant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "compliance",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "repeat_refuse",
+      "label": "拒绝复述",
+      "from": "product_repeat",
+      "to": "complaints_desk",
+      "priority": 90,
+      "trigger": {
+        "type": "choice",
+        "value": "refuse_repeat"
+      },
+      "choice": {
+        "text": "不。这不是我的话。",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "suspicion",
+          "amount": 2
+        },
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply_accept",
+      "label": "提交原身份",
+      "from": "representative_apply",
+      "to": "ending_recruited",
+      "priority": 90,
+      "trigger": {
+        "type": "choice",
+        "value": "apply_accept"
+      },
+      "choice": {
+        "text": "把原来的身份留空。",
+        "tone": "compliant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "compliance",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "apply_counterfeit",
+      "label": "伪造代表身份",
+      "from": "representative_apply",
+      "to": "ending_counterfeit",
+      "priority": 130,
+      "trigger": {
+        "type": "choice",
+        "value": "apply_counterfeit"
+      },
+      "conditions": [
+        {
+          "type": "endingSeen",
+          "value": "recruited"
+        }
+      ],
+      "choice": {
+        "text": "工号 MCE-0，夜班外勤。",
+        "tone": "plain"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "counterfeitAgent": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply_escape",
+      "label": "转向投诉",
+      "from": "representative_apply",
+      "to": "complaints_desk",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "apply_escape"
+      },
+      "choice": {
+        "text": "我的申请表有线路故障。",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "complaint_voice",
+      "label": "投诉听见自己的声音",
+      "from": "complaints_desk",
+      "to": "complaints_human",
+      "priority": 90,
+      "trigger": {
+        "type": "choice",
+        "value": "voice_fault"
+      },
+      "choice": {
+        "text": "我听见了不属于我的声音。",
+        "tone": "plain"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true,
+            "faultCode": "VOICE"
+          }
+        }
+      ]
+    },
+    {
+      "id": "complaint_number",
+      "label": "报出十九号",
+      "from": "complaints_desk",
+      "to": "internal_directory",
+      "priority": 120,
+      "trigger": {
+        "type": "choice",
+        "value": "old_extension"
+      },
+      "conditions": [
+        {
+          "type": "hasNumber",
+          "value": "8714019"
+        }
+      ],
+      "choice": {
+        "text": "故障来自被注销的十九号席位。",
+        "tone": "plain"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true,
+            "internalAccess": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "complaint_weather",
+      "label": "投诉天气",
+      "from": "complaints_desk",
+      "to": "weather_deny",
+      "priority": 70,
+      "trigger": {
+        "type": "choice",
+        "value": "weather_fault"
+      },
+      "choice": {
+        "text": "天气服务正在改写回答。",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "suspicion",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "human_scratched",
+      "label": "提到被划铭牌",
+      "from": "complaints_human",
+      "to": "old_operator",
+      "priority": 120,
+      "trigger": {
+        "type": "choice",
+        "value": "scratched_plate"
+      },
+      "conditions": [
+        {
+          "type": "hasNumber",
+          "value": "8714019"
+        }
+      ],
+      "choice": {
+        "text": "铭牌上还有 871 4019。",
+        "tone": "plain"
+      },
+      "effects": [
+        {
+          "type": "discoverNumber",
+          "number": "8714127"
+        },
+        {
+          "type": "addClue",
+          "clue": "总机解法：从投诉线获得权限，再拨 871 4127 切断训练线。"
+        },
+        {
+          "type": "setState",
+          "values": {
+            "operatorCode": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "human_ad",
+      "label": "承认来自广告",
+      "from": "complaints_human",
+      "to": "transfer_loop",
+      "priority": 70,
+      "trigger": {
+        "type": "choice",
+        "value": "from_ad"
+      },
+      "choice": {
+        "text": "我从 Meridian 的广告打来。",
+        "tone": "compliant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "transferDepth",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "human_trust",
+      "label": "请求线路员帮助",
+      "from": "complaints_human",
+      "to": "old_operator",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "trust_human"
+      },
+      "choice": {
+        "text": "告诉我怎么切断它。",
+        "tone": "warm"
+      },
+      "effects": [
+        {
+          "type": "discoverNumber",
+          "number": "8714127"
+        },
+        {
+          "type": "addClue",
+          "clue": "871 4127 是 Meridian 中央交换机。"
+        },
+        {
+          "type": "setState",
+          "values": {
+            "operatorCode": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "directory_silence",
+      "label": "保持沉默",
+      "from": "internal_directory",
+      "to": "old_operator",
+      "priority": 100,
+      "trigger": {
+        "type": "choice",
+        "value": "stay_silent"
+      },
+      "choice": {
+        "text": "保持沉默。",
+        "tone": "plain"
+      },
+      "effects": [
+        {
+          "type": "discoverNumber",
+          "number": "8714127"
+        },
+        {
+          "type": "addClue",
+          "clue": "旧接线员要求从投诉线路进入总机。"
+        },
+        {
+          "type": "setState",
+          "values": {
+            "operatorCode": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "directory_announce",
+      "label": "向目录报到",
+      "from": "internal_directory",
+      "to": "transfer_loop",
+      "priority": 70,
+      "trigger": {
+        "type": "choice",
+        "value": "announce"
+      },
+      "choice": {
+        "text": "我是来维修十九号席位的。",
+        "tone": "compliant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "transferDepth",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "operator_repeat_code",
+      "label": "确认总机解法",
+      "from": "old_operator",
+      "to": "switchboard_gate",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "use_code"
+      },
+      "choice": {
+        "text": "投诉、静音、切断训练线。",
+        "tone": "plain"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true,
+            "operatorCode": true,
+            "switchboardAuthorized": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "operator_wait",
+      "label": "先挂断再拨",
+      "from": "old_operator",
+      "to": "booth_idle",
+      "priority": 70,
+      "trigger": {
+        "type": "choice",
+        "value": "remember"
+      },
+      "choice": {
+        "text": "我记住了。",
+        "tone": "warm"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true,
+            "operatorCode": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "gate_fault",
+      "label": "以故障编号验证",
+      "from": "switchboard_gate",
+      "to": "switchboard_core",
+      "priority": 110,
+      "trigger": {
+        "type": "choice",
+        "value": "fault_auth"
+      },
+      "conditions": [
+        {
+          "type": "stateEquals",
+          "key": "complaintAccess",
+          "value": true
+        }
+      ],
+      "choice": {
+        "text": "投诉线路，VOICE 故障，十九号席位。",
+        "tone": "plain"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "rootAccess": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "gate_name",
+      "label": "用姓名验证",
+      "from": "switchboard_gate",
+      "to": "transfer_loop",
+      "priority": 70,
+      "trigger": {
+        "type": "choice",
+        "value": "name_auth"
+      },
+      "choice": {
+        "text": "报出自己的姓名。",
+        "tone": "compliant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "transferDepth",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "core_cut_training",
+      "label": "切断训练线",
+      "from": "switchboard_core",
+      "to": "ending_disconnected",
+      "priority": 120,
+      "trigger": {
+        "type": "choice",
+        "value": "cut_training"
+      },
+      "conditions": [
+        {
+          "type": "stateEquals",
+          "key": "operatorCode",
+          "value": true
+        }
+      ],
+      "choice": {
+        "text": "拔下礼仪训练线。",
+        "tone": "defiant"
+      }
+    },
+    {
+      "id": "core_cut_weather",
+      "label": "误切天气线",
+      "from": "switchboard_core",
+      "to": "ending_weather",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "cut_weather"
+      },
+      "choice": {
+        "text": "拔下天气服务线。",
+        "tone": "plain"
+      }
+    },
+    {
+      "id": "core_listen",
+      "label": "监听全部线路",
+      "from": "switchboard_core",
+      "to": "transfer_loop",
+      "priority": 70,
+      "trigger": {
+        "type": "choice",
+        "value": "listen_all"
+      },
+      "choice": {
+        "text": "先听听每条线路。",
+        "tone": "warm"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "transferDepth",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "core_takeover",
+      "label": "接管夜班总机",
+      "from": "switchboard_core",
+      "to": "ending_operator",
+      "priority": 140,
+      "trigger": {
+        "type": "choice",
+        "value": "takeover"
+      },
+      "conditions": [
+        {
+          "type": "endingSeen",
+          "value": "disconnected"
+        },
+        {
+          "type": "endingSeen",
+          "value": "recruited"
+        },
+        {
+          "type": "hasNumber",
+          "value": "7941966"
+        }
+      ],
+      "choice": {
+        "text": "把所有招募来电转到我的听筒。",
+        "tone": "defiant"
+      }
+    },
+    {
+      "id": "transfer_wait",
+      "label": "继续等待",
+      "from": "transfer_loop",
+      "to": "ending_transfer",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "keep_waiting"
+      },
+      "choice": {
+        "text": "继续等待转接。",
+        "tone": "compliant"
+      }
+    },
+    {
+      "id": "transfer_break",
+      "label": "尝试强行断开",
+      "from": "transfer_loop",
+      "to": "ending_transfer",
+      "priority": 70,
+      "trigger": {
+        "type": "choice",
+        "value": "break_loop"
+      },
+      "choice": {
+        "text": "把听筒砸回去。",
+        "tone": "defiant"
+      }
+    },
+    {
+      "id": "lost_which",
+      "label": "询问公用电话钥匙",
+      "from": "lost_found",
+      "to": "lost_key",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "lost_key"
+      },
+      "choice": {
+        "text": "那把公用电话钥匙。",
+        "tone": "plain"
+      },
+      "effects": [
+        {
+          "type": "addClue",
+          "clue": "总机不识别人名，只识别被投诉过的线路。"
+        }
+      ]
+    },
+    {
+      "id": "lost_identity",
+      "label": "询问身份",
+      "from": "lost_found",
+      "to": "representative_apply",
+      "priority": 70,
+      "trigger": {
+        "type": "choice",
+        "value": "lost_identity"
+      },
+      "choice": {
+        "text": "那个姓名是谁的？",
+        "tone": "warm"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "compliance",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "emergency_location",
+      "label": "描述电话亭",
+      "from": "emergency_operator",
+      "to": "weather_trace",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "describe_booth"
+      },
+      "choice": {
+        "text": "红色电话亭，玻璃外一直下雨。",
+        "tone": "plain"
+      },
+      "effects": [
+        {
+          "type": "addClue",
+          "clue": "紧急服务地图上不存在这座电话亭。"
+        },
+        {
+          "type": "increment",
+          "key": "suspicion",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "emergency_help",
+      "label": "请求切断线路",
+      "from": "emergency_operator",
+      "to": "complaints_desk",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "ask_help"
+      },
+      "choice": {
+        "text": "有人在通过电话改写我的声音。",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "answer_rain_query",
+      "label": "接听雨况来电",
+      "from": "global",
+      "to": "incoming_weather",
+      "priority": 100,
+      "trigger": {
+        "type": "incomingAnswer",
+        "value": "rain_query"
+      }
+    },
+    {
+      "id": "answer_courtesy_call",
+      "label": "接听 Meridian 主动服务",
+      "from": "global",
+      "to": "incoming_automaton",
+      "priority": 100,
+      "trigger": {
+        "type": "incomingAnswer",
+        "value": "courtesy_call"
+      }
+    },
+    {
+      "id": "answer_salesman_warning",
+      "label": "接听推销员警告",
+      "from": "global",
+      "to": "incoming_salesman",
+      "priority": 100,
+      "trigger": {
+        "type": "incomingAnswer",
+        "value": "salesman_warning"
+      },
+      "effects": [
+        {
+          "type": "discoverNumber",
+          "number": "8714019"
+        },
+        {
+          "type": "addClue",
+          "clue": "疲惫的推销员警告：不要重复训练句，找十九号投诉线。"
+        }
+      ]
+    },
+    {
+      "id": "incoming_weather_same",
+      "label": "回答同样下雨",
+      "from": "incoming_weather",
+      "to": "weather_intro",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "same_rain"
+      },
+      "choice": {
+        "text": "是的，这里也在下雨。",
+        "tone": "warm"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "compliance",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "incoming_weather_warn",
+      "label": "警告陌生人",
+      "from": "incoming_weather",
+      "to": "weather_trace",
+      "priority": 90,
+      "trigger": {
+        "type": "choice",
+        "value": "warn_stranger"
+      },
+      "choice": {
+        "text": "别回答它的问题。先问是谁在听。",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "suspicion",
+          "amount": 1
+        },
+        {
+          "type": "discoverNumber",
+          "number": "8714000"
+        }
+      ]
+    },
+    {
+      "id": "automaton_accept",
+      "label": "接受主动服务",
+      "from": "incoming_automaton",
+      "to": "menu_main",
+      "priority": 80,
+      "trigger": {
+        "type": "choice",
+        "value": "accept_service"
+      },
+      "choice": {
+        "text": "我愿意听取更好的选择。",
+        "tone": "compliant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "compliance",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "automaton_refuse",
+      "label": "拒绝主动服务",
+      "from": "incoming_automaton",
+      "to": "complaints_desk",
+      "priority": 90,
+      "trigger": {
+        "type": "choice",
+        "value": "reject_service"
+      },
+      "choice": {
+        "text": "我没有选择你们。",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "suspicion",
+          "amount": 1
+        },
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "salesman_trust",
+      "label": "相信疲惫推销员",
+      "from": "incoming_salesman",
+      "to": "internal_directory",
+      "priority": 90,
+      "trigger": {
+        "type": "choice",
+        "value": "trust_salesman"
+      },
+      "choice": {
+        "text": "我记住 871 4019 了。",
+        "tone": "warm"
+      },
+      "effects": [
+        {
+          "type": "discoverNumber",
+          "number": "8714019"
+        },
+        {
+          "type": "setState",
+          "values": {
+            "complaintAccess": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "salesman_doubt",
+      "label": "怀疑推销员",
+      "from": "incoming_salesman",
+      "to": "meridian_welcome",
+      "priority": 70,
+      "trigger": {
+        "type": "choice",
+        "value": "doubt_salesman"
+      },
+      "choice": {
+        "text": "你也是他们的脚本。",
+        "tone": "defiant"
+      },
+      "effects": [
+        {
+          "type": "increment",
+          "key": "suspicion",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "inspect_weather_card",
+      "label": "检查天气卡",
+      "from": "global",
+      "to": "scene_weather_card",
+      "priority": 100,
+      "trigger": {
+        "type": "sceneInspect",
+        "value": "weather-card"
+      },
+      "effects": [
+        {
+          "type": "discoverNumber",
+          "number": "9460264"
+        },
+        {
+          "type": "increment",
+          "key": "inspected",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "inspect_meridian_ad",
+      "label": "检查 Meridian 广告",
+      "from": "global",
+      "to": "scene_meridian_ad",
+      "priority": 100,
+      "trigger": {
+        "type": "sceneInspect",
+        "value": "meridian-ad"
+      },
+      "effects": [
+        {
+          "type": "discoverNumber",
+          "number": "8714000"
+        },
+        {
+          "type": "increment",
+          "key": "inspected",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "inspect_scratched_plate",
+      "label": "检查被划铭牌",
+      "from": "global",
+      "to": "scene_scratched_plate",
+      "priority": 100,
+      "trigger": {
+        "type": "sceneInspect",
+        "value": "scratched-plate"
+      },
+      "effects": [
+        {
+          "type": "discoverNumber",
+          "number": "8714019"
+        },
+        {
+          "type": "addClue",
+          "clue": "铜牌上的维修转接号是 871 4019。"
+        },
+        {
+          "type": "increment",
+          "key": "inspected",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "inspect_newspaper",
+      "label": "检查报纸",
+      "from": "global",
+      "to": "scene_newspaper",
+      "priority": 100,
+      "trigger": {
+        "type": "sceneInspect",
+        "value": "newspaper"
+      },
+      "effects": [
+        {
+          "type": "discoverNumber",
+          "number": "7941966"
+        },
+        {
+          "type": "increment",
+          "key": "inspected",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "inspect_phonebook",
+      "label": "检查电话簿",
+      "from": "global",
+      "to": "scene_phonebook",
+      "priority": 100,
+      "trigger": {
+        "type": "sceneInspect",
+        "value": "phonebook"
+      },
+      "effects": [
+        {
+          "type": "discoverNumber",
+          "number": "3011968"
+        },
+        {
+          "type": "increment",
+          "key": "inspected",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "inspect_coin_return",
+      "label": "检查退币槽",
+      "from": "global",
+      "to": "scene_coin_return",
+      "priority": 100,
+      "trigger": {
+        "type": "sceneInspect",
+        "value": "coin-return"
+      },
+      "effects": [
+        {
+          "type": "addClue",
+          "clue": "见过“入职”结局后，可以用 Meridian 的身份反骗系统。"
+        },
+        {
+          "type": "increment",
+          "key": "inspected",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "worn_after_hangups",
+      "label": "错号与挂断磨损转盘",
+      "from": "global",
+      "to": "ending_worn",
+      "priority": 150,
+      "trigger": {
+        "type": "hangUp",
+        "value": "*"
+      },
+      "conditions": [
+        {
+          "type": "stateGte",
+          "key": "wrongDials",
+          "value": 2
+        },
+        {
+          "type": "stateGte",
+          "key": "hangups",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "id": "timeout_weather",
+      "label": "天气沉默超时",
+      "from": "weather_intro",
+      "to": "ending_weather",
+      "priority": 80,
+      "trigger": {
+        "type": "timeout",
+        "value": "choice"
+      }
+    },
+    {
+      "id": "timeout_training",
+      "label": "训练沉默超时",
+      "from": "product_repeat",
+      "to": "transfer_loop",
+      "priority": 80,
+      "trigger": {
+        "type": "timeout",
+        "value": "choice"
+      }
+    },
+    {
+      "id": "timeout_transfer",
+      "label": "转接等待超时",
+      "from": "transfer_loop",
+      "to": "ending_transfer",
+      "priority": 100,
+      "trigger": {
+        "type": "timeout",
+        "value": "call"
+      }
+    },
+    {
+      "id": "worn_after_wrong_dials",
+      "label": "错误拨号过多",
+      "from": "wrong_number",
+      "to": "ending_worn",
+      "priority": 130,
+      "trigger": {
+        "type": "timeout",
+        "value": "call"
+      },
+      "conditions": [
+        {
+          "type": "stateGte",
+          "key": "wrongDials",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "id": "wrong_timeout_idle",
+      "label": "空号自动结束",
+      "from": "wrong_number",
+      "to": "booth_idle",
+      "priority": 70,
+      "trigger": {
+        "type": "timeout",
+        "value": "call"
+      }
+    },
+    {
+      "id": "busy_timeout_idle",
+      "label": "忙音自动结束",
+      "from": "busy_line",
+      "to": "booth_idle",
+      "priority": 70,
+      "trigger": {
+        "type": "timeout",
+        "value": "call"
+      }
+    }
   ],
   "globals": {
-    "timeout": { "dialIdleMs": 18000, "choiceIdleMs": 30000, "callMaxMs": 95000, "warningMs": 7000 },
+    "timeout": {
+      "dialIdleMs": 18000,
+      "choiceIdleMs": 30000,
+      "callMaxMs": 95000,
+      "warningMs": 7000
+    },
     "phone": {
       "validNumbers": [
-        { "number": "999", "label": "紧急服务", "description": "英国紧急服务。电话亭似乎不在他们的地图上。", "initiallyKnown": true, "category": "emergency" },
-        { "number": "9460264", "label": "伦敦自动天气", "description": "墙上天气卡印着的公共服务号码。", "category": "public" },
-        { "number": "8714000", "label": "Meridian 免费咨询", "description": "子午礼仪交换所公开的咨询总线。", "category": "meridian" },
-        { "number": "8714003", "label": "Meridian 线路投诉", "description": "自动菜单后的故障申报线。", "category": "meridian" },
-        { "number": "8714019", "label": "注销的十九号席位", "description": "铜牌上被钥匙划掉的内部转接号。", "category": "internal" },
-        { "number": "8714127", "label": "Meridian 中央交换机", "description": "旧接线员与午夜广播共同指向的核心号码。", "category": "internal" },
-        { "number": "3011968", "label": "伦敦交通失物招领", "description": "发霉电话簿里被圈出的号码。", "category": "public" },
-        { "number": "7941966", "label": "Radio Nocturne", "description": "报纸节目表上的午夜点歌线。", "category": "strange" }
+        {
+          "number": "999",
+          "label": "紧急服务",
+          "description": "英国紧急服务。电话亭似乎不在他们的地图上。",
+          "initiallyKnown": true,
+          "category": "emergency"
+        },
+        {
+          "number": "9460264",
+          "label": "伦敦自动天气",
+          "description": "墙上天气卡印着的公共服务号码。",
+          "category": "public"
+        },
+        {
+          "number": "8714000",
+          "label": "Meridian 免费咨询",
+          "description": "子午礼仪交换所公开的咨询总线。",
+          "category": "meridian"
+        },
+        {
+          "number": "8714003",
+          "label": "Meridian 线路投诉",
+          "description": "自动菜单后的故障申报线。",
+          "category": "meridian"
+        },
+        {
+          "number": "8714019",
+          "label": "注销的十九号席位",
+          "description": "铜牌上被钥匙划掉的内部转接号。",
+          "category": "internal"
+        },
+        {
+          "number": "8714127",
+          "label": "Meridian 中央交换机",
+          "description": "旧接线员与午夜广播共同指向的核心号码。",
+          "category": "internal"
+        },
+        {
+          "number": "3011968",
+          "label": "伦敦交通失物招领",
+          "description": "发霉电话簿里被圈出的号码。",
+          "category": "public"
+        },
+        {
+          "number": "7941966",
+          "label": "Radio Nocturne",
+          "description": "报纸节目表上的午夜点歌线。",
+          "category": "strange"
+        }
       ],
-      "emergencyNumbers": ["999"],
+      "emergencyNumbers": [
+        "999"
+      ],
       "wrongNumberNodeId": "wrong_number",
       "busyNumberNodeId": "busy_line",
       "idleRingSchedule": [
-        { "id": "rain_query", "label": "陌生人的雨况确认", "delayMs": 12000, "nodeId": "incoming_weather" },
-        { "id": "courtesy_call", "label": "Meridian 主动服务", "delayMs": 18000, "nodeId": "incoming_automaton", "requires": [{ "type": "stateGte", "key": "inspected", "value": 1 }] },
-        { "id": "salesman_warning", "label": "疲惫推销员的警告", "delayMs": 22000, "nodeId": "incoming_salesman", "requires": [{ "type": "stateEquals", "key": "calledMeridian", "value": true }] }
+        {
+          "id": "rain_query",
+          "label": "陌生人的雨况确认",
+          "delayMs": 12000,
+          "nodeId": "incoming_weather"
+        },
+        {
+          "id": "courtesy_call",
+          "label": "Meridian 主动服务",
+          "delayMs": 18000,
+          "nodeId": "incoming_automaton",
+          "requires": [
+            {
+              "type": "stateGte",
+              "key": "inspected",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "salesman_warning",
+          "label": "疲惫推销员的警告",
+          "delayMs": 22000,
+          "nodeId": "incoming_salesman",
+          "requires": [
+            {
+              "type": "stateEquals",
+              "key": "calledMeridian",
+              "value": true
+            }
+          ]
+        }
       ]
     }
   },
@@ -667,23 +2800,120 @@
         "hungUp": "LINE CLOSED"
       },
       "endings": {
-        "disconnected": { "title": "断线", "subtitle": "NETWORK DOWN · 00:04", "description": "你让整座城市安静了四秒。足够许多人想起自己的声音。" },
-        "recruited": { "title": "入职", "subtitle": "WELCOME, AGENT", "description": "你没有挂断。你只是被转到了线路的另一端。" },
-        "transfer": { "title": "永远转接", "subtitle": "YOUR CALL IS IMPORTANT", "description": "系统仍在为你寻找一个不存在的接线员。" },
-        "worn": { "title": "号码磨损", "subtitle": "NUMBER UNOBTAINABLE", "description": "数字消失后，电话只记得你拨错过。" },
-        "weather": { "title": "天气很好", "subtitle": "WEATHER: FINE", "description": "窗外仍在下雨。你的回答却已经换了季节。" },
-        "counterfeit": { "title": "假代表", "subtitle": "AGENT UNKNOWN", "description": "你学会了他们的声音，但没有交出自己的。" },
-        "operator": { "title": "夜班接线员", "subtitle": "ALL LINES REDIRECTED", "description": "从今以后，每个被选中的陌生人都会先听见你的警告。" }
+        "disconnected": {
+          "title": "断线",
+          "subtitle": "NETWORK DOWN · 00:04",
+          "description": "你让整座城市安静了四秒。足够许多人想起自己的声音。"
+        },
+        "recruited": {
+          "title": "入职",
+          "subtitle": "WELCOME, AGENT",
+          "description": "你没有挂断。你只是被转到了线路的另一端。"
+        },
+        "transfer": {
+          "title": "永远转接",
+          "subtitle": "YOUR CALL IS IMPORTANT",
+          "description": "系统仍在为你寻找一个不存在的接线员。"
+        },
+        "worn": {
+          "title": "号码磨损",
+          "subtitle": "NUMBER UNOBTAINABLE",
+          "description": "数字消失后，电话只记得你拨错过。"
+        },
+        "weather": {
+          "title": "天气很好",
+          "subtitle": "WEATHER: FINE",
+          "description": "窗外仍在下雨。你的回答却已经换了季节。"
+        },
+        "counterfeit": {
+          "title": "假代表",
+          "subtitle": "AGENT UNKNOWN",
+          "description": "你学会了他们的声音，但没有交出自己的。"
+        },
+        "operator": {
+          "title": "夜班接线员",
+          "subtitle": "ALL LINES REDIRECTED",
+          "description": "从今以后，每个被选中的陌生人都会先听见你的警告。"
+        }
       },
       "sceneHotspots": [
-        { "id": "weather-card", "label": "天气服务卡", "ariaLabel": "检查左上方潮湿的天气服务卡", "x": 9, "y": 18, "width": 15, "height": 17, "body": "卡片被雨气泡软，印着天气服务号码 946 0264。", "repeatBody": "天气卡背后的铅笔字仍是：它从不预报，只提问。", "number": "9460264" },
-        { "id": "meridian-ad", "label": "Meridian 广告", "ariaLabel": "检查右上方烫金 Meridian 广告", "x": 76, "y": 14, "width": 16, "height": 22, "body": "广告承诺免费改善你的说话方式：871 4000。", "repeatBody": "纸上的模特笑得像从未挂断过电话。", "number": "8714000" },
-        { "id": "scratched-plate", "label": "被划铭牌", "ariaLabel": "检查电话机右侧被刮花的维修铭牌", "x": 72, "y": 53, "width": 12, "height": 10, "body": "刮痕下藏着维修转接号 871 4019。", "repeatBody": "有人故意想抹掉十九号，却没舍得用力。", "number": "8714019" },
-        { "id": "newspaper", "label": "报纸剪角", "ariaLabel": "检查左下方贴住的报纸节目表", "x": 5, "y": 70, "width": 18, "height": 20, "body": "午夜节目 Radio Nocturne 的点歌线是 794 1966。", "repeatBody": "节目旁边写着：听数字，不要听歌。", "number": "7941966" },
-        { "id": "phonebook", "label": "发霉电话簿", "ariaLabel": "检查电话下方发霉的电话簿", "x": 73, "y": 77, "width": 19, "height": 14, "body": "失物招领 301 1968 被红笔圈了三遍。", "repeatBody": "认领单的姓名栏是空白的。", "number": "3011968" },
-        { "id": "coin-return", "label": "退币槽", "ariaLabel": "检查电话机正面的退币槽", "x": 46, "y": 61, "width": 9, "height": 8, "body": "里面没有硬币，只有一张劝你用 Meridian 的声音撒谎的纸条。", "repeatBody": "纸条背面多了一行：第一次失败不是浪费。" }
+        {
+          "id": "weather-card",
+          "label": "天气服务卡",
+          "ariaLabel": "检查左上方潮湿的天气服务卡",
+          "x": 9,
+          "y": 18,
+          "width": 15,
+          "height": 17,
+          "body": "卡片被雨气泡软，印着天气服务号码 946 0264。",
+          "repeatBody": "天气卡背后的铅笔字仍是：它从不预报，只提问。",
+          "number": "9460264"
+        },
+        {
+          "id": "meridian-ad",
+          "label": "Meridian 广告",
+          "ariaLabel": "检查右上方烫金 Meridian 广告",
+          "x": 76,
+          "y": 14,
+          "width": 16,
+          "height": 22,
+          "body": "广告承诺免费改善你的说话方式：871 4000。",
+          "repeatBody": "纸上的模特笑得像从未挂断过电话。",
+          "number": "8714000"
+        },
+        {
+          "id": "scratched-plate",
+          "label": "被划铭牌",
+          "ariaLabel": "检查电话机右侧被刮花的维修铭牌",
+          "x": 72,
+          "y": 53,
+          "width": 12,
+          "height": 10,
+          "body": "刮痕下藏着维修转接号 871 4019。",
+          "repeatBody": "有人故意想抹掉十九号，却没舍得用力。",
+          "number": "8714019"
+        },
+        {
+          "id": "newspaper",
+          "label": "报纸剪角",
+          "ariaLabel": "检查左下方贴住的报纸节目表",
+          "x": 5,
+          "y": 70,
+          "width": 18,
+          "height": 20,
+          "body": "午夜节目 Radio Nocturne 的点歌线是 794 1966。",
+          "repeatBody": "节目旁边写着：听数字，不要听歌。",
+          "number": "7941966"
+        },
+        {
+          "id": "phonebook",
+          "label": "发霉电话簿",
+          "ariaLabel": "检查电话下方发霉的电话簿",
+          "x": 73,
+          "y": 77,
+          "width": 19,
+          "height": 14,
+          "body": "失物招领 301 1968 被红笔圈了三遍。",
+          "repeatBody": "认领单的姓名栏是空白的。",
+          "number": "3011968"
+        },
+        {
+          "id": "coin-return",
+          "label": "退币槽",
+          "ariaLabel": "检查电话机正面的退币槽",
+          "x": 46,
+          "y": 61,
+          "width": 9,
+          "height": 8,
+          "body": "里面没有硬币，只有一张劝你用 Meridian 的声音撒谎的纸条。",
+          "repeatBody": "纸条背面多了一行：第一次失败不是浪费。"
+        }
       ],
-      "audioProfile": { "rainLevel": 0.7, "lineNoise": 0.25, "ringPitch": 0.8 }
+      "audioProfile": {
+        "rainLevel": 0.7,
+        "lineNoise": 0.25,
+        "ringPitch": 0.8
+      }
     }
   }
 }

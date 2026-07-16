@@ -20,6 +20,7 @@ import { CallEngine } from '../game/callEngine'
 import type {
   EngineTransition,
   PhoneNumberDefinition,
+  RingEvent,
   SceneHotspot,
   TelephoneEdge,
   TelephoneNode,
@@ -32,7 +33,8 @@ interface GraphEditorProps { story: TelephoneStory; onChange: (story: TelephoneS
 type InspectorTab = 'node' | 'edge' | 'simulate' | 'phone' | 'hotspots'
 
 const NODE_KINDS: TelephoneNodeKind[] = ['start', 'idle', 'incoming_call', 'dial_target', 'call', 'menu', 'scene', 'global', 'end', 'fail']
-const TRIGGERS: TriggerType[] = ['dialNumber', 'choice', 'incomingAnswer', 'hangUp', 'timeout', 'sceneInspect', 'auto']
+const TRIGGERS: TriggerType[] = ['dialNumber', 'choice', 'incomingAnswer', 'hangUp', 'timeout', 'sceneInspect', 'keywordAny', 'auto']
+const SPEAKERS = ['caller', 'operator', 'recording', 'stranger', 'system', 'player'] as const
 
 function lines(value: string) { return value.split('\n').map((line) => line.trim()).filter(Boolean) }
 function uniqueId(prefix: string, existing: string[]) {
@@ -49,6 +51,22 @@ function nodeColor(kind: TelephoneNodeKind) {
   if (kind === 'scene') return '#4d6171'
   if (kind === 'menu') return '#4e466e'
   return '#37443e'
+}
+
+function JsonTextarea({ value, rows = 6, onCommit }: { value: unknown; rows?: number; onCommit: (value: any) => void }) {
+  const serialized = JSON.stringify(value ?? [], null, 2)
+  const [invalid, setInvalid] = useState(false)
+
+  function commit(raw: string) {
+    try {
+      onCommit(JSON.parse(raw))
+      setInvalid(false)
+    } catch {
+      setInvalid(true)
+    }
+  }
+
+  return <textarea key={serialized} rows={rows} defaultValue={serialized} aria-invalid={invalid} onBlur={(event) => commit(event.currentTarget.value)} />
 }
 
 export function GraphEditor({ story, onChange }: GraphEditorProps) {
@@ -77,6 +95,7 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
   const flowEdges = useMemo<Edge[]>(() => story.edges.map((edge) => ({ id: edge.id, source: edge.from, target: edge.to, label: `${edge.label} · ${edge.trigger.type}`, animated: selectedEdgeId === edge.id, className: selectedEdgeId === edge.id ? 'selected-flow-edge' : '' })), [selectedEdgeId, story.edges])
   const selectedNode = story.nodes.find((node) => node.id === selectedNodeId) ?? null
   const selectedEdge = story.edges.find((edge) => edge.id === selectedEdgeId) ?? null
+  const simulatorNode = story.nodes.find((node) => node.id === simState.currentNodeId) ?? null
 
   function updateNode(patch: Partial<TelephoneNode>) {
     onChange({ ...story, nodes: story.nodes.map((node) => node.id === selectedNodeId ? { ...node, ...patch } : node) })
@@ -158,6 +177,10 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
     const values = story.globals.phone.validNumbers.map((number, itemIndex) => itemIndex === index ? { ...number, ...patch } : number)
     onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, validNumbers: values } } })
   }
+  function updateRing(index: number, patch: Partial<RingEvent>) {
+    const idleRingSchedule = story.globals.phone.idleRingSchedule.map((ring, itemIndex) => itemIndex === index ? { ...ring, ...patch } : ring)
+    onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, idleRingSchedule } } })
+  }
   function updateHotspot(index: number, patch: Partial<SceneHotspot>) {
     const telephone = story.extensions.telephone
     onChange({ ...story, extensions: { ...story.extensions, telephone: { ...telephone, sceneHotspots: telephone.sceneHotspots.map((hotspot, itemIndex) => itemIndex === index ? { ...hotspot, ...patch } : hotspot) } } })
@@ -211,8 +234,10 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
               <label><span>剧情目标 / 备注</span><textarea rows={3} value={selectedNode.body.notes ?? ''} onChange={(event) => updateNode({ body: { ...selectedNode.body, notes: event.target.value } })} /></label>
             </fieldset>
             <fieldset><legend>电话适配字段</legend>
+              <label><span>说话者类型</span><select value={selectedNode.telephone?.speaker ?? 'operator'} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, speaker: event.target.value as typeof SPEAKERS[number] } })}>{SPEAKERS.map((speaker) => <option key={speaker}>{speaker}</option>)}</select></label>
               <label><span>说话者显示名</span><input value={selectedNode.telephone?.speakerLabel ?? ''} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, speakerLabel: event.target.value } })} /></label>
               <label><span>LCD 覆盖文本</span><input value={selectedNode.telephone?.lcd ?? ''} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, lcd: event.target.value } })} /></label>
+              <div className="two-fields"><label><span>自动推进（毫秒）</span><input type="number" value={selectedNode.telephone?.autoAdvanceMs ?? ''} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, autoAdvanceMs: event.target.value ? Number(event.target.value) : undefined } })} /></label><label><span>线路失真（0–1）</span><input type="number" min="0" max="1" step="0.05" value={selectedNode.telephone?.corruption ?? 0} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, corruption: Number(event.target.value) } })} /></label></div>
               <label className="checkbox-line"><input type="checkbox" checked={selectedNode.telephone?.canHangUp !== false} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, canHangUp: event.target.checked } })} /><span>允许玩家挂断</span></label>
               <label><span>结局类型（留空表示非结局）</span><input value={selectedNode.telephone?.ending ?? ''} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, ending: event.target.value as any || undefined } })} /></label>
             </fieldset>
@@ -228,11 +253,12 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
             <fieldset><legend>事件触发</legend>
               <label><span>触发类型</span><select value={selectedEdge.trigger.type} onChange={(event) => updateEdge({ trigger: { ...selectedEdge.trigger, type: event.target.value as TriggerType } })}>{TRIGGERS.map((trigger) => <option key={trigger}>{trigger}</option>)}</select></label>
               <label><span>触发值（号码 / 选项 ID / 热点 ID）</span><input value={selectedEdge.trigger.value ?? ''} onChange={(event) => updateEdge({ trigger: { ...selectedEdge.trigger, value: event.target.value || undefined } })} /></label>
-              {selectedEdge.trigger.type === 'choice' && <><label><span>玩家可见选项</span><textarea rows={3} value={selectedEdge.choice?.text ?? ''} onChange={(event) => updateEdge({ choice: { ...selectedEdge.choice, text: event.target.value, tone: selectedEdge.choice?.tone ?? 'plain' } })} /></label><label><span>选项语气</span><select value={selectedEdge.choice?.tone ?? 'plain'} onChange={(event) => updateEdge({ choice: { text: selectedEdge.choice?.text ?? selectedEdge.label, tone: event.target.value as any } })}><option>plain</option><option>warm</option><option>defiant</option><option>compliant</option></select></label></>}
+              <label><span>样例事件（每行一条）</span><textarea rows={3} value={(selectedEdge.samples ?? []).join('\n')} onChange={(event) => updateEdge({ samples: lines(event.target.value) })} /></label>
+              {selectedEdge.trigger.type === 'choice' && <><label><span>玩家可见选项</span><textarea rows={3} value={selectedEdge.choice?.text ?? ''} onChange={(event) => updateEdge({ choice: { ...selectedEdge.choice, text: event.target.value, tone: selectedEdge.choice?.tone ?? 'plain' } })} /></label><label><span>选项语气</span><select value={selectedEdge.choice?.tone ?? 'plain'} onChange={(event) => updateEdge({ choice: { text: selectedEdge.choice?.text ?? selectedEdge.label, tone: event.target.value as any } })}><option>plain</option><option>warm</option><option>defiant</option><option>compliant</option></select></label><label className="checkbox-line"><input type="checkbox" checked={selectedEdge.choice?.hidden ?? false} onChange={(event) => updateEdge({ choice: { text: selectedEdge.choice?.text ?? selectedEdge.label, tone: selectedEdge.choice?.tone ?? 'plain', hidden: event.target.checked } })} /><span>默认隐藏该选项</span></label></>}
             </fieldset>
             <fieldset><legend>条件与效果（JSON）</legend>
-              <label><span>conditions</span><textarea rows={7} value={JSON.stringify(selectedEdge.conditions ?? [], null, 2)} onChange={(event) => { try { updateEdge({ conditions: JSON.parse(event.target.value) }) } catch { /* keep editing until valid */ } }} /></label>
-              <label><span>effects</span><textarea rows={7} value={JSON.stringify(selectedEdge.effects ?? [], null, 2)} onChange={(event) => { try { updateEdge({ effects: JSON.parse(event.target.value) }) } catch { /* keep editing until valid */ } }} /></label>
+              <label><span>conditions</span><JsonTextarea rows={7} value={selectedEdge.conditions ?? []} onCommit={(conditions) => updateEdge({ conditions })} /></label>
+              <label><span>effects</span><JsonTextarea rows={7} value={selectedEdge.effects ?? []} onCommit={(effects) => updateEdge({ effects })} /></label>
             </fieldset>
           </> : <div className="empty-inspector">在画布中选择一条转场连线。</div>)}
 
@@ -241,21 +267,28 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
               <div className="two-fields"><label><span>事件</span><select value={simEvent} onChange={(event) => setSimEvent(event.target.value as TriggerType)}>{TRIGGERS.map((trigger) => <option key={trigger}>{trigger}</option>)}</select></label><label><span>值</span><input value={simValue} onChange={(event) => setSimValue(event.target.value)} /></label></div>
               <div className="sim-actions"><button type="button" onClick={runSimulation}><Play size={14} />执行事件</button><button type="button" onClick={resetSimulator}><RotateCcw size={14} />重置</button></div>
             </fieldset>
-            <dl className="sim-state"><div><dt>当前节点</dt><dd>{simState.currentNodeId}</dd></div><div><dt>回合</dt><dd>{simState.turn}</dd></div><div><dt>结局</dt><dd>{simState.ending ?? '—'}</dd></div><div><dt>Flags</dt><dd><code>{JSON.stringify(simState.flags)}</code></dd></div></dl>
+            <dl className="sim-state"><div><dt>当前节点</dt><dd>{simState.currentNodeId}</dd></div><div><dt>LCD</dt><dd>{simulatorNode?.telephone?.lcd ?? 'LINE OPEN'}</dd></div><div><dt>回合</dt><dd>{simState.turn}</dd></div><div><dt>结局</dt><dd>{simState.ending ?? '—'}</dd></div><div><dt>Flags</dt><dd><code>{JSON.stringify(simState.flags)}</code></dd></div></dl>
             <div className="sim-transcript">{simLog.length ? simLog.map((item, index) => <article key={`${item.event.type}-${index}`}><span>{item.event.type}</span><strong>{item.node.label}</strong><p>{item.text}</p><small>{item.edge ? `命中 ${item.edge.id}` : 'Fallback / 无匹配边'} · 候选 {item.candidates.join(', ') || '无'}</small></article>) : <p className="muted-copy">从任意号码、来电、选择、超时、挂断或场景事件开始测试。</p>}</div>
           </>}
 
           {tab === 'phone' && <>
+            <fieldset><legend>线路目标</legend>
+              <label><span>空号节点</span><select value={story.globals.phone.wrongNumberNodeId} onChange={(event) => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, wrongNumberNodeId: event.target.value } } })}>{story.nodes.map((node) => <option key={node.id}>{node.id}</option>)}</select></label>
+              <label><span>忙音节点</span><select value={story.globals.phone.busyNumberNodeId} onChange={(event) => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, busyNumberNodeId: event.target.value } } })}>{story.nodes.map((node) => <option key={node.id}>{node.id}</option>)}</select></label>
+              <label><span>紧急号码（逗号分隔）</span><input value={(story.globals.phone.emergencyNumbers ?? []).join(', ')} onChange={(event) => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, emergencyNumbers: event.target.value.split(',').map((value) => value.replace(/\D/g, '')).filter(Boolean) } } })} /></label>
+            </fieldset>
             <fieldset><legend>超时配置（毫秒）</legend>
               {Object.entries(story.globals.timeout).map(([key, value]) => <label key={key}><span>{key}</span><input type="number" value={value} onChange={(event) => onChange({ ...story, globals: { ...story.globals, timeout: { ...story.globals.timeout, [key]: Number(event.target.value) } } })} /></label>)}
             </fieldset>
             <div className="admin-list-heading"><div><span>PHONE DIRECTORY</span><h3>有效号码簿</h3></div><button type="button" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, validNumbers: [...story.globals.phone.validNumbers, { number: '0000000', label: '新号码', description: '', category: 'strange' }] } } })}><Plus size={13} />新增</button></div>
             <div className="admin-number-list">{story.globals.phone.validNumbers.map((number, index) => <article key={`${number.number}-${index}`}><div className="two-fields"><label><span>号码</span><input value={number.number} onChange={(event) => updateNumber(index, { number: event.target.value.replace(/\D/g, '') })} /></label><label><span>名称</span><input value={number.label} onChange={(event) => updateNumber(index, { label: event.target.value })} /></label></div><label><span>说明</span><textarea rows={2} value={number.description} onChange={(event) => updateNumber(index, { description: event.target.value })} /></label><button type="button" className="inline-delete" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, validNumbers: story.globals.phone.validNumbers.filter((_, itemIndex) => itemIndex !== index) } } })}><Trash2 size={13} />删除</button></article>)}</div>
+            <div className="admin-list-heading"><div><span>INCOMING SWITCHBOARD</span><h3>主动来电排程</h3></div><button type="button" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, idleRingSchedule: [...story.globals.phone.idleRingSchedule, { id: `incoming-${story.globals.phone.idleRingSchedule.length + 1}`, label: '新来电', delayMs: 12000, nodeId: story.entryNodeId, requires: [] }] } } })}><Plus size={13} />新增</button></div>
+            <div className="admin-number-list">{story.globals.phone.idleRingSchedule.map((ring, index) => <article key={`${ring.id}-${index}`}><div className="two-fields"><label><span>ID</span><input value={ring.id} onChange={(event) => updateRing(index, { id: event.target.value })} /></label><label><span>显示名称</span><input value={ring.label} onChange={(event) => updateRing(index, { label: event.target.value })} /></label></div><div className="two-fields"><label><span>来电节点</span><select value={ring.nodeId} onChange={(event) => updateRing(index, { nodeId: event.target.value })}>{story.nodes.map((node) => <option key={node.id}>{node.id}</option>)}</select></label><label><span>等待时间（毫秒）</span><input type="number" value={ring.delayMs} onChange={(event) => updateRing(index, { delayMs: Number(event.target.value) })} /></label></div><label><span>触发条件</span><JsonTextarea rows={5} value={ring.requires ?? []} onCommit={(requires) => updateRing(index, { requires })} /></label><button type="button" className="inline-delete" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, idleRingSchedule: story.globals.phone.idleRingSchedule.filter((_, itemIndex) => itemIndex !== index) } } })}><Trash2 size={13} />删除</button></article>)}</div>
           </>}
 
           {tab === 'hotspots' && <>
             <div className="admin-list-heading"><div><span>SCENE INTERACTIONS</span><h3>电话亭热点</h3></div><button type="button" onClick={() => { const telephone = story.extensions.telephone; onChange({ ...story, extensions: { ...story.extensions, telephone: { ...telephone, sceneHotspots: [...telephone.sceneHotspots, { id: `hotspot-${telephone.sceneHotspots.length + 1}`, label: '新热点', ariaLabel: '检查新热点', x: 40, y: 40, width: 10, height: 10, body: '新发现。' }] } } }) }}><Plus size={13} />新增</button></div>
-            <div className="admin-hotspot-list">{story.extensions.telephone.sceneHotspots.map((hotspot, index) => <article key={hotspot.id}><div className="two-fields"><label><span>ID</span><input value={hotspot.id} onChange={(event) => updateHotspot(index, { id: event.target.value })} /></label><label><span>名称</span><input value={hotspot.label} onChange={(event) => updateHotspot(index, { label: event.target.value })} /></label></div><label><span>首次发现文案</span><textarea rows={3} value={hotspot.body} onChange={(event) => updateHotspot(index, { body: event.target.value })} /></label><div className="four-fields">{(['x', 'y', 'width', 'height'] as const).map((field) => <label key={field}><span>{field}%</span><input type="number" value={hotspot[field]} onChange={(event) => updateHotspot(index, { [field]: Number(event.target.value) })} /></label>)}</div><button type="button" className="inline-delete" onClick={() => { const telephone = story.extensions.telephone; onChange({ ...story, extensions: { ...story.extensions, telephone: { ...telephone, sceneHotspots: telephone.sceneHotspots.filter((_, itemIndex) => itemIndex !== index) } } }) }}><Trash2 size={13} />删除</button></article>)}</div>
+            <div className="admin-hotspot-list">{story.extensions.telephone.sceneHotspots.map((hotspot, index) => <article key={hotspot.id}><div className="two-fields"><label><span>ID</span><input value={hotspot.id} onChange={(event) => updateHotspot(index, { id: event.target.value })} /></label><label><span>名称</span><input value={hotspot.label} onChange={(event) => updateHotspot(index, { label: event.target.value })} /></label></div><label><span>无障碍描述</span><input value={hotspot.ariaLabel} onChange={(event) => updateHotspot(index, { ariaLabel: event.target.value })} /></label><label><span>首次发现文案</span><textarea rows={3} value={hotspot.body} onChange={(event) => updateHotspot(index, { body: event.target.value })} /></label><label><span>再次检查文案</span><textarea rows={2} value={hotspot.repeatBody ?? ''} onChange={(event) => updateHotspot(index, { repeatBody: event.target.value || undefined })} /></label><label><span>发现号码</span><input value={hotspot.number ?? ''} onChange={(event) => updateHotspot(index, { number: event.target.value.replace(/\D/g, '') || undefined })} /></label><label><span>显示条件</span><JsonTextarea rows={5} value={hotspot.requires ?? []} onCommit={(requires) => updateHotspot(index, { requires })} /></label><div className="four-fields">{(['x', 'y', 'width', 'height'] as const).map((field) => <label key={field}><span>{field}%</span><input type="number" value={hotspot[field]} onChange={(event) => updateHotspot(index, { [field]: Number(event.target.value) })} /></label>)}</div><button type="button" className="inline-delete" onClick={() => { const telephone = story.extensions.telephone; onChange({ ...story, extensions: { ...story.extensions, telephone: { ...telephone, sceneHotspots: telephone.sceneHotspots.filter((_, itemIndex) => itemIndex !== index) } } }) }}><Trash2 size={13} />删除</button></article>)}</div>
           </>}
         </div>
       </aside>

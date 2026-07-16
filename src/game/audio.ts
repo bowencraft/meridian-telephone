@@ -69,6 +69,34 @@ export class TelephoneAudio {
   playConnectNoise() { this.noise(0.72, 0.09); this.tone(1240, 0.08, 0.025, 'sine', 0.25) }
   playWhisper() { this.noise(0.6, 0.028); this.tone(180, 0.25, 0.015, 'sine', 0.08) }
   playReveal() { this.tone(420, 0.08, 0.04); this.tone(620, 0.14, 0.035, 'sine', 0.07) }
+  playNumberUnobtainable() {
+    this.tone(480, 0.11, 0.07, 'sine')
+    this.tone(480, 0.11, 0.07, 'sine', 0.22)
+    this.tone(390, 0.22, 0.07, 'sine', 0.44)
+  }
+
+  startRain() {
+    this.stopLoop('rain')
+    if (!this.context || !this.master) return
+    const buffer = this.context.createBuffer(1, this.context.sampleRate * 4, this.context.sampleRate)
+    const data = buffer.getChannelData(0)
+    let last = 0
+    for (let index = 0; index < data.length; index += 1) {
+      last = last * 0.92 + (Math.random() * 2 - 1) * 0.08
+      data[index] = last
+    }
+    const source = this.context.createBufferSource()
+    const highpass = this.context.createBiquadFilter()
+    const gain = this.context.createGain()
+    source.buffer = buffer
+    source.loop = true
+    highpass.type = 'highpass'
+    highpass.frequency.value = 520
+    gain.gain.value = 0.038
+    source.connect(highpass).connect(gain).connect(this.master)
+    source.start()
+    this.loops.set('rain', [source, highpass, gain])
+  }
 
   startRing() {
     this.stopLoop('ring')
@@ -90,6 +118,19 @@ export class TelephoneAudio {
   startDialTone() {
     this.stopLoop('dialTone')
     this.startOscillatorLoop('dialTone', [350, 440], 0.035)
+  }
+
+  startBusy() {
+    this.stopLoop('busy')
+    this.stopLoop('line')
+    const pulse = () => {
+      this.tone(400, 0.34, 0.055, 'sine')
+      this.tone(450, 0.34, 0.04, 'sine')
+    }
+    pulse()
+    const id = window.setInterval(pulse, 920)
+    const marker = { disconnect: () => window.clearInterval(id) } as unknown as AudioNode
+    this.loops.set('busy', [marker])
   }
 
   startLineNoise() {
@@ -138,5 +179,11 @@ export class TelephoneAudio {
     this.loops.delete(name)
   }
 
-  stopAll() { ;(['rain', 'line', 'ring', 'dialTone', 'busy'] as LoopName[]).forEach((name) => this.stopLoop(name)) }
+  stopCallLoops() {
+    ;(['line', 'ring', 'dialTone', 'busy'] as LoopName[]).forEach((name) => this.stopLoop(name))
+  }
+
+  stopAll() {
+    ;(['rain', 'line', 'ring', 'dialTone', 'busy'] as LoopName[]).forEach((name) => this.stopLoop(name))
+  }
 }

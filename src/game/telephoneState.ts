@@ -9,7 +9,7 @@ export type TelephoneAction =
   | { type: 'CONNECT' }
   | { type: 'CONNECTED'; nodeId: string; now: number; hasChoices: boolean }
   | { type: 'SHOW_CHOICES' }
-  | { type: 'WARNING'; reason: string }
+  | { type: 'WARNING'; reason: string; kind: 'dial' | 'choice' | 'call' }
   | { type: 'HANG_UP' }
   | { type: 'RESET_IDLE' }
   | { type: 'END'; nodeId: string }
@@ -23,12 +23,13 @@ export const initialTelephoneState: TelephoneMachineState = {
   activeNodeId: null,
   callStartedAt: null,
   warningReason: null,
+  warningKind: null,
 }
 
 export function telephoneReducer(state: TelephoneMachineState, action: TelephoneAction): TelephoneMachineState {
   switch (action.type) {
     case 'START':
-      return { ...state, phase: 'idle', warningReason: null }
+      return { ...state, phase: 'idle', warningReason: null, warningKind: null }
     case 'RING':
       if (state.phase !== 'idle') return state
       return { ...state, phase: 'ringing', incomingEventId: action.eventId }
@@ -40,16 +41,19 @@ export function telephoneReducer(state: TelephoneMachineState, action: Telephone
         activeNodeId: action.nodeId ?? null,
         callStartedAt: action.nodeId ? action.now : null,
         warningReason: null,
+        warningKind: null,
       }
     case 'BEGIN_DIAL':
-      return state.phase === 'offHook' || state.phase === 'dialing' ? { ...state, phase: 'dialing' } : state
+      return state.phase === 'offHook' || state.phase === 'dialing' || (state.phase === 'timeoutWarning' && state.warningKind === 'dial')
+        ? { ...state, phase: 'dialing', warningReason: null, warningKind: null }
+        : state
     case 'DIGIT':
-      return state.phase === 'dialing' || state.phase === 'offHook'
-        ? { ...state, phase: 'dialing', dialedNumber: `${state.dialedNumber}${action.digit}` }
+      return state.phase === 'dialing' || state.phase === 'offHook' || (state.phase === 'timeoutWarning' && state.warningKind === 'dial')
+        ? { ...state, phase: 'dialing', dialedNumber: `${state.dialedNumber}${action.digit}`, warningReason: null, warningKind: null }
         : state
     case 'CONNECT':
-      return state.dialedNumber && ['dialing', 'offHook'].includes(state.phase)
-        ? { ...state, phase: 'connecting', warningReason: null }
+      return state.dialedNumber && (['dialing', 'offHook'].includes(state.phase) || (state.phase === 'timeoutWarning' && state.warningKind === 'dial'))
+        ? { ...state, phase: 'connecting', warningReason: null, warningKind: null }
         : state
     case 'CONNECTED':
       return {
@@ -58,12 +62,13 @@ export function telephoneReducer(state: TelephoneMachineState, action: Telephone
         activeNodeId: action.nodeId,
         callStartedAt: state.callStartedAt ?? action.now,
         warningReason: null,
+        warningKind: null,
       }
     case 'SHOW_CHOICES':
-      return state.phase === 'inCall' ? { ...state, phase: 'awaitingChoice' } : state
+      return state.phase === 'inCall' ? { ...state, phase: 'awaitingChoice', warningReason: null, warningKind: null } : state
     case 'WARNING':
       return ['offHook', 'dialing', 'inCall', 'awaitingChoice'].includes(state.phase)
-        ? { ...state, phase: 'timeoutWarning', warningReason: action.reason }
+        ? { ...state, phase: 'timeoutWarning', warningReason: action.reason, warningKind: action.kind }
         : state
     case 'HANG_UP':
       return state.phase === 'intro' || state.phase === 'idle' ? state : {
@@ -74,11 +79,12 @@ export function telephoneReducer(state: TelephoneMachineState, action: Telephone
         activeNodeId: null,
         callStartedAt: null,
         warningReason: null,
+        warningKind: null,
       }
     case 'RESET_IDLE':
-      return { ...state, phase: 'idle', dialedNumber: '', incomingEventId: null, activeNodeId: null, callStartedAt: null, warningReason: null }
+      return { ...state, phase: 'idle', dialedNumber: '', incomingEventId: null, activeNodeId: null, callStartedAt: null, warningReason: null, warningKind: null }
     case 'END':
-      return { ...state, phase: 'ending', activeNodeId: action.nodeId, warningReason: null }
+      return { ...state, phase: 'ending', activeNodeId: action.nodeId, warningReason: null, warningKind: null }
     case 'CLEAR_NUMBER':
       return { ...state, dialedNumber: '' }
     case 'RESTART':

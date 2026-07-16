@@ -77,6 +77,7 @@ src/
   styles/              前台、后台与档案页样式
 docs/
   TELEPHONE_DEVELOPMENT_PLAN.md
+  TELEPHONE_ACCEPTANCE.md
 ```
 
 ## 持久化

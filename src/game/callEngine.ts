@@ -60,6 +60,15 @@ export function conditionsMatch(conditions: GraphCondition[] | undefined, state:
 
 function triggerMatches(edge: TelephoneEdge, event: CallEvent) {
   if (edge.trigger.type !== event.type) return false
+  if (event.type === 'keywordAny') {
+    const input = event.value?.trim().toLocaleLowerCase() ?? ''
+    const keywords = [edge.trigger.value, ...(edge.samples ?? [])]
+      .filter((value): value is string => Boolean(value))
+      .flatMap((value) => value.split(/[|,，]/))
+      .map((value) => value.trim().toLocaleLowerCase())
+      .filter(Boolean)
+    return input.length > 0 && keywords.some((keyword) => input.includes(keyword))
+  }
   if (edge.trigger.value === undefined || edge.trigger.value === '*') return true
   return edge.trigger.value === event.value
 }
