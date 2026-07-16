@@ -1,4 +1,4 @@
-import { useRef, useState, type PointerEvent } from 'react'
+import { useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import {
   ROTARY_DIGITS,
   angleFromCenter,
@@ -104,7 +104,7 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
         })}
       </div>
       <div className="dial-finger-stop"><i /></div>
-      <div className="dial-wheel" style={{ transform: `rotate(${rotation}deg)` }}>
+      <div className="dial-wheel" style={{ transform: `rotate(${rotation}deg)`, '--dial-rotation': `${rotation}deg` } as CSSProperties}>
         {ROTARY_DIGITS.map((digit) => {
           const angle = digitHoleAngle(digit)
           const radians = angle * Math.PI / 180
@@ -113,6 +113,7 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
               key={digit}
               type="button"
               className="dial-hole"
+              data-digit={digit}
               style={{ left: `${50 + Math.cos(radians) * 37.5}%`, top: `${50 + Math.sin(radians) * 37.5}%` }}
               aria-label={`拨 ${digit}`}
               disabled={disabled}

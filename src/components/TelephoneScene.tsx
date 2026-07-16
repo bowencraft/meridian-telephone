@@ -25,6 +25,7 @@ function nowId(prefix: string) {
 }
 
 export function TelephoneScene() {
+  const sceneRef = useRef<HTMLElement>(null)
   const story = useMemo(() => loadStoryDefinition(), [])
   const [progress, setProgress] = useState(loadProgress)
   const audioRef = useRef(new TelephoneAudio())
@@ -338,10 +339,22 @@ export function TelephoneScene() {
   const ending = runtime.ending ? story.extensions.telephone.endings[runtime.ending] : null
   const discoveredDefinitions = story.globals.phone.validNumbers.filter((number) => runtime.discoveredNumbers.includes(number.number))
 
+  function moveAmbientLight(event: React.PointerEvent<HTMLElement>) {
+    const rect = event.currentTarget.getBoundingClientRect()
+    const x = (event.clientX - rect.left) / rect.width * 100
+    const y = (event.clientY - rect.top) / rect.height * 100
+    event.currentTarget.style.setProperty('--light-x', `${x.toFixed(2)}%`)
+    event.currentTarget.style.setProperty('--light-y', `${y.toFixed(2)}%`)
+  }
+
   return (
-    <main className={`telephone-scene phase-${machine.phase}`}>
+    <main ref={sceneRef} className={`telephone-scene phase-${machine.phase}`} onPointerMove={moveAmbientLight}>
       <div className="rain-layer rain-far" aria-hidden="true" />
       <div className="rain-layer rain-near" aria-hidden="true" />
+      <div className="booth-glass" aria-hidden="true"><i /><i /><i /></div>
+      <div className="window-condensation" aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
+      <div className="ceiling-lamp" aria-hidden="true"><span /><i /></div>
+      <div className="street-bokeh" aria-hidden="true"><i /><i /><i /><i /><i /></div>
       <div className="booth-frame" aria-hidden="true"><i /><i /><i /><i /></div>
       <div className="street-reflection" aria-hidden="true" />
 
@@ -392,7 +405,7 @@ export function TelephoneScene() {
       <footer className="game-status">
         <span className={`status-light status-${machine.phase}`} />
         <strong>{machine.phase === 'ringing' ? ringLabel : node.label}</strong>
-        <span>{machine.phase === 'idle' ? '查看亭内线索，或提起听筒拨号' : machine.phase === 'dialing' ? `已拨 ${formatPhoneNumber(machine.dialedNumber)}` : machine.phase === 'awaitingChoice' ? '线路等待回应' : '伦敦 · 雨夜 · 线路开放'}</span>
+        <span>{machine.phase === 'idle' ? '查看亭内线索，或点击听筒拿起' : machine.phase === 'offHook' ? '移动鼠标携带听筒 · 再次点击挂回' : machine.phase === 'dialing' ? `已拨 ${formatPhoneNumber(machine.dialedNumber)}` : machine.phase === 'awaitingChoice' ? '线路等待回应' : '伦敦 · 雨夜 · 线路开放'}</span>
       </footer>
 
       {numberBookOpen && (

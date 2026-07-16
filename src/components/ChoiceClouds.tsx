@@ -7,6 +7,7 @@ export function ChoiceClouds({ choices, onChoose, disabled }: ChoiceCloudsProps)
   if (!visible.length) return null
   return (
     <div className="choice-clouds" aria-label="回应选项">
+      <div className="response-bank-label"><span>SELECT RESPONSE</span><small>PRESS ONE SPEAKING KEY</small></div>
       {visible.map((choice, index) => (
         <button
           type="button"
@@ -16,7 +17,9 @@ export function ChoiceClouds({ choices, onChoose, disabled }: ChoiceCloudsProps)
           disabled={disabled}
           onClick={() => onChoose(choice)}
         >
-          <span>{choice.text}</span>
+          <span className="choice-number">{String(index + 1).padStart(2, '0')}</span>
+          <span className="choice-copy">{choice.text}</span>
+          <i className="choice-rivet" aria-hidden="true" />
         </button>
       ))}
     </div>
