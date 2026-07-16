@@ -1,0 +1,29 @@
+:root {
+  font-family: "Gill Sans", "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  color: #eee8d8;
+  background: #0c0808;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --cream: #eee4ca;
+  --paper: #d8c8a6;
+  --ink: #1c1a17;
+  --red: #641d1d;
+  --gold: #c7a55b;
+  --green: #9cbd87;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-width: 320px; min-height: 100%; margin: 0; }
+body { min-height: 100vh; overflow-x: hidden; }
+button, input, textarea, select { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid #e4bd61;
+  outline-offset: 3px;
+}
+::selection { color: #fff8df; background: #8b332d; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}

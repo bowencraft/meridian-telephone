@@ -1,0 +1,264 @@
+import {
+  Background,
+  Controls,
+  MiniMap,
+  Position,
+  ReactFlow,
+  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
+  type Connection,
+  type Edge,
+  type EdgeChange,
+  type Node,
+  type NodeChange,
+} from '@xyflow/react'
+import '@xyflow/react/dist/style.css'
+import { BookOpen, Cable, Clock3, MapPin, Play, Plus, RotateCcw, Trash2 } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { CallEngine } from '../game/callEngine'
+import type {
+  EngineTransition,
+  PhoneNumberDefinition,
+  SceneHotspot,
+  TelephoneEdge,
+  TelephoneNode,
+  TelephoneNodeKind,
+  TelephoneStory,
+  TriggerType,
+} from '../game/types'
+
+interface GraphEditorProps { story: TelephoneStory; onChange: (story: TelephoneStory) => void }
+type InspectorTab = 'node' | 'edge' | 'simulate' | 'phone' | 'hotspots'
+
+const NODE_KINDS: TelephoneNodeKind[] = ['start', 'idle', 'incoming_call', 'dial_target', 'call', 'menu', 'scene', 'global', 'end', 'fail']
+const TRIGGERS: TriggerType[] = ['dialNumber', 'choice', 'incomingAnswer', 'hangUp', 'timeout', 'sceneInspect', 'auto']
+
+function lines(value: string) { return value.split('\n').map((line) => line.trim()).filter(Boolean) }
+function uniqueId(prefix: string, existing: string[]) {
+  let index = existing.length + 1
+  while (existing.includes(`${prefix}_${index}`)) index += 1
+  return `${prefix}_${index}`
+}
+
+function nodeColor(kind: TelephoneNodeKind) {
+  if (kind === 'end') return '#376857'
+  if (kind === 'fail') return '#71413e'
+  if (kind === 'global') return '#6f673e'
+  if (kind === 'incoming_call') return '#765b2f'
+  if (kind === 'scene') return '#4d6171'
+  if (kind === 'menu') return '#4e466e'
+  return '#37443e'
+}
+
+export function GraphEditor({ story, onChange }: GraphEditorProps) {
+  const [selectedNodeId, setSelectedNodeId] = useState(story.entryNodeId)
+  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null)
+  const [tab, setTab] = useState<InspectorTab>('node')
+  const [simEvent, setSimEvent] = useState<TriggerType>('dialNumber')
+  const [simValue, setSimValue] = useState('9460264')
+  const [simulator, setSimulator] = useState(() => new CallEngine(story, undefined, 42))
+  const [simState, setSimState] = useState(() => structuredClone(new CallEngine(story, undefined, 42).state))
+  const [simLog, setSimLog] = useState<EngineTransition[]>([])
+
+  const flowNodes = useMemo<Node[]>(() => story.nodes.map((node) => ({
+    id: node.id,
+    position: node.position,
+    data: { label: `${node.label}\n${node.id}` },
+    type: 'default',
+    initialWidth: 178,
+    initialHeight: 64,
+    measured: { width: 178, height: 64 },
+    sourcePosition: Position.Bottom,
+    targetPosition: Position.Top,
+    className: `telephone-flow-node kind-${node.kind}`,
+    style: { background: nodeColor(node.kind), color: '#f2eee2', border: selectedNodeId === node.id ? '2px solid #e5b85c' : '1px solid #737b70', borderRadius: 6, width: 178, fontSize: 11, whiteSpace: 'pre-line' },
+  })), [selectedNodeId, story.nodes])
+  const flowEdges = useMemo<Edge[]>(() => story.edges.map((edge) => ({ id: edge.id, source: edge.from, target: edge.to, label: `${edge.label} · ${edge.trigger.type}`, animated: selectedEdgeId === edge.id, className: selectedEdgeId === edge.id ? 'selected-flow-edge' : '' })), [selectedEdgeId, story.edges])
+  const selectedNode = story.nodes.find((node) => node.id === selectedNodeId) ?? null
+  const selectedEdge = story.edges.find((edge) => edge.id === selectedEdgeId) ?? null
+
+  function updateNode(patch: Partial<TelephoneNode>) {
+    onChange({ ...story, nodes: story.nodes.map((node) => node.id === selectedNodeId ? { ...node, ...patch } : node) })
+  }
+  function updateEdge(patch: Partial<TelephoneEdge>) {
+    if (!selectedEdgeId) return
+    onChange({ ...story, edges: story.edges.map((edge) => edge.id === selectedEdgeId ? { ...edge, ...patch } : edge) })
+  }
+
+  function onNodesChange(changes: NodeChange[]) {
+    const next = applyNodeChanges(changes, flowNodes)
+    const positions = new Map(next.map((node) => [node.id, node.position]))
+    onChange({ ...story, nodes: story.nodes.map((node) => ({ ...node, position: positions.get(node.id) ?? node.position })) })
+  }
+
+  function onEdgesChange(changes: EdgeChange[]) {
+    const next = applyEdgeChanges(changes, flowEdges)
+    const kept = new Set(next.map((edge) => edge.id))
+    onChange({ ...story, edges: story.edges.filter((edge) => kept.has(edge.id)) })
+  }
+
+  function connect(connection: Connection) {
+    if (!connection.source || !connection.target) return
+    const id = uniqueId('edge', story.edges.map((edge) => edge.id))
+    const edge: TelephoneEdge = {
+      id,
+      label: '新转场',
+      from: connection.source,
+      to: connection.target,
+      priority: 50,
+      trigger: { type: 'choice', value: id },
+      choice: { text: '继续', tone: 'plain' },
+    }
+    addEdge({ id, source: connection.source, target: connection.target }, flowEdges)
+    onChange({ ...story, edges: [...story.edges, edge] })
+    setSelectedEdgeId(id)
+    setTab('edge')
+  }
+
+  function addNode(kind: TelephoneNodeKind) {
+    const id = uniqueId(kind, story.nodes.map((node) => node.id))
+    const node: TelephoneNode = {
+      id, label: `新 ${kind}`, kind,
+      position: { x: 160 + story.nodes.length * 26, y: 160 + story.nodes.length * 18 },
+      body: { variants: ['新通话文本。'], fallbackVariants: [], notes: '' },
+      telephone: { speaker: 'operator', speakerLabel: '未知线路', lcd: 'LINE OPEN', canHangUp: true },
+    }
+    onChange({ ...story, nodes: [...story.nodes, node] })
+    setSelectedNodeId(id)
+    setSelectedEdgeId(null)
+    setTab('node')
+  }
+
+  function removeSelection() {
+    if (selectedEdgeId) {
+      onChange({ ...story, edges: story.edges.filter((edge) => edge.id !== selectedEdgeId) })
+      setSelectedEdgeId(null)
+      return
+    }
+    if (!selectedNode || selectedNode.id === story.entryNodeId || selectedNode.kind === 'global') return
+    onChange({ ...story, nodes: story.nodes.filter((node) => node.id !== selectedNode.id), edges: story.edges.filter((edge) => edge.from !== selectedNode.id && edge.to !== selectedNode.id) })
+    setSelectedNodeId(story.entryNodeId)
+  }
+
+  function resetSimulator() {
+    const next = new CallEngine(story, undefined, 42)
+    setSimulator(next)
+    setSimState(structuredClone(next.state))
+    setSimLog([])
+  }
+
+  function runSimulation() {
+    const transition = simulator.dispatch({ type: simEvent, value: simValue, createdAt: Date.now() })
+    setSimState(transition.state)
+    setSimLog((items) => [...items, transition])
+  }
+
+  function updateNumber(index: number, patch: Partial<PhoneNumberDefinition>) {
+    const values = story.globals.phone.validNumbers.map((number, itemIndex) => itemIndex === index ? { ...number, ...patch } : number)
+    onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, validNumbers: values } } })
+  }
+  function updateHotspot(index: number, patch: Partial<SceneHotspot>) {
+    const telephone = story.extensions.telephone
+    onChange({ ...story, extensions: { ...story.extensions, telephone: { ...telephone, sceneHotspots: telephone.sceneHotspots.map((hotspot, itemIndex) => itemIndex === index ? { ...hotspot, ...patch } : hotspot) } } })
+  }
+
+  return (
+    <section className="graph-editor-shell">
+      <div className="graph-canvas-pane">
+        <div className="graph-toolbar">
+          <div className="node-adders">{NODE_KINDS.map((kind) => <button type="button" key={kind} onClick={() => addNode(kind)}><Plus size={12} />{kind}</button>)}</div>
+          <button className="danger-tool" type="button" onClick={removeSelection} aria-label="删除所选内容"><Trash2 size={15} /></button>
+        </div>
+        <ReactFlow
+          nodes={flowNodes}
+          edges={flowEdges}
+          fitView
+          minZoom={0.12}
+          maxZoom={1.8}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={connect}
+          onNodeClick={(_, selected) => { setSelectedNodeId(selected.id); setSelectedEdgeId(null); setTab('node') }}
+          onEdgeClick={(_, selected) => { setSelectedEdgeId(selected.id); setTab('edge') }}
+        >
+          <Background color="#727970" gap={22} size={1} />
+          <MiniMap nodeColor={(flowNode) => nodeColor(story.nodes.find((node) => node.id === flowNode.id)?.kind ?? 'call')} pannable zoomable />
+          <Controls />
+        </ReactFlow>
+      </div>
+
+      <aside className="graph-inspector">
+        <nav className="inspector-tabs">
+          <button className={tab === 'node' ? 'active' : ''} onClick={() => setTab('node')}><BookOpen size={13} />节点</button>
+          <button className={tab === 'edge' ? 'active' : ''} onClick={() => setTab('edge')}><Cable size={13} />转场</button>
+          <button className={tab === 'simulate' ? 'active' : ''} onClick={() => setTab('simulate')}><Play size={13} />运行预览</button>
+          <button className={tab === 'phone' ? 'active' : ''} onClick={() => setTab('phone')}><Clock3 size={13} />号码与超时</button>
+          <button className={tab === 'hotspots' ? 'active' : ''} onClick={() => setTab('hotspots')}><MapPin size={13} />场景热点</button>
+        </nav>
+
+        <div className="inspector-scroll">
+          {tab === 'node' && selectedNode && <>
+            <fieldset><legend>节点身份</legend>
+              <label><span>ID（保持稳定）</span><input value={selectedNode.id} disabled /></label>
+              <label><span>名称</span><input value={selectedNode.label} onChange={(event) => updateNode({ label: event.target.value })} /></label>
+              <label><span>类型</span><select value={selectedNode.kind} onChange={(event) => updateNode({ kind: event.target.value as TelephoneNodeKind })}>{NODE_KINDS.map((kind) => <option key={kind}>{kind}</option>)}</select></label>
+              <label><span>标签（逗号分隔）</span><input value={(selectedNode.tags ?? []).join(', ')} onChange={(event) => updateNode({ tags: event.target.value.split(',').map((value) => value.trim()).filter(Boolean) })} /></label>
+            </fieldset>
+            <fieldset><legend>通话内容</legend>
+              <label><span>文本 variants（每行一条）</span><textarea rows={7} value={selectedNode.body.variants.join('\n')} onChange={(event) => updateNode({ body: { ...selectedNode.body, variants: lines(event.target.value) } })} /></label>
+              <label><span>Fallback（每行一条）</span><textarea rows={4} value={(selectedNode.body.fallbackVariants ?? []).join('\n')} onChange={(event) => updateNode({ body: { ...selectedNode.body, fallbackVariants: lines(event.target.value) } })} /></label>
+              <label><span>剧情目标 / 备注</span><textarea rows={3} value={selectedNode.body.notes ?? ''} onChange={(event) => updateNode({ body: { ...selectedNode.body, notes: event.target.value } })} /></label>
+            </fieldset>
+            <fieldset><legend>电话适配字段</legend>
+              <label><span>说话者显示名</span><input value={selectedNode.telephone?.speakerLabel ?? ''} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, speakerLabel: event.target.value } })} /></label>
+              <label><span>LCD 覆盖文本</span><input value={selectedNode.telephone?.lcd ?? ''} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, lcd: event.target.value } })} /></label>
+              <label className="checkbox-line"><input type="checkbox" checked={selectedNode.telephone?.canHangUp !== false} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, canHangUp: event.target.checked } })} /><span>允许玩家挂断</span></label>
+              <label><span>结局类型（留空表示非结局）</span><input value={selectedNode.telephone?.ending ?? ''} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, ending: event.target.value as any || undefined } })} /></label>
+            </fieldset>
+          </>}
+
+          {tab === 'edge' && (selectedEdge ? <>
+            <fieldset><legend>转场身份</legend>
+              <label><span>ID</span><input value={selectedEdge.id} disabled /></label>
+              <label><span>名称</span><input value={selectedEdge.label} onChange={(event) => updateEdge({ label: event.target.value })} /></label>
+              <div className="two-fields"><label><span>From</span><select value={selectedEdge.from} onChange={(event) => updateEdge({ from: event.target.value })}>{story.nodes.map((node) => <option key={node.id}>{node.id}</option>)}</select></label><label><span>To</span><select value={selectedEdge.to} onChange={(event) => updateEdge({ to: event.target.value })}>{story.nodes.map((node) => <option key={node.id}>{node.id}</option>)}</select></label></div>
+              <label><span>优先级</span><input type="number" value={selectedEdge.priority} onChange={(event) => updateEdge({ priority: Number(event.target.value) })} /></label>
+            </fieldset>
+            <fieldset><legend>事件触发</legend>
+              <label><span>触发类型</span><select value={selectedEdge.trigger.type} onChange={(event) => updateEdge({ trigger: { ...selectedEdge.trigger, type: event.target.value as TriggerType } })}>{TRIGGERS.map((trigger) => <option key={trigger}>{trigger}</option>)}</select></label>
+              <label><span>触发值（号码 / 选项 ID / 热点 ID）</span><input value={selectedEdge.trigger.value ?? ''} onChange={(event) => updateEdge({ trigger: { ...selectedEdge.trigger, value: event.target.value || undefined } })} /></label>
+              {selectedEdge.trigger.type === 'choice' && <><label><span>玩家可见选项</span><textarea rows={3} value={selectedEdge.choice?.text ?? ''} onChange={(event) => updateEdge({ choice: { ...selectedEdge.choice, text: event.target.value, tone: selectedEdge.choice?.tone ?? 'plain' } })} /></label><label><span>选项语气</span><select value={selectedEdge.choice?.tone ?? 'plain'} onChange={(event) => updateEdge({ choice: { text: selectedEdge.choice?.text ?? selectedEdge.label, tone: event.target.value as any } })}><option>plain</option><option>warm</option><option>defiant</option><option>compliant</option></select></label></>}
+            </fieldset>
+            <fieldset><legend>条件与效果（JSON）</legend>
+              <label><span>conditions</span><textarea rows={7} value={JSON.stringify(selectedEdge.conditions ?? [], null, 2)} onChange={(event) => { try { updateEdge({ conditions: JSON.parse(event.target.value) }) } catch { /* keep editing until valid */ } }} /></label>
+              <label><span>effects</span><textarea rows={7} value={JSON.stringify(selectedEdge.effects ?? [], null, 2)} onChange={(event) => { try { updateEdge({ effects: JSON.parse(event.target.value) }) } catch { /* keep editing until valid */ } }} /></label>
+            </fieldset>
+          </> : <div className="empty-inspector">在画布中选择一条转场连线。</div>)}
+
+          {tab === 'simulate' && <>
+            <fieldset><legend>事件模拟器</legend>
+              <div className="two-fields"><label><span>事件</span><select value={simEvent} onChange={(event) => setSimEvent(event.target.value as TriggerType)}>{TRIGGERS.map((trigger) => <option key={trigger}>{trigger}</option>)}</select></label><label><span>值</span><input value={simValue} onChange={(event) => setSimValue(event.target.value)} /></label></div>
+              <div className="sim-actions"><button type="button" onClick={runSimulation}><Play size={14} />执行事件</button><button type="button" onClick={resetSimulator}><RotateCcw size={14} />重置</button></div>
+            </fieldset>
+            <dl className="sim-state"><div><dt>当前节点</dt><dd>{simState.currentNodeId}</dd></div><div><dt>回合</dt><dd>{simState.turn}</dd></div><div><dt>结局</dt><dd>{simState.ending ?? '—'}</dd></div><div><dt>Flags</dt><dd><code>{JSON.stringify(simState.flags)}</code></dd></div></dl>
+            <div className="sim-transcript">{simLog.length ? simLog.map((item, index) => <article key={`${item.event.type}-${index}`}><span>{item.event.type}</span><strong>{item.node.label}</strong><p>{item.text}</p><small>{item.edge ? `命中 ${item.edge.id}` : 'Fallback / 无匹配边'} · 候选 {item.candidates.join(', ') || '无'}</small></article>) : <p className="muted-copy">从任意号码、来电、选择、超时、挂断或场景事件开始测试。</p>}</div>
+          </>}
+
+          {tab === 'phone' && <>
+            <fieldset><legend>超时配置（毫秒）</legend>
+              {Object.entries(story.globals.timeout).map(([key, value]) => <label key={key}><span>{key}</span><input type="number" value={value} onChange={(event) => onChange({ ...story, globals: { ...story.globals, timeout: { ...story.globals.timeout, [key]: Number(event.target.value) } } })} /></label>)}
+            </fieldset>
+            <div className="admin-list-heading"><div><span>PHONE DIRECTORY</span><h3>有效号码簿</h3></div><button type="button" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, validNumbers: [...story.globals.phone.validNumbers, { number: '0000000', label: '新号码', description: '', category: 'strange' }] } } })}><Plus size={13} />新增</button></div>
+            <div className="admin-number-list">{story.globals.phone.validNumbers.map((number, index) => <article key={`${number.number}-${index}`}><div className="two-fields"><label><span>号码</span><input value={number.number} onChange={(event) => updateNumber(index, { number: event.target.value.replace(/\D/g, '') })} /></label><label><span>名称</span><input value={number.label} onChange={(event) => updateNumber(index, { label: event.target.value })} /></label></div><label><span>说明</span><textarea rows={2} value={number.description} onChange={(event) => updateNumber(index, { description: event.target.value })} /></label><button type="button" className="inline-delete" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, validNumbers: story.globals.phone.validNumbers.filter((_, itemIndex) => itemIndex !== index) } } })}><Trash2 size={13} />删除</button></article>)}</div>
+          </>}
+
+          {tab === 'hotspots' && <>
+            <div className="admin-list-heading"><div><span>SCENE INTERACTIONS</span><h3>电话亭热点</h3></div><button type="button" onClick={() => { const telephone = story.extensions.telephone; onChange({ ...story, extensions: { ...story.extensions, telephone: { ...telephone, sceneHotspots: [...telephone.sceneHotspots, { id: `hotspot-${telephone.sceneHotspots.length + 1}`, label: '新热点', ariaLabel: '检查新热点', x: 40, y: 40, width: 10, height: 10, body: '新发现。' }] } } }) }}><Plus size={13} />新增</button></div>
+            <div className="admin-hotspot-list">{story.extensions.telephone.sceneHotspots.map((hotspot, index) => <article key={hotspot.id}><div className="two-fields"><label><span>ID</span><input value={hotspot.id} onChange={(event) => updateHotspot(index, { id: event.target.value })} /></label><label><span>名称</span><input value={hotspot.label} onChange={(event) => updateHotspot(index, { label: event.target.value })} /></label></div><label><span>首次发现文案</span><textarea rows={3} value={hotspot.body} onChange={(event) => updateHotspot(index, { body: event.target.value })} /></label><div className="four-fields">{(['x', 'y', 'width', 'height'] as const).map((field) => <label key={field}><span>{field}%</span><input type="number" value={hotspot[field]} onChange={(event) => updateHotspot(index, { [field]: Number(event.target.value) })} /></label>)}</div><button type="button" className="inline-delete" onClick={() => { const telephone = story.extensions.telephone; onChange({ ...story, extensions: { ...story.extensions, telephone: { ...telephone, sceneHotspots: telephone.sceneHotspots.filter((_, itemIndex) => itemIndex !== index) } } }) }}><Trash2 size={13} />删除</button></article>)}</div>
+          </>}
+        </div>
+      </aside>
+    </section>
+  )
+}
