@@ -1,0 +1,33 @@
+:root {
+  font-family: "Gill Sans", "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  color: #eee8d8;
+  background: #0c0808;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --cream: #eee4ca;
+  --paper: #d8c8a6;
+  --ink: #1c1a17;
+  --red: #641d1d;
+  --gold: #c7a55b;
+  --green: #9cbd87;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-width: 320px; min-height: 100%; margin: 0; }
+body { min-height: 100vh; overflow-x: hidden; }
+button, input, textarea, select { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid #e4bd61;
+  outline-offset: 3px;
+}
+::selection { color: #fff8df; background: #8b332d; }
+
+.route-loading { display: grid; min-height: 100svh; place-content: center; gap: 10px; color: #c8b995; background: #080a08; text-align: center; }
+.route-loading span { font: 8px/1 "Courier New", monospace; letter-spacing: .22em; }
+.route-loading strong { font: 18px/1.4 Georgia, "Songti SC", serif; font-weight: 400; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
