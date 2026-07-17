@@ -467,4 +467,4 @@ git merge --no-ff codex/feature-name
 
 ## License
 
-当前仓库未声明开源许可证，默认保留全部权利。若计划公开发布，请在分发前补充明确的 `LICENSE` 文件。
+当前仓库未声明开源许可证，默认保留全部权利。
