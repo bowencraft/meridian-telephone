@@ -25,7 +25,7 @@ Telephone 是一个完整的“单物品强交互 + 事件驱动节点图叙事 
 ## 功能概览
 
 - 拟物老式公共电话：受限跟随听筒、挂架吸附、真实回弹转盘、投币与退币机构。
-- 轻量电话线物理：22 个 Verlet 质点、重力与约束、鼠标碰撞、活动与静止自适应渲染。
+- 轻量电话线物理：桌面 22 / 手机 16 个 Verlet 质点、重力与约束、鼠标碰撞、活动与静止自适应渲染。
 - 完整通话状态机：待机、响铃、拨号、接通、选择、超时、挂断与结局。
 - 事件驱动剧情图：号码、选择、来电、场景检查、超时、挂断和自动事件都使用同一种图边表达。
 - 可视化剧情交换台：节点图、Inspector、运行模拟器、号码管理、超时配置与热点编辑。
@@ -75,9 +75,11 @@ Telephone 是一个完整的“单物品强交互 + 事件驱动节点图叙事 
 
 ### 移动端布局
 
-窄屏下电话仍保持固定比例；通话稿纸和回应面板改为上下层布局，不会拉伸听筒或让数字重叠。
+窄屏下电话仍保持固定比例；通话稿纸和回应面板改为上下层布局，不会拉伸听筒或让数字重叠。游戏场景固定在动态视口内，页面不会被转盘手势上下拖动；转盘输入按动画帧合并更新，电话线也会自动切换到移动端轻量求解配置。
 
-![移动端游戏页](docs/screenshots-performance/03-mobile-regression.jpg)
+![移动端游戏页](docs/screenshots-mobile-polish/09-final-390x720.jpg)
+
+![移动端通话与回应](docs/screenshots-mobile-polish/10-final-call.jpg)
 
 ## 快速开始
 
@@ -464,6 +466,7 @@ git merge --no-ff codex/feature-name
 - [物理交互验收](docs/TELEPHONE_PHYSICAL_INTERACTIONS_ACCEPTANCE.md)
 - [追加三轮迭代](docs/TELEPHONE_ADDITIONAL_THREE_PASSES.md)
 - [性能验收](docs/TELEPHONE_PERFORMANCE_ACCEPTANCE.md)
+- [移动端体验验收](docs/TELEPHONE_MOBILE_ACCEPTANCE.md)
 
 ## License
 

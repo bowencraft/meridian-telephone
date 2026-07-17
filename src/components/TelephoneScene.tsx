@@ -468,6 +468,7 @@ export function TelephoneScene() {
   const discoveredDefinitions = story.globals.phone.validNumbers.filter((number) => runtime.discoveredNumbers.includes(number.number))
 
   function moveAmbientLight(event: React.PointerEvent<HTMLElement>) {
+    if (event.pointerType !== 'mouse') return
     pendingLightRef.current = { clientX: event.clientX, clientY: event.clientY }
     if (lightFrameRef.current !== null) return
     lightFrameRef.current = window.requestAnimationFrame(() => {

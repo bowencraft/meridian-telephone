@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import {
   ROTARY_DIGITS,
   angleFromCenter,
@@ -19,42 +19,86 @@ interface RotaryDialProps {
 
 export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: RotaryDialProps) {
   const dialRef = useRef<HTMLDivElement>(null)
+  const gestureRef = useRef<{
+    digit: string
+    pointerId: number
+    startAngle: number
+    center: { x: number; y: number }
+    rotation: number
+    lastTick: number
+  } | null>(null)
+  const frameRef = useRef<number | null>(null)
+  const pendingRotationRef = useRef(0)
+  const pendingTickRef = useRef(false)
+  const moveCountRef = useRef(0)
+  const renderFrameCountRef = useRef(0)
   const [activeDigit, setActiveDigit] = useState<string | null>(null)
-  const [startAngle, setStartAngle] = useState(0)
   const [rotation, setRotation] = useState(0)
   const [returning, setReturning] = useState(false)
-  const lastTickRef = useRef(0)
+
+  function flushDialFrame() {
+    frameRef.current = null
+    renderFrameCountRef.current += 1
+    if (dialRef.current) {
+      dialRef.current.dataset.moveEvents = String(moveCountRef.current)
+      dialRef.current.dataset.renderFrames = String(renderFrameCountRef.current)
+    }
+    setRotation(pendingRotationRef.current)
+    if (pendingTickRef.current) {
+      pendingTickRef.current = false
+      onTick?.()
+    }
+  }
 
   function begin(event: PointerEvent<HTMLButtonElement>, digit: string) {
     if (disabled || activeDigit || returning || !dialRef.current) return
     event.preventDefault()
     const rect = dialRef.current.getBoundingClientRect()
     const center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+    const startAngle = angleFromCenter(center, { x: event.clientX, y: event.clientY })
+    gestureRef.current = { digit, pointerId: event.pointerId, startAngle, center, rotation: 0, lastTick: 0 }
+    moveCountRef.current = 0
+    renderFrameCountRef.current = 0
+    dialRef.current.dataset.moveEvents = '0'
+    dialRef.current.dataset.renderFrames = '0'
     setActiveDigit(digit)
-    setStartAngle(angleFromCenter(center, { x: event.clientX, y: event.clientY }))
     setRotation(0)
-    lastTickRef.current = 0
     event.currentTarget.setPointerCapture(event.pointerId)
   }
 
   function move(event: PointerEvent<HTMLButtonElement>) {
-    if (!activeDigit || !dialRef.current) return
-    const rect = dialRef.current.getBoundingClientRect()
-    const center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
-    const current = angleFromCenter(center, { x: event.clientX, y: event.clientY })
-    const next = clampDialRotation(activeDigit, clockwiseDelta(startAngle, current))
-    setRotation(next)
-    if (next - lastTickRef.current > 12) {
-      lastTickRef.current = next
-      onTick?.()
+    const gesture = gestureRef.current
+    if (!gesture || gesture.pointerId !== event.pointerId) return
+    event.preventDefault()
+    moveCountRef.current += 1
+    const current = angleFromCenter(gesture.center, { x: event.clientX, y: event.clientY })
+    const next = clampDialRotation(gesture.digit, clockwiseDelta(gesture.startAngle, current))
+    gesture.rotation = next
+    pendingRotationRef.current = next
+    if (next - gesture.lastTick > 12) {
+      gesture.lastTick = Math.floor(next / 12) * 12
+      pendingTickRef.current = true
     }
+    if (frameRef.current === null) frameRef.current = window.requestAnimationFrame(flushDialFrame)
   }
 
   function finish(event: PointerEvent<HTMLButtonElement>) {
-    if (!activeDigit) return
-    const digit = activeDigit
+    const gesture = gestureRef.current
+    if (!gesture || gesture.pointerId !== event.pointerId) return
+    event.preventDefault()
+    const digit = gesture.digit
     try { event.currentTarget.releasePointerCapture(event.pointerId) } catch { /* capture may already be released */ }
-    const complete = isDialComplete(digit, rotation)
+    if (frameRef.current !== null) {
+      window.cancelAnimationFrame(frameRef.current)
+      frameRef.current = null
+    }
+    pendingTickRef.current = false
+    gestureRef.current = null
+    if (dialRef.current) {
+      dialRef.current.dataset.moveEvents = String(moveCountRef.current)
+      dialRef.current.dataset.renderFrames = String(renderFrameCountRef.current)
+    }
+    const complete = isDialComplete(digit, gesture.rotation)
     setActiveDigit(null)
     setReturning(true)
     if (complete) {
@@ -69,6 +113,10 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
       if (complete) onDigit(digit)
     }, 560)
   }
+
+  useEffect(() => () => {
+    if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current)
+  }, [])
 
   function keyDial(event: React.KeyboardEvent<HTMLDivElement>) {
     if (disabled || returning || activeDigit || !/^\d$/.test(event.key)) return
@@ -104,7 +152,7 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
         })}
       </div>
       <div className="dial-finger-stop"><i /></div>
-      <div className="dial-wheel" style={{ transform: `rotate(${rotation}deg)`, '--dial-rotation': `${rotation}deg` } as CSSProperties}>
+      <div className="dial-wheel" style={{ transform: `translateZ(0) rotate(${rotation}deg)`, '--dial-rotation': `${rotation}deg` } as CSSProperties}>
         {ROTARY_DIGITS.map((digit) => {
           const angle = digitHoleAngle(digit)
           const radians = angle * Math.PI / 180

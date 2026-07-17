@@ -65,6 +65,7 @@ export function PhoneCord({ lifted, pose }: PhoneCordProps) {
     let canvasRect = canvas.getBoundingClientRect()
     let rubberGradient: CanvasGradient | null = null
     let frameCount = 0
+    const compactMode = window.matchMedia('(max-width: 760px)').matches
 
     const cancelScheduledDraw = () => {
       if (animationFrame) window.cancelAnimationFrame(animationFrame)
@@ -90,7 +91,7 @@ export function PhoneCord({ lifted, pose }: PhoneCordProps) {
       width = assembly.offsetWidth
       height = assembly.offsetHeight
       canvasRect = canvas.getBoundingClientRect()
-      const pixelRatio = Math.min(2, window.devicePixelRatio || 1)
+      const pixelRatio = Math.min(compactMode ? 1.25 : 2, window.devicePixelRatio || 1)
       canvas.width = Math.max(1, Math.round(rect.width * pixelRatio))
       canvas.height = Math.max(1, Math.round(rect.height * pixelRatio))
       canvas.style.width = `${width}px`
@@ -104,7 +105,7 @@ export function PhoneCord({ lifted, pose }: PhoneCordProps) {
       const start = phoneAnchor(width, height)
       const end = handsetAnchor(width, height, poseRef.current)
       const cableLength = Math.max(Math.hypot(end.x - start.x, end.y - start.y) * 1.07, height * 0.64)
-      points = createRope(start, end, 22, height * 0.16)
+      points = createRope(start, end, compactMode ? 16 : 22, height * 0.16)
       points.forEach((point, index) => {
         const t = index / (points.length - 1)
         const outwardBow = Math.sin(Math.PI * t) * width * 0.205
@@ -121,6 +122,7 @@ export function PhoneCord({ lifted, pose }: PhoneCordProps) {
     }
 
     const pointer = (event: globalThis.PointerEvent) => {
+      if (event.pointerType !== 'mouse') return
       pointerPosition = { clientX: event.clientX, clientY: event.clientY }
       const nearCanvas = event.clientX >= canvasRect.left - 60
         && event.clientX <= canvasRect.right + 60
@@ -177,7 +179,7 @@ export function PhoneCord({ lifted, pose }: PhoneCordProps) {
         segmentLength,
         gravity: liftedRef.current ? 0.42 : 0.5,
         damping: 0.984,
-        iterations: 8,
+        iterations: compactMode ? 5 : 8,
         collision,
       })
       for (let index = 1; index < points.length - 1; index += 1) {

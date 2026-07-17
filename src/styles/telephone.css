@@ -1041,3 +1041,191 @@
 .phone-assembly { filter:none; }
 .street-bokeh,.rain-far { filter:none; }
 .telephone-scene:is(.phase-inCall,.phase-awaitingChoice,.phase-timeoutWarning) .booth-counter { opacity:.78; filter:none; }
+
+/* Mobile experience pass: fixed viewport, compact composition and touch-first controls. */
+@media (max-width: 760px) {
+  html:has(.telephone-scene),
+  body:has(.telephone-scene),
+  #root:has(.telephone-scene) {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  .telephone-scene {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+    /* The fixed, clipped scene prevents page travel while still allowing
+       explicitly scrollable overlays to opt into vertical touch panning. */
+    touch-action: manipulation;
+  }
+
+  .game-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    display: block;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .game-masthead {
+    position: absolute;
+    top: max(16px, env(safe-area-inset-top));
+    left: 20px;
+    right: 20px;
+    gap: 10px;
+  }
+
+  .game-wordmark span { margin-bottom: 1px; font-size: 6px; letter-spacing: .2em; }
+  .game-wordmark strong { font-size: 16px; letter-spacing: .12em; }
+  .game-masthead nav { gap: 4px; }
+  .game-masthead nav a,
+  .game-masthead nav button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-color: rgba(225,208,172,.14);
+    background: rgba(8,10,9,.68);
+    backdrop-filter: none;
+  }
+  .game-masthead nav svg { width: 14px; height: 14px; }
+
+  .phone-assembly {
+    position: absolute;
+    left: 50%;
+    top: max(88px, calc(12dvh + 18px));
+    width: min(78vw, 310px, calc((100dvh - 235px) * .7754));
+    min-width: 0;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 107 / 138;
+    translate: -50% 0;
+    transform: none !important;
+    contain: layout;
+  }
+
+  .rotary-dial {
+    overscroll-behavior: none;
+    contain: layout paint;
+  }
+  .dial-wheel {
+    will-change: transform;
+    transform: translateZ(0) rotate(var(--dial-rotation));
+    backface-visibility: hidden;
+  }
+  .dial-hole { touch-action: none; }
+
+  .booth-counter {
+    left: 50%;
+    bottom: max(4px, env(safe-area-inset-bottom));
+    width: 100vw;
+    height: 160px;
+  }
+  .counter-back-rail { left: 1.5%; right: 1.5%; }
+  .counter-surface { left: -1%; right: -1%; }
+  .counter-light-pool { left: 0; right: 0; filter: blur(5px); }
+  .counter-front { left: 0; right: 0; }
+  .shelf-coin {
+    top: calc(var(--coin-y) - 7%);
+    width: 42px;
+    background:
+      radial-gradient(circle at 34% 25%,rgba(255,248,205,.78),transparent 14%),
+      radial-gradient(circle,#d2b474 0 48%,#856538 63%,#ddbd78 72%,#4b391f 100%);
+    box-shadow: inset 0 0 0 2px rgba(51,37,19,.5),inset 2px 3px 5px rgba(255,245,205,.32),0 7px 9px rgba(0,0,0,.72),0 0 12px rgba(209,169,85,.12);
+  }
+  .shelf-coin span { font-size: 14px; }
+  .shelf-object-night-ticket { right: 1%; transform: scale(.72) rotate(6deg); }
+  .shelf-object-meridian-matches { left: 1%; transform: scale(.72) rotate(-8deg); }
+  .shelf-object-locker-key { right: 18%; transform: scale(.74) rotate(-13deg); }
+  .shelf-object-operator-docket { right: 27%; transform: scale(.72) rotate(4deg); }
+  .credit-witness {
+    left: 11%;
+    top: 68%;
+    display: flex;
+    font-size: 5px;
+    opacity: .76;
+  }
+
+  .game-status {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: max(14px, calc(env(safe-area-inset-bottom) + 8px));
+    min-width: 0;
+    width: auto;
+    min-height: 30px;
+    padding: 7px 11px;
+    gap: 8px;
+    background: linear-gradient(180deg,rgba(20,21,18,.88),rgba(5,6,5,.86));
+    backdrop-filter: none;
+    transform: none;
+  }
+  .game-status strong { overflow: hidden; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
+
+  .call-text-overlay {
+    left: 12px;
+    right: 12px;
+    top: max(64px, calc(env(safe-area-inset-top) + 54px));
+    max-height: 34dvh;
+    width: auto;
+    padding: 14px 15px 13px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    transform: none;
+    z-index: 44;
+  }
+  .call-text-overlay p { margin-top: 10px; font-size: 13px; line-height: 1.48; }
+  .call-text-overlay footer { margin-top: 10px; }
+
+  .choice-clouds {
+    left: 42px;
+    right: 42px;
+    top: auto;
+    bottom: max(50px, calc(env(safe-area-inset-bottom) + 44px));
+    width: auto;
+    max-height: 43dvh;
+    gap: 5px;
+    padding: 8px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    z-index: 45;
+  }
+  .response-bank-label { padding: 5px 6px 7px; }
+  .choice-cloud {
+    min-height: 44px;
+    grid-template-columns: 30px 1fr 6px;
+    gap: 9px;
+    padding: 6px 9px 6px 6px;
+  }
+  .choice-number { width: 28px; height: 28px; font-size: 8px; }
+  .choice-copy { font-size: 12px; line-height: 1.3; }
+
+  .number-book,
+  .clue-card,
+  .intro-card,
+  .ending-card {
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+  .number-book { inset: 62px 14px 42px; }
+  .clue-card { left: 14px; right: 14px; bottom: 44px; }
+  .intro-card { width: calc(100vw - 28px); padding: 32px 20px 28px; }
+  .intro-card h1 { font-size: clamp(31px, 10.5vw, 40px); }
+
+  .telephone-scene::after { mix-blend-mode: normal; }
+  .street-reflection { opacity: .24; filter: none; }
+  .rain-far,
+  .rain-near::after { display: none; }
+  .window-condensation i:nth-child(n + 4),
+  .street-bokeh i:nth-child(n + 3) { display: none; }
+}

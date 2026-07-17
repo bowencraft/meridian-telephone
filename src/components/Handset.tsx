@@ -127,6 +127,9 @@ export function Handset({ docked, ringing, disabled, onLift, onHangup, onPoseCha
     if (!effectiveCarrying || disabled) return
 
     const move = (event: globalThis.PointerEvent) => {
+      // Touch has no hover position. Keeping the receiver in its lifted pose
+      // prevents a dial gesture from also re-rendering the handset and cable.
+      if (event.pointerType !== 'mouse') return
       const geometry = geometryRef.current
       if (!geometry) return
       const rawX = (event.clientX - geometry.grabX - geometry.homeX) / geometry.scale
