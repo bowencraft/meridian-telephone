@@ -9,7 +9,7 @@ describe('receiver physics', () => {
   it('keeps a freshly lifted receiver free of the cradle snap zone', () => {
     expect(solveReceiverOffset(0, 0, 500, 690, false)).toMatchObject({
       x: 0,
-      y: 0,
+      y: -89.7,
       nearCradle: false,
       hasLeftCradle: false,
     })
@@ -26,8 +26,16 @@ describe('receiver physics', () => {
   it('keeps the receiver inside a restrained upper interaction zone', () => {
     const pose = solveReceiverOffset(900, 900, 500, 690, true)
     expect(pose.x).toBe(120)
-    expect(pose.y).toBeCloseTo(65.55, 5)
+    expect(pose.y).toBeCloseTo(-24.15, 5)
     expect(pose.rotation).toBeLessThanOrEqual(7)
+  })
+
+  it('keeps the entire carrying band above the telephone display', () => {
+    const reachingForDial = solveReceiverOffset(0, 1200, 500, 690, true)
+    const reachingAbovePhone = solveReceiverOffset(0, -1200, 500, 690, true)
+
+    expect(reachingForDial.y).toBeCloseTo(-24.15, 5)
+    expect(reachingAbovePhone.y).toBeCloseTo(-124.2, 5)
   })
 
   it('keeps the legacy cable length helper available for cord tuning', () => {

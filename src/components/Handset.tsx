@@ -103,7 +103,17 @@ export function Handset({ docked, ringing, disabled, onLift, onHangup, onPoseCha
     if (disabled) return
     if (docked) {
       leftCradleRef.current = false
-      const lifted = { ...HOME_POSE, carrying: true }
+      const geometry = geometryRef.current
+      const liftOffset = geometry
+        ? solveReceiverOffset(0, 0, geometry.assemblyWidth, geometry.assemblyHeight, false)
+        : null
+      const lifted = {
+        ...HOME_POSE,
+        y: liftOffset?.y ?? -72,
+        yPercent: liftOffset && geometry ? liftOffset.y / geometry.assemblyHeight * 100 : -13,
+        rotation: liftOffset?.rotation ?? -0.5,
+        carrying: true,
+      }
       setCarrying(true)
       setPose(lifted)
       onPoseChange?.(lifted)

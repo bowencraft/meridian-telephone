@@ -10,6 +10,7 @@ export const RECEIVER_LEAVE_DISTANCE = 92
 export const RECEIVER_SNAP_DISTANCE = 68
 export const RECEIVER_FOLLOW_X = 0.34
 export const RECEIVER_FOLLOW_Y = 0.26
+export const RECEIVER_LIFT_Y = 0.13
 
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value))
@@ -35,7 +36,15 @@ export function solveReceiverOffset(
   }
 
   const x = clamp(rawX * RECEIVER_FOLLOW_X, -assemblyWidth * 0.24, assemblyWidth * 0.24)
-  const y = clamp(rawY * RECEIVER_FOLLOW_Y, -assemblyHeight * 0.1, assemblyHeight * 0.095)
+  // The lifted receiver occupies a band above the LCD. Pointer movement still
+  // gives it restrained weight, but reaching for the dial can no longer drag it
+  // back across the display.
+  const liftOffset = assemblyHeight * RECEIVER_LIFT_Y
+  const y = clamp(
+    rawY * RECEIVER_FOLLOW_Y - liftOffset,
+    -assemblyHeight * 0.18,
+    -assemblyHeight * 0.035,
+  )
 
   return {
     x,
