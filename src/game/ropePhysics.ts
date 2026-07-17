@@ -20,6 +20,14 @@ export interface RopeStepOptions {
   collision?: RopeCollision | null
 }
 
+export const ROPE_ACTIVE_WINDOW_MS = 950
+export const ROPE_IDLE_FRAME_MS = 120
+
+export function ropeRenderMode(elapsedSinceInteraction: number, hidden = false): 'active' | 'idle' | 'paused' {
+  if (hidden) return 'paused'
+  return elapsedSinceInteraction < ROPE_ACTIVE_WINDOW_MS ? 'active' : 'idle'
+}
+
 export function createRope(start: RopeVector, end: RopeVector, count = 21, sag = 110): RopePoint[] {
   const pointCount = Math.max(3, count)
   return Array.from({ length: pointCount }, (_, index) => {

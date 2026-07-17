@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { formatPhoneNumber } from '../game/dialModel'
 import { clearProgress, loadLastRecord, loadProgress, loadRecordArchive } from '../game/record'
 import { loadStoryDefinition } from '../game/callEngine'
+import '../styles/record.css'
 
 function formatDate(timestamp: number) {
   return new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'medium' }).format(new Date(timestamp))

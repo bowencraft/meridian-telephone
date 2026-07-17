@@ -32,6 +32,7 @@ npm run build
 - 点击听筒即可拿起；它只在电话上方的受限区域内缓慢跟随指针，不会像普通拖拽物一样黏在鼠标上。
 - 把听筒移回挂架会出现磁性吸附反馈；再次点击听筒、点击非交互背景或按回车可放回听筒。
 - 电话线使用 22 个质点的轻量 Verlet 约束模拟，始终连接机身与听筒，并会在重力、听筒位移和鼠标碰撞下自然垂落。
+- 电话线采用自适应调度：交互时跟随浏览器刷新率，静止后以低频持续微摆，标签页隐藏时暂停；不会再在固定时间后冻结。
 - 每次夜班会在置物台生成 1–3 枚三便士硬币；外拨必须先拿起并投入一枚硬币，来电接听不消耗信用。
 - 投币槽、信用窗、退币键、线路测试键和台面遗留物都可以交互；退币会把未使用的硬币送回台面。
 - 将数字孔顺时针拖至挡片，等待转盘回弹后才会确认数字。
@@ -44,6 +45,8 @@ npm run build
 - 所有声音由 Web Audio API 实时生成，可随时静音。
 
 电话、听筒和转盘在不同视口下保持固定比例；前台场景禁用文本选中，热点标签在检查后也不会被状态文案替换。
+
+剧情后台和通话档案按路由懒加载，游戏首页不会同步解析图编辑器依赖。
 
 ## 内容规模
 
@@ -87,9 +90,11 @@ docs/
   TELEPHONE_VISUAL_POLISH_ACCEPTANCE.md
   TELEPHONE_PHYSICAL_INTERACTIONS_ACCEPTANCE.md
   TELEPHONE_ADDITIONAL_THREE_PASSES.md
+  TELEPHONE_PERFORMANCE_ACCEPTANCE.md
   screenshots/          分阶段浏览器实机截图
   screenshots-physical/ 电话物理交互与三轮美术迭代截图
   screenshots-physical-final3/ 追加三轮独立迭代与跨尺寸通话截图
+  screenshots-performance/ 16:9 布局、绳索与性能优化截图
 ```
 
 ## 持久化

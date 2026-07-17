@@ -4,6 +4,7 @@ import { defaultTelephoneStory, loadStoryDefinition } from '../game/callEngine'
 import { clearStoryOverride, saveStoryDefinitionFallback, saveStoryDefinitionToLocalApi } from '../game/storyPersistence'
 import { validateStoryDefinition } from '../game/storyValidation'
 import type { TelephoneStory } from '../game/types'
+import '../styles/admin.css'
 import { GraphEditor } from './GraphEditor'
 
 export function AdminPanel() {

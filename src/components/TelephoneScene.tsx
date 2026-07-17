@@ -28,6 +28,8 @@ function nowId(prefix: string) {
 
 export function TelephoneScene() {
   const sceneRef = useRef<HTMLElement>(null)
+  const lightFrameRef = useRef<number | null>(null)
+  const pendingLightRef = useRef<{ clientX: number; clientY: number } | null>(null)
   const story = useMemo(() => loadStoryDefinition(), [])
   const [progress, setProgress] = useState(loadProgress)
   const audioRef = useRef(new TelephoneAudio())
@@ -71,6 +73,7 @@ export function TelephoneScene() {
 
   useEffect(() => () => {
     if (mechanicalTimerRef.current) window.clearTimeout(mechanicalTimerRef.current)
+    if (lightFrameRef.current !== null) window.cancelAnimationFrame(lightFrameRef.current)
   }, [])
 
   const appendTranscript = useCallback((transition: EngineTransition, number?: string) => {
@@ -465,11 +468,19 @@ export function TelephoneScene() {
   const discoveredDefinitions = story.globals.phone.validNumbers.filter((number) => runtime.discoveredNumbers.includes(number.number))
 
   function moveAmbientLight(event: React.PointerEvent<HTMLElement>) {
-    const rect = event.currentTarget.getBoundingClientRect()
-    const x = (event.clientX - rect.left) / rect.width * 100
-    const y = (event.clientY - rect.top) / rect.height * 100
-    event.currentTarget.style.setProperty('--light-x', `${x.toFixed(2)}%`)
-    event.currentTarget.style.setProperty('--light-y', `${y.toFixed(2)}%`)
+    pendingLightRef.current = { clientX: event.clientX, clientY: event.clientY }
+    if (lightFrameRef.current !== null) return
+    lightFrameRef.current = window.requestAnimationFrame(() => {
+      lightFrameRef.current = null
+      const scene = sceneRef.current
+      const pointer = pendingLightRef.current
+      if (!scene || !pointer) return
+      const rect = scene.getBoundingClientRect()
+      const x = (pointer.clientX - rect.left) / rect.width * 100
+      const y = (pointer.clientY - rect.top) / rect.height * 100
+      scene.style.setProperty('--light-x', `${x.toFixed(2)}%`)
+      scene.style.setProperty('--light-y', `${y.toFixed(2)}%`)
+    })
   }
 
   return (

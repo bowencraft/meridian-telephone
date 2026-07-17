@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
-import { AdminPanel } from '../components/AdminPanel'
-import { CallRecord } from '../components/CallRecord'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { TelephoneScene } from '../components/TelephoneScene'
 import '../styles/telephone.css'
-import '../styles/admin.css'
-import '../styles/record.css'
+
+const AdminPanel = lazy(() => import('../components/AdminPanel').then((module) => ({ default: module.AdminPanel })))
+const CallRecord = lazy(() => import('../components/CallRecord').then((module) => ({ default: module.CallRecord })))
 
 type Route = 'game' | 'admin' | 'record'
 
@@ -24,7 +23,11 @@ export function App() {
     return () => window.removeEventListener('hashchange', sync)
   }, [])
 
-  if (route === 'admin') return <AdminPanel />
-  if (route === 'record') return <CallRecord />
+  if (route === 'admin') return <Suspense fallback={<RouteLoading />}><AdminPanel /></Suspense>
+  if (route === 'record') return <Suspense fallback={<RouteLoading />}><CallRecord /></Suspense>
   return <TelephoneScene />
+}
+
+function RouteLoading() {
+  return <main className="route-loading" aria-live="polite"><span>GPO EXCHANGE</span><strong>正在接通线路…</strong></main>
 }

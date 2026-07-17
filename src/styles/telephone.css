@@ -753,7 +753,6 @@
   height: 100%;
   overflow: visible;
   pointer-events: none;
-  filter: saturate(.76) contrast(1.12) drop-shadow(-2px 4px 3px rgba(0,0,0,.72));
 }
 
 .cord-grommet-phone {
@@ -994,8 +993,7 @@
 @keyframes mechanical-credit-flash { 0%,38%{filter:none} 54%{filter:brightness(2.5) drop-shadow(0 0 5px #a4d477)} 100%{filter:none} }
 @keyframes mechanical-return-gate { 0%,100%{transform:none} 24%{transform:translateY(3px)} 52%{transform:translateY(-1px)} }
 
-.phone-cord-canvas { transition:filter 150ms ease-out; }
-.phone-cord-canvas[data-collision="active"] { filter:saturate(.92) contrast(1.18) brightness(1.16) drop-shadow(-3px 6px 4px rgba(0,0,0,.78)); }
+.phone-cord-canvas { filter:none; }
 
 /* Additional art pass 3: exchange-paper transcript, speaking-key bank and call focus */
 .telephone-scene:is(.phase-inCall,.phase-awaitingChoice,.phase-timeoutWarning) .booth-copy,
@@ -1014,7 +1012,7 @@
 .call-text-overlay p { position:relative; }
 .call-text-overlay p::after { position:absolute; left:0; right:0; bottom:-9px; height:1px; content:""; opacity:.28; background:repeating-linear-gradient(90deg,#51452f 0 2px,transparent 2px 6px); }
 
-.choice-clouds { left:auto; right:4%; box-sizing:border-box; width:min(29vw,380px); padding:12px 12px 13px; isolation:isolate; }
+.choice-clouds { left:calc(50% + clamp(200px,15vw,290px)); right:auto; box-sizing:border-box; width:min(29vw,380px); padding:12px 12px 13px; isolation:isolate; }
 .response-bank-chassis { position:absolute; inset:0; z-index:-1; border:1px solid #090a08; border-radius:5px; background:
   radial-gradient(circle at 20% 8%,rgba(255,255,255,.055) 0 .6px,transparent .9px) 0 0/9px 13px,
   linear-gradient(145deg,#393a33 0,#171814 43%,#070806 100%); box-shadow:inset 0 1px rgba(255,255,255,.08),inset 0 -8px 15px #050604,0 18px 32px rgba(0,0,0,.64),0 0 0 3px rgba(44,44,37,.38); }
@@ -1034,3 +1032,12 @@
   .response-bank-chassis::before { display:none; }
   .transcript-routing { margin-top:7px; }
 }
+
+@media (min-width:761px) and (max-width:1100px) {
+  .choice-clouds { left:auto; right:4%; width:32%; }
+}
+
+/* Performance pass: avoid full-scene offscreen filter layers. */
+.phone-assembly { filter:none; }
+.street-bokeh,.rain-far { filter:none; }
+.telephone-scene:is(.phase-inCall,.phase-awaitingChoice,.phase-timeoutWarning) .booth-counter { opacity:.78; filter:none; }

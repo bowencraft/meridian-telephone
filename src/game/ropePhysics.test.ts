@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { collideRope, createRope, ropeLength, stepRope } from './ropePhysics'
+import { ROPE_ACTIVE_WINDOW_MS, collideRope, createRope, ropeLength, ropeRenderMode, stepRope } from './ropePhysics'
 
 describe('lightweight rope physics', () => {
   it('creates a sagging rope with pinned endpoints', () => {
@@ -25,5 +25,12 @@ describe('lightweight rope physics', () => {
     rope[5].y = 1
     collideRope(rope, { x: 50, y: 0, radius: 20, strength: 1 })
     expect(Math.hypot(rope[5].x - 50, rope[5].y)).toBeCloseTo(20, 4)
+  })
+
+  it('drops to an idle render cadence without pausing a visible rope', () => {
+    expect(ropeRenderMode(ROPE_ACTIVE_WINDOW_MS - 1)).toBe('active')
+    expect(ropeRenderMode(ROPE_ACTIVE_WINDOW_MS)).toBe('idle')
+    expect(ropeRenderMode(4_000)).toBe('idle')
+    expect(ropeRenderMode(4_000, true)).toBe('paused')
   })
 })
