@@ -36,7 +36,7 @@ export function CallRecord() {
       <section className="record-overview">
         <article><span>ATTEMPTS</span><strong>{String(progress.attempts).padStart(2, '0')}</strong><small>已完成夜班</small></article>
         <article><span>ENDINGS</span><strong>{progress.seenEndings.length}/{endingTypes.length}</strong><small>已归档结局</small></article>
-        <article><span>NUMBERS</span><strong>{progress.discoveredNumbers.length}/{story.globals.phone.validNumbers.length}</strong><small>已发现线路</small></article>
+        <article><span>NUMBERS</span><strong>{progress.discoveredNumbers.length}/{story.globals.phone.directory.length}</strong><small>已发现线路</small></article>
         <article><span>CLUES</span><strong>{progress.clues.length}</strong><small>保留的异常记录</small></article>
       </section>
 

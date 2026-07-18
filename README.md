@@ -28,7 +28,7 @@ Telephone 是一个完整的“单物品强交互 + 事件驱动节点图叙事 
 - 轻量电话线物理：桌面 22 / 手机 16 个 Verlet 质点、重力与约束、鼠标碰撞、活动与静止自适应渲染。
 - 完整通话状态机：待机、响铃、拨号、接通、选择、超时、挂断与结局。
 - 事件驱动剧情图：号码、选择、来电、场景检查、超时、挂断和自动事件都使用同一种图边表达。
-- 可视化剧情交换台：节点图、Inspector、运行模拟器、号码管理、超时配置与热点编辑。
+- 可视化剧情交换台：节点图、运行模拟器、独立电话簿，以及带概率刷和桌面/手机实时画布的夜班场景编辑器。
 - 跨周目档案：通话逐句记录、拨号历史、线索、已发现号码和结局索引。
 - 程序化音频：铃声、拨号音、忙音、线路噪声、转盘与听筒机械声由 Web Audio API 生成。
 - 响应式呈现：桌面、16:9 与窄屏都保持电话和听筒固定比例，移动端使用适配后的信息层。
@@ -51,7 +51,7 @@ Telephone 是一个完整的“单物品强交互 + 事件驱动节点图叙事 
 
 ### 剧情后台 · `/admin`
 
-内容后台基于 `@xyflow/react`。左侧画布展示完整叙事网络，右侧 Inspector 编辑当前节点、转场、运行状态、号码与超时、场景热点。
+内容后台基于 `@xyflow/react`。剧情图、电话簿和夜班场景各自拥有独立工作区，避免把线路数据、空间坐标和物品样式混在同一张表里。
 
 ![剧情后台：节点图与 Inspector](docs/readme/admin.jpg)
 
@@ -62,9 +62,15 @@ Telephone 是一个完整的“单物品强交互 + 事件驱动节点图叙事 
 - 编辑触发事件、条件、effects、选项语气、隐藏状态和优先级。
 - 模拟拨号、接听、选择、超时、挂断和场景检查。
 - 查看候选边、命中边、当前节点、flags、回合和结局状态。
-- 管理有效号码、主动来电、全局超时与场景热点。
+- 分开管理电话簿、主动来电与全局超时。
+- 在 16:9 / 手机实时画布中编辑夜班点位、生成概率、候选权重、拟物材质与竖屏坐标。
+- 用稳定电话 ID 将多个不同小广告关联到同一条线路。
 - 导入、导出、恢复和保存完整剧情 JSON。
 - 使用本地环境变量配置的值班密钥访问；解锁状态仅保留在当前浏览器会话。
+
+![夜班场景编辑器](docs/screenshots/replay-admin-scene-desktop.png)
+
+![夜班场景手机预览](docs/screenshots/replay-admin-scene-mobile-preview.png)
 
 ### 通话档案 · `/record`
 
@@ -81,6 +87,10 @@ Telephone 是一个完整的“单物品强交互 + 事件驱动节点图叙事 
 ![移动端游戏页](docs/screenshots-mobile-polish/09-final-390x720.jpg)
 
 ![移动端通话与回应](docs/screenshots-mobile-polish/10-final-call.jpg)
+
+随机夜班物品使用独立竖屏坐标，不会被电话主体或置物台遮住：
+
+![移动端随机夜班](docs/screenshots/replay-night-mobile.png)
 
 ## 快速开始
 
@@ -154,7 +164,8 @@ npm run preview
 | 事件驱动转场 | 74 |
 | 有效号码 | 8 |
 | 主动来电 | 3 |
-| 场景热点 | 6 |
+| 概率场景点位 | 6 |
+| 可随机物品样式 | 16 |
 | 可归档结局 | 7 |
 
 主要线路包括伦敦自动天气、Meridian 免费咨询与投诉、注销的十九号席位、中央交换机、失物招领、午夜广播和紧急服务。不同选择会积累顺从、怀疑、错号、挂断和线路权限等状态；部分路线要求跨周目保留号码或结局记录。
@@ -179,14 +190,14 @@ flowchart LR
 
 | 字段 | 作用 |
 | --- | --- |
-| `format` / `formatVersion` | 图文档格式与迁移版本。当前为 `graph-content@1`。 |
+| `format` / `formatVersion` | 图文档格式与迁移版本。当前为 `graph-content@2`。 |
 | `id` / `title` | 剧情包稳定标识和后台显示名称。 |
 | `entryNodeId` | 新周目的入口节点。 |
 | `nodes` | 电话、场景、系统和结局内容节点。 |
 | `edges` | 由事件触发并带条件与 effects 的有向转场。 |
 | `globals.timeout` | 拨号、选项、通话上限与警告阶段时长。 |
-| `globals.phone` | 有效号码、紧急号码、错号/忙线节点和主动来电计划。 |
-| `extensions.telephone` | LCD 默认文本、结局文案、场景热点和音频参数。 |
+| `globals.phone` | 独立电话簿、紧急号码、错号/忙线节点和主动来电计划。 |
+| `extensions.telephone` | LCD 默认文本、结局文案、概率夜班场景和音频参数。 |
 
 ### 节点 `TelephoneNode`
 
@@ -269,13 +280,14 @@ interface TelephoneEdge {
 
 #### 条件与 Effects
 
-条件支持 `stateEquals`、`stateNotEquals`、`stateGte`、`hasNumber` 和 `endingSeen`。所有条件同时成立时转场才可用。
+条件支持 `stateEquals`、`stateNotEquals`、`stateGte`、`hasNumber`、`phoneKnown` 和 `endingSeen`。所有条件同时成立时转场才可用。
 
 Effects 支持：
 
 - `setState`：一次设置多个 flags。
 - `increment`：累加检查次数、顺从度、错号数等计数。
 - `discoverNumber`：把号码写入当前周目和跨周目进度。
+- `discoverPhone`：通过稳定电话 ID 发现号码，供场景物品与电话簿解耦。
 - `addClue`：保存可在档案页查看的线索。
 
 ### 全局电话配置
@@ -289,7 +301,7 @@ Effects 支持：
     "warningMs": 7000
   },
   "phone": {
-    "validNumbers": [],
+    "directory": [],
     "emergencyNumbers": ["999"],
     "wrongNumberNodeId": "wrong_number",
     "busyNumberNodeId": "busy_line",
@@ -302,65 +314,62 @@ Effects 支持：
 
 ## 场景热点
 
-热点配置位于 `extensions.telephone.sceneHotspots`。它们是相对于主场景的百分比矩形，不依赖固定像素，因此在 16:9 和窄屏中都能跟随背景缩放。
+场景配置位于 `extensions.telephone.scene`，由四层数据组成：
+
+| 数据 | 作用 |
+| --- | --- |
+| `globals.phone.directory` | 独立电话簿；每条线路拥有稳定 ID。 |
+| `scene.slots` | 空间点位、横竖屏坐标、整夜生成概率和候选池。 |
+| `scene.props` | 可复用物品内容、电话引用、剧情效果和外观。 |
+| `scene.stylePresets` | 纸张、广告、黄铜、报纸、票据和手写纸条等拟物基底。 |
 
 ```ts
-interface SceneHotspot {
+interface SceneSlot {
   id: string
-  label: string
-  ariaLabel: string
-  x: number
-  y: number
-  width: number
-  height: number
-  body: string
-  repeatBody?: string
-  number?: string
-  requires?: GraphCondition[]
+  bounds: { x: number; y: number; width: number; height: number }
+  mobileBounds?: { x: number; y: number; width: number; height: number }
+  spawnChance: number
+  candidates: Array<{ propId: string; weight: number }>
+}
+
+interface ScenePropDefinition {
+  id: string
+  kind: ScenePropKind
+  printedLines?: string[]
+  copy: { firstVariants: string[]; repeatVariants?: string[] }
+  phoneRefs?: string[]
+  effects?: GraphEffect[]
+  sceneEvent?: string
+  appearance: SceneAppearance
 }
 ```
 
-| 字段 | 说明 |
-| --- | --- |
-| `x` / `y` | 热点左上角相对场景的百分比坐标。 |
-| `width` / `height` | 可点击区域相对场景的百分比尺寸。 |
-| `body` | 第一次检查显示的内容。 |
-| `repeatBody` | 再次检查时显示的替代内容。 |
-| `number` | 检查后自动发现的号码。 |
-| `requires` | 控制热点是否出现的图条件。 |
+随机刷新单位是“夜班”，不是单次通话。首次进入，以及达成结局后点击“再次进入”时，系统根据新的 `sessionSeed` 生成一次 `ResolvedSceneItem[]` 快照；同一夜班内拨号、接听、挂断、超时、查看物品、调整窗口和重渲染都不会改变结果。
 
-当前热点：
+每个正式点位都有为空的概率；点位出现时再按候选权重选择具体外观。目前天气、Meridian、十九号席位、午夜广播和失物招领各有三种视觉变体。多个变体通过 `phoneRefs` 指向同一个电话 ID，因此能制作不同小广告而不复制电话号码。
 
-| ID | 场景物件 | 发现内容 |
-| --- | --- | --- |
-| `weather-card` | 潮湿天气服务卡 | `946 0264` |
-| `meridian-ad` | 烫金 Meridian 广告 | `871 4000` |
-| `scratched-plate` | 被刮花的维修铭牌 | `871 4019` |
-| `newspaper` | 报纸节目表 | `794 1966` |
-| `phonebook` | 发霉电话簿 | `301 1968` |
-| `coin-return` | 电话机退币槽 | 隐藏纸条线索 |
+桌面和手机坐标均为数据字段。前台与后台共用 [`src/components/SceneProp.tsx`](src/components/SceneProp.tsx)，所以编辑器中看到的纸色、墨色、潮湿、折痕、旋转和排版就是游戏中的实际效果。
 
-热点按钮的可见标签保持为物件名称；检查后的正文显示在场景消息层，不会把热点本身替换成状态文案。`ariaLabel` 为每个物件提供完整的屏幕阅读器说明。
-
-台面物件和硬币由 [`src/game/boothItems.ts`](src/game/boothItems.ts) 管理。它们与 JSON 热点分离，因为硬币拥有拿取、投币、退币和随机生成等物理状态，而墙面热点主要负责剧情发现。
+台面物件和硬币仍由 [`src/game/boothItems.ts`](src/game/boothItems.ts) 管理；它们拥有拿取、投币、退币等物理状态，不参与墙面夜班点位抽取。
 
 ## 剧情后台工作流
 
 1. 在 `.env` 设置 `ADMIN_PASSWORD`，重启开发服务后打开 `/admin` 并输入值班密钥。
-2. 在画布上选择节点或转场。
-3. 在 Inspector 中编辑内容；结构校验会实时报告缺失引用、无效号码和不可达内容。
-4. 使用“运行预览”模拟事件，确认命中边、flags 和目标节点。
-5. 使用“导出”保存独立 JSON 备份。
-6. 点击“保存剧情”：
+2. 在剧情图中编辑节点、转场和运行预览。
+3. 在“线路与超时”配置主动来电；在“电话簿”维护稳定线路 ID。
+4. 打开“夜班场景”，用种子、概率刷、候选池和 16:9 / 手机画布配置随机物品。
+5. 结构校验会实时报告缺失电话、物品、预设、节点和越界坐标。
+6. 使用“导出”保存独立 JSON 备份，或点击“保存剧情”：
    - 本地 Vite 开发环境通过 `/api/story-definition` 写回源码。
    - 静态或生产环境回退保存到 `localStorage` 覆盖层。
-7. 使用“恢复源码”清除覆盖层，重新读取仓库中的唯一剧情文件。
+7. 使用“恢复源码”清除覆盖层，重新读取仓库中的唯一剧情文件。v1 导入文件会自动迁移到 v2。
 
 修改数据结构后应同步更新：
 
 - [`src/game/types.ts`](src/game/types.ts)
 - [`src/game/storyValidation.ts`](src/game/storyValidation.ts)
 - [`src/components/GraphEditor.tsx`](src/components/GraphEditor.tsx)
+- [`src/components/SceneAdminEditor.tsx`](src/components/SceneAdminEditor.tsx)
 - 对应的 Vitest 测试
 
 ## 状态与持久化
@@ -368,7 +377,8 @@ interface SceneHotspot {
 游戏使用两层状态：
 
 - `TelephoneMachineState`：负责 `idle → ringing/offHook → dialing → connecting → inCall → awaitingChoice → hungUp/ending` 等即时电话阶段。
-- `RuntimeState`：负责当前剧情节点、flags、号码、线索、访问次数、来电处理和本周目结局。
+- `RuntimeState`：负责当前剧情节点、flags、号码、线索、访问次数、来电处理、本夜结局与 `sessionSeed`。
+- `ResolvedSceneItem[]`：新夜班开始时生成一次的场景快照；不写回进度，也不随单次通话变化。
 
 本地持久化内容包括：
 
@@ -388,16 +398,18 @@ telephone/
 │   └── og.png
 ├── src/
 │   ├── app/
-│   │   └── App.tsx                 # Hash 路由与懒加载入口
+│   │   └── App.tsx                 # History API 路由与懒加载入口
 │   ├── components/
 │   │   ├── TelephoneScene.tsx      # 前台编排与游戏循环
 │   │   ├── PhoneBooth.tsx          # 电话机组合
 │   │   ├── Handset.tsx             # 听筒交互
 │   │   ├── PhoneCord.tsx           # Canvas 电话线物理
 │   │   ├── RotaryDial.tsx          # 真实转盘输入
-│   │   ├── SceneHotspots.tsx       # JSON 场景热点
+│   │   ├── SceneHotspots.tsx       # 本夜已生成物品集合
+│   │   ├── SceneProp.tsx           # 前后台共用的拟物物品渲染器
 │   │   ├── AdminPanel.tsx          # 剧情后台外壳
 │   │   ├── GraphEditor.tsx         # 图编辑器与 Inspector
+│   │   ├── SceneAdminEditor.tsx    # 概率场景画布与配置器
 │   │   └── CallRecord.tsx          # 通话档案
 │   ├── game/
 │   │   ├── telephoneState.ts       # 电话状态机
@@ -406,6 +418,8 @@ telephone/
 │   │   ├── receiverPhysics.ts      # 听筒活动区与吸附
 │   │   ├── ropePhysics.ts          # 轻量绳索约束
 │   │   ├── sceneInteractions.ts    # 热点可见性与文案
+│   │   ├── sceneRandomizer.ts      # 确定性夜班抽取与权重
+│   │   ├── storyMigration.ts       # v1 → v2 数据迁移
 │   │   ├── storyValidation.ts      # 剧情文档校验
 │   │   ├── storyPersistence.ts     # 源码 / 覆盖层保存
 │   │   └── types.ts                # 共享数据类型
@@ -472,6 +486,7 @@ git merge --no-ff codex/feature-name
 - [追加三轮迭代](docs/TELEPHONE_ADDITIONAL_THREE_PASSES.md)
 - [性能验收](docs/TELEPHONE_PERFORMANCE_ACCEPTANCE.md)
 - [移动端体验验收](docs/TELEPHONE_MOBILE_ACCEPTANCE.md)
+- [可复玩夜班场景与后台数据计划](docs/TELEPHONE_REPLAYABLE_SCENE_PLAN.md)
 
 ## License
 

@@ -1,4 +1,4 @@
-import type { TelephoneStory } from './types'
+import type { GraphCondition, GraphEffect, TelephoneStory } from './types'
 
 export interface StoryValidationIssue { level: 'error' | 'warning'; path: string; message: string }
 
@@ -11,15 +11,69 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
   const nodeIds = story.nodes.map((node) => node.id)
   const edgeIds = story.edges.map((edge) => edge.id)
   const nodeSet = new Set(nodeIds)
-  const numbers = story.globals.phone.validNumbers.map((entry) => entry.number)
+  const directory = story.globals.phone.directory
+  const numbers = directory.map((entry) => entry.number)
+  const phoneIds = directory.map((entry) => entry.id)
+  const scene = story.extensions.telephone.scene
+  const propIds = scene.props.map((prop) => prop.id)
+  const slotIds = scene.slots.map((slot) => slot.id)
+  const presetIds = scene.stylePresets.map((preset) => preset.id)
+
+  function validateConditions(conditions: GraphCondition[] | undefined, path: string) {
+    conditions?.forEach((condition, index) => {
+      if (condition.type === 'phoneKnown' && !phoneIds.includes(condition.phoneId)) issues.push({ level: 'error', path: `${path}.${index}`, message: `条件引用的电话 ${condition.phoneId} 不存在。` })
+    })
+  }
+
+  function validateEffects(effects: GraphEffect[] | undefined, path: string) {
+    effects?.forEach((effect, index) => {
+      if (effect.type === 'discoverPhone' && !phoneIds.includes(effect.phoneId)) issues.push({ level: 'error', path: `${path}.${index}`, message: `效果引用的电话 ${effect.phoneId} 不存在。` })
+    })
+  }
 
   if (story.format !== 'graph-content') issues.push({ level: 'error', path: 'format', message: '格式必须为 graph-content。' })
+  if (story.formatVersion !== 2) issues.push({ level: 'error', path: 'formatVersion', message: '后台仅保存迁移后的 v2 剧情格式。' })
+  if (scene.refreshPolicy !== 'nightStart') issues.push({ level: 'error', path: 'extensions.telephone.scene.refreshPolicy', message: '场景只能在新夜班开始时刷新。' })
   if (!nodeSet.has(story.entryNodeId)) issues.push({ level: 'error', path: 'entryNodeId', message: '入口节点不存在。' })
   if (!nodeSet.has(story.globals.phone.wrongNumberNodeId)) issues.push({ level: 'error', path: 'globals.phone.wrongNumberNodeId', message: '空号节点不存在。' })
   if (!nodeSet.has(story.globals.phone.busyNumberNodeId)) issues.push({ level: 'error', path: 'globals.phone.busyNumberNodeId', message: '忙音节点不存在。' })
   duplicateValues(nodeIds).forEach((id) => issues.push({ level: 'error', path: `nodes.${id}`, message: `节点 ID ${id} 重复。` }))
   duplicateValues(edgeIds).forEach((id) => issues.push({ level: 'error', path: `edges.${id}`, message: `转场 ID ${id} 重复。` }))
-  duplicateValues(numbers).forEach((number) => issues.push({ level: 'error', path: 'globals.phone.validNumbers', message: `号码 ${number} 重复。` }))
+  duplicateValues(numbers).forEach((number) => issues.push({ level: 'error', path: 'globals.phone.directory', message: `号码 ${number} 重复。` }))
+  duplicateValues(phoneIds).forEach((id) => issues.push({ level: 'error', path: 'globals.phone.directory', message: `号码簿 ID ${id} 重复。` }))
+  duplicateValues(propIds).forEach((id) => issues.push({ level: 'error', path: 'extensions.telephone.scene.props', message: `场景物品 ID ${id} 重复。` }))
+  duplicateValues(slotIds).forEach((id) => issues.push({ level: 'error', path: 'extensions.telephone.scene.slots', message: `场景点位 ID ${id} 重复。` }))
+  duplicateValues(presetIds).forEach((id) => issues.push({ level: 'error', path: 'extensions.telephone.scene.stylePresets', message: `外观预设 ID ${id} 重复。` }))
+
+  directory.forEach((entry, index) => {
+    if (!entry.id.trim()) issues.push({ level: 'error', path: `globals.phone.directory.${index}.id`, message: '电话 ID 不能为空。' })
+    if (!entry.number.trim()) issues.push({ level: 'error', path: `globals.phone.directory.${entry.id}.number`, message: '电话号码不能为空。' })
+    if (!entry.label.trim()) issues.push({ level: 'error', path: `globals.phone.directory.${entry.id}.label`, message: '电话名称不能为空。' })
+  })
+
+  scene.slots.forEach((slot) => {
+    if (slot.spawnChance < 0 || slot.spawnChance > 1) issues.push({ level: 'error', path: `extensions.telephone.scene.slots.${slot.id}.spawnChance`, message: '生成概率必须在 0–1 之间。' })
+    if (!slot.candidates.length) issues.push({ level: 'warning', path: `extensions.telephone.scene.slots.${slot.id}.candidates`, message: '点位没有候选物品，将始终为空。' })
+    if (slot.bounds.width <= 0 || slot.bounds.height <= 0) issues.push({ level: 'error', path: `extensions.telephone.scene.slots.${slot.id}.bounds`, message: '点位宽高必须大于 0。' })
+    if (slot.bounds.x < 0 || slot.bounds.y < 0 || slot.bounds.x + slot.bounds.width > 100 || slot.bounds.y + slot.bounds.height > 100) issues.push({ level: 'warning', path: `extensions.telephone.scene.slots.${slot.id}.bounds`, message: '点位超出场景边界。' })
+    if (slot.mobileBounds && (slot.mobileBounds.width <= 0 || slot.mobileBounds.height <= 0)) issues.push({ level: 'error', path: `extensions.telephone.scene.slots.${slot.id}.mobileBounds`, message: '手机点位宽高必须大于 0。' })
+    if (slot.mobileBounds && (slot.mobileBounds.x < 0 || slot.mobileBounds.y < 0 || slot.mobileBounds.x + slot.mobileBounds.width > 100 || slot.mobileBounds.y + slot.mobileBounds.height > 100)) issues.push({ level: 'warning', path: `extensions.telephone.scene.slots.${slot.id}.mobileBounds`, message: '手机点位超出场景边界。' })
+    validateConditions(slot.requires, `extensions.telephone.scene.slots.${slot.id}.requires`)
+    slot.candidates.forEach((candidate) => {
+      if (!propIds.includes(candidate.propId)) issues.push({ level: 'error', path: `extensions.telephone.scene.slots.${slot.id}`, message: `候选物品 ${candidate.propId} 不存在。` })
+      if (candidate.weight <= 0) issues.push({ level: 'warning', path: `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}.weight`, message: '候选权重应大于 0。' })
+      if (candidate.appearanceOverrides?.presetId && !presetIds.includes(candidate.appearanceOverrides.presetId)) issues.push({ level: 'error', path: `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}.appearanceOverrides`, message: `候选覆盖预设 ${candidate.appearanceOverrides.presetId} 不存在。` })
+      validateConditions(candidate.requires, `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}.requires`)
+    })
+  })
+  scene.props.forEach((prop) => {
+    if (!presetIds.includes(prop.appearance.presetId)) issues.push({ level: 'error', path: `extensions.telephone.scene.props.${prop.id}.appearance`, message: `外观预设 ${prop.appearance.presetId} 不存在。` })
+    if (!prop.copy.firstVariants.length) issues.push({ level: 'warning', path: `extensions.telephone.scene.props.${prop.id}.copy`, message: '物品没有首次检查文案。' })
+    prop.phoneRefs?.forEach((phoneId) => {
+      if (!phoneIds.includes(phoneId)) issues.push({ level: 'error', path: `extensions.telephone.scene.props.${prop.id}.phoneRefs`, message: `号码引用 ${phoneId} 不存在。` })
+    })
+    validateEffects(prop.effects, `extensions.telephone.scene.props.${prop.id}.effects`)
+  })
 
   story.nodes.forEach((node) => {
     if (!node.label.trim()) issues.push({ level: 'error', path: `nodes.${node.id}.label`, message: '节点名称不能为空。' })
@@ -29,7 +83,10 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
     if (!nodeSet.has(edge.from)) issues.push({ level: 'error', path: `edges.${edge.id}.from`, message: `来源节点 ${edge.from} 不存在。` })
     if (!nodeSet.has(edge.to)) issues.push({ level: 'error', path: `edges.${edge.id}.to`, message: `目标节点 ${edge.to} 不存在。` })
     if (edge.trigger.type === 'choice' && !edge.choice?.text) issues.push({ level: 'warning', path: `edges.${edge.id}.choice`, message: '选项转场缺少玩家可见文本。' })
+    validateConditions(edge.conditions, `edges.${edge.id}.conditions`)
+    validateEffects(edge.effects, `edges.${edge.id}.effects`)
   })
+  story.globals.phone.idleRingSchedule.forEach((ring) => validateConditions(ring.requires, `globals.phone.idleRingSchedule.${ring.id}.requires`))
   if (!story.nodes.some((node) => node.telephone?.ending === 'disconnected')) issues.push({ level: 'error', path: 'nodes', message: '缺少“断线”成功结局。' })
   if (new Set(story.nodes.map((node) => node.telephone?.ending).filter(Boolean)).size < 5) issues.push({ level: 'warning', path: 'nodes', message: '建议至少提供五种不同结局。' })
   return issues

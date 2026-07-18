@@ -14,23 +14,23 @@ import {
   type NodeChange,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { BookOpen, Cable, Clock3, MapPin, Play, Plus, RotateCcw, Trash2 } from 'lucide-react'
+import { BookOpen, Cable, Clock3, ContactRound, MapPin, Play, Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { CallEngine } from '../game/callEngine'
 import type {
   EngineTransition,
-  PhoneNumberDefinition,
+  PhoneDirectoryEntry,
   RingEvent,
-  SceneHotspot,
   TelephoneEdge,
   TelephoneNode,
   TelephoneNodeKind,
   TelephoneStory,
   TriggerType,
 } from '../game/types'
+import { SceneAdminEditor } from './SceneAdminEditor'
 
 interface GraphEditorProps { story: TelephoneStory; onChange: (story: TelephoneStory) => void }
-type InspectorTab = 'node' | 'edge' | 'simulate' | 'phone' | 'hotspots'
+type InspectorTab = 'node' | 'edge' | 'simulate' | 'phone' | 'directory' | 'scene'
 
 const NODE_KINDS: TelephoneNodeKind[] = ['start', 'idle', 'incoming_call', 'dial_target', 'call', 'menu', 'scene', 'global', 'end', 'fail']
 const TRIGGERS: TriggerType[] = ['dialNumber', 'choice', 'incomingAnswer', 'hangUp', 'timeout', 'sceneInspect', 'keywordAny', 'auto']
@@ -173,18 +173,15 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
     setSimLog((items) => [...items, transition])
   }
 
-  function updateNumber(index: number, patch: Partial<PhoneNumberDefinition>) {
-    const values = story.globals.phone.validNumbers.map((number, itemIndex) => itemIndex === index ? { ...number, ...patch } : number)
-    onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, validNumbers: values } } })
+  function updateNumber(index: number, patch: Partial<PhoneDirectoryEntry>) {
+    const directory = story.globals.phone.directory.map((number, itemIndex) => itemIndex === index ? { ...number, ...patch } : number)
+    onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, directory } } })
   }
   function updateRing(index: number, patch: Partial<RingEvent>) {
     const idleRingSchedule = story.globals.phone.idleRingSchedule.map((ring, itemIndex) => itemIndex === index ? { ...ring, ...patch } : ring)
     onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, idleRingSchedule } } })
   }
-  function updateHotspot(index: number, patch: Partial<SceneHotspot>) {
-    const telephone = story.extensions.telephone
-    onChange({ ...story, extensions: { ...story.extensions, telephone: { ...telephone, sceneHotspots: telephone.sceneHotspots.map((hotspot, itemIndex) => itemIndex === index ? { ...hotspot, ...patch } : hotspot) } } })
-  }
+  if (tab === 'scene') return <SceneAdminEditor story={story} onChange={onChange} onExit={() => setTab('node')} />
 
   return (
     <section className="graph-editor-shell">
@@ -216,8 +213,9 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
           <button className={tab === 'node' ? 'active' : ''} onClick={() => setTab('node')}><BookOpen size={13} />节点</button>
           <button className={tab === 'edge' ? 'active' : ''} onClick={() => setTab('edge')}><Cable size={13} />转场</button>
           <button className={tab === 'simulate' ? 'active' : ''} onClick={() => setTab('simulate')}><Play size={13} />运行预览</button>
-          <button className={tab === 'phone' ? 'active' : ''} onClick={() => setTab('phone')}><Clock3 size={13} />号码与超时</button>
-          <button className={tab === 'hotspots' ? 'active' : ''} onClick={() => setTab('hotspots')}><MapPin size={13} />场景热点</button>
+          <button className={tab === 'phone' ? 'active' : ''} onClick={() => setTab('phone')}><Clock3 size={13} />线路与超时</button>
+          <button className={tab === 'directory' ? 'active' : ''} onClick={() => setTab('directory')}><ContactRound size={13} />电话簿</button>
+          <button onClick={() => setTab('scene')}><MapPin size={13} />夜班场景</button>
         </nav>
 
         <div className="inspector-scroll">
@@ -280,15 +278,24 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
             <fieldset><legend>超时配置（毫秒）</legend>
               {Object.entries(story.globals.timeout).map(([key, value]) => <label key={key}><span>{key}</span><input type="number" value={value} onChange={(event) => onChange({ ...story, globals: { ...story.globals, timeout: { ...story.globals.timeout, [key]: Number(event.target.value) } } })} /></label>)}
             </fieldset>
-            <div className="admin-list-heading"><div><span>PHONE DIRECTORY</span><h3>有效号码簿</h3></div><button type="button" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, validNumbers: [...story.globals.phone.validNumbers, { number: '0000000', label: '新号码', description: '', category: 'strange' }] } } })}><Plus size={13} />新增</button></div>
-            <div className="admin-number-list">{story.globals.phone.validNumbers.map((number, index) => <article key={`${number.number}-${index}`}><div className="two-fields"><label><span>号码</span><input value={number.number} onChange={(event) => updateNumber(index, { number: event.target.value.replace(/\D/g, '') })} /></label><label><span>名称</span><input value={number.label} onChange={(event) => updateNumber(index, { label: event.target.value })} /></label></div><label><span>说明</span><textarea rows={2} value={number.description} onChange={(event) => updateNumber(index, { description: event.target.value })} /></label><button type="button" className="inline-delete" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, validNumbers: story.globals.phone.validNumbers.filter((_, itemIndex) => itemIndex !== index) } } })}><Trash2 size={13} />删除</button></article>)}</div>
             <div className="admin-list-heading"><div><span>INCOMING SWITCHBOARD</span><h3>主动来电排程</h3></div><button type="button" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, idleRingSchedule: [...story.globals.phone.idleRingSchedule, { id: `incoming-${story.globals.phone.idleRingSchedule.length + 1}`, label: '新来电', delayMs: 12000, nodeId: story.entryNodeId, requires: [] }] } } })}><Plus size={13} />新增</button></div>
             <div className="admin-number-list">{story.globals.phone.idleRingSchedule.map((ring, index) => <article key={`${ring.id}-${index}`}><div className="two-fields"><label><span>ID</span><input value={ring.id} onChange={(event) => updateRing(index, { id: event.target.value })} /></label><label><span>显示名称</span><input value={ring.label} onChange={(event) => updateRing(index, { label: event.target.value })} /></label></div><div className="two-fields"><label><span>来电节点</span><select value={ring.nodeId} onChange={(event) => updateRing(index, { nodeId: event.target.value })}>{story.nodes.map((node) => <option key={node.id}>{node.id}</option>)}</select></label><label><span>等待时间（毫秒）</span><input type="number" value={ring.delayMs} onChange={(event) => updateRing(index, { delayMs: Number(event.target.value) })} /></label></div><label><span>触发条件</span><JsonTextarea rows={5} value={ring.requires ?? []} onCommit={(requires) => updateRing(index, { requires })} /></label><button type="button" className="inline-delete" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, idleRingSchedule: story.globals.phone.idleRingSchedule.filter((_, itemIndex) => itemIndex !== index) } } })}><Trash2 size={13} />删除</button></article>)}</div>
           </>}
 
-          {tab === 'hotspots' && <>
-            <div className="admin-list-heading"><div><span>SCENE INTERACTIONS</span><h3>电话亭热点</h3></div><button type="button" onClick={() => { const telephone = story.extensions.telephone; onChange({ ...story, extensions: { ...story.extensions, telephone: { ...telephone, sceneHotspots: [...telephone.sceneHotspots, { id: `hotspot-${telephone.sceneHotspots.length + 1}`, label: '新热点', ariaLabel: '检查新热点', x: 40, y: 40, width: 10, height: 10, body: '新发现。' }] } } }) }}><Plus size={13} />新增</button></div>
-            <div className="admin-hotspot-list">{story.extensions.telephone.sceneHotspots.map((hotspot, index) => <article key={hotspot.id}><div className="two-fields"><label><span>ID</span><input value={hotspot.id} onChange={(event) => updateHotspot(index, { id: event.target.value })} /></label><label><span>名称</span><input value={hotspot.label} onChange={(event) => updateHotspot(index, { label: event.target.value })} /></label></div><label><span>无障碍描述</span><input value={hotspot.ariaLabel} onChange={(event) => updateHotspot(index, { ariaLabel: event.target.value })} /></label><label><span>首次发现文案</span><textarea rows={3} value={hotspot.body} onChange={(event) => updateHotspot(index, { body: event.target.value })} /></label><label><span>再次检查文案</span><textarea rows={2} value={hotspot.repeatBody ?? ''} onChange={(event) => updateHotspot(index, { repeatBody: event.target.value || undefined })} /></label><label><span>发现号码</span><input value={hotspot.number ?? ''} onChange={(event) => updateHotspot(index, { number: event.target.value.replace(/\D/g, '') || undefined })} /></label><label><span>显示条件</span><JsonTextarea rows={5} value={hotspot.requires ?? []} onCommit={(requires) => updateHotspot(index, { requires })} /></label><div className="four-fields">{(['x', 'y', 'width', 'height'] as const).map((field) => <label key={field}><span>{field}%</span><input type="number" value={hotspot[field]} onChange={(event) => updateHotspot(index, { [field]: Number(event.target.value) })} /></label>)}</div><button type="button" className="inline-delete" onClick={() => { const telephone = story.extensions.telephone; onChange({ ...story, extensions: { ...story.extensions, telephone: { ...telephone, sceneHotspots: telephone.sceneHotspots.filter((_, itemIndex) => itemIndex !== index) } } }) }}><Trash2 size={13} />删除</button></article>)}</div>
+          {tab === 'directory' && <>
+            <div className="admin-list-heading"><div><span>PHONE DIRECTORY / INDEPENDENT DATA</span><h3>电话簿</h3></div><button type="button" onClick={() => {
+              const id = uniqueId('phone', story.globals.phone.directory.map((number) => number.id))
+              onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, directory: [...story.globals.phone.directory, { id, number: '0000000', label: '新号码', description: '', category: 'strange' }] } } })
+            }}><Plus size={13} />新增电话</button></div>
+            <p className="admin-help directory-help">电话簿只描述线路；场景物品通过稳定 ID 引用它。这样多张不同小广告可以揭示同一个电话，号码变更时也无需逐个修改热点。</p>
+            <div className="admin-number-list">{story.globals.phone.directory.map((number, index) => <article key={number.id}>
+              <div className="two-fields"><label><span>稳定 ID</span><input value={number.id} disabled /></label><label><span>号码</span><input value={number.number} onChange={(event) => updateNumber(index, { number: event.target.value.replace(/\D/g, '') })} /></label></div>
+              <div className="two-fields"><label><span>名称</span><input value={number.label} onChange={(event) => updateNumber(index, { label: event.target.value })} /></label><label><span>分类</span><select value={number.category ?? 'strange'} onChange={(event) => updateNumber(index, { category: event.target.value as PhoneDirectoryEntry['category'] })}><option>public</option><option>meridian</option><option>internal</option><option>emergency</option><option>strange</option></select></label></div>
+              <label><span>说明</span><textarea rows={3} value={number.description} onChange={(event) => updateNumber(index, { description: event.target.value })} /></label>
+              <label className="checkbox-line"><input type="checkbox" checked={number.initiallyKnown ?? false} onChange={(event) => updateNumber(index, { initiallyKnown: event.target.checked })} /><span>新夜班开始时已经记录在玩家号码簿</span></label>
+              <div className="directory-ref-summary"><span>被场景物品引用</span><strong>{story.extensions.telephone.scene.props.filter((prop) => prop.phoneRefs?.includes(number.id)).length} 次</strong></div>
+              <button type="button" className="inline-delete" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, directory: story.globals.phone.directory.filter((_, itemIndex) => itemIndex !== index) } } })}><Trash2 size={13} />删除</button>
+            </article>)}</div>
           </>}
         </div>
       </aside>

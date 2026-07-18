@@ -30,12 +30,14 @@ export type GraphCondition =
   | { type: 'stateNotEquals'; key: string; value: Scalar }
   | { type: 'stateGte'; key: string; value: number }
   | { type: 'hasNumber'; value: string }
+  | { type: 'phoneKnown'; phoneId: string; expected: boolean }
   | { type: 'endingSeen'; value: EndingType }
 
 export type GraphEffect =
   | { type: 'setState'; values: Record<string, Scalar> }
   | { type: 'increment'; key: string; amount: number }
   | { type: 'discoverNumber'; number: string }
+  | { type: 'discoverPhone'; phoneId: string }
   | { type: 'addClue'; clue: string }
 
 export interface GraphPosition { x: number; y: number }
@@ -75,13 +77,17 @@ export interface TelephoneEdge {
   samples?: string[]
 }
 
-export interface PhoneNumberDefinition {
+export interface PhoneDirectoryEntry {
+  id: string
   number: string
   label: string
   description: string
   initiallyKnown?: boolean
   category?: 'public' | 'meridian' | 'internal' | 'emergency' | 'strange'
 }
+
+/** @deprecated v1 story shape accepted only by the migration layer. */
+export type PhoneNumberDefinition = PhoneDirectoryEntry
 
 export interface RingEvent {
   id: string
@@ -91,6 +97,95 @@ export interface RingEvent {
   requires?: GraphCondition[]
 }
 
+export type ScenePropKind =
+  | 'paper-card'
+  | 'classified-ad'
+  | 'poster'
+  | 'brass-plate'
+  | 'newspaper'
+  | 'booklet'
+  | 'ticket'
+  | 'sticker'
+  | 'handwritten-note'
+
+export type SceneTypography = 'serif' | 'typewriter' | 'handwritten' | 'official'
+
+export interface SceneAppearance {
+  presetId: string
+  rotation?: number
+  scale?: number
+  paperTone?: string
+  inkColor?: string
+  accentColor?: string
+  aging?: number
+  moisture?: number
+  crease?: number
+  tear?: number
+  opacity?: number
+  typography?: SceneTypography
+}
+
+export interface SceneStylePreset {
+  id: string
+  label: string
+  kind: ScenePropKind
+  defaults: SceneAppearance
+}
+
+export interface ScenePropDefinition {
+  id: string
+  kind: ScenePropKind
+  label: string
+  ariaLabel: string
+  printedLines?: string[]
+  copy: {
+    firstVariants: string[]
+    repeatVariants?: string[]
+  }
+  phoneRefs?: string[]
+  effects?: GraphEffect[]
+  sceneEvent?: string
+  appearance: SceneAppearance
+}
+
+export interface SceneCandidate {
+  propId: string
+  weight: number
+  requires?: GraphCondition[]
+  appearanceOverrides?: Partial<SceneAppearance>
+}
+
+export interface SceneSlot {
+  id: string
+  label: string
+  bounds: { x: number; y: number; width: number; height: number }
+  mobileBounds?: { x: number; y: number; width: number; height: number }
+  spawnChance: number
+  requires?: GraphCondition[]
+  candidates: SceneCandidate[]
+  jitter?: { x?: number; y?: number; rotation?: number; scale?: number }
+}
+
+export interface SceneDefinition {
+  refreshPolicy: 'nightStart'
+  initialRoll: boolean
+  stylePresets: SceneStylePreset[]
+  props: ScenePropDefinition[]
+  slots: SceneSlot[]
+}
+
+export interface ResolvedSceneItem {
+  instanceId: string
+  slotId: string
+  prop: ScenePropDefinition
+  bounds: SceneSlot['bounds']
+  mobileBounds?: SceneSlot['mobileBounds']
+  appearance: SceneAppearance
+  firstCopy: string
+  repeatCopy?: string
+}
+
+/** @deprecated v1 story shape accepted only by the migration layer. */
 export interface SceneHotspot {
   id: string
   label: string
@@ -107,7 +202,7 @@ export interface SceneHotspot {
 
 export interface TelephoneStory {
   format: 'graph-content'
-  formatVersion: number
+  formatVersion: 2
   id: string
   title: string
   entryNodeId: string
@@ -121,7 +216,7 @@ export interface TelephoneStory {
       warningMs: number
     }
     phone: {
-      validNumbers: PhoneNumberDefinition[]
+      directory: PhoneDirectoryEntry[]
       emergencyNumbers?: string[]
       wrongNumberNodeId: string
       busyNumberNodeId: string
@@ -132,7 +227,7 @@ export interface TelephoneStory {
     telephone: {
       lcdMessages: Record<string, string>
       endings: Record<EndingType, { title: string; subtitle: string; description: string }>
-      sceneHotspots: SceneHotspot[]
+      scene: SceneDefinition
       audioProfile: { rainLevel: number; lineNoise: number; ringPitch: number }
     }
   }

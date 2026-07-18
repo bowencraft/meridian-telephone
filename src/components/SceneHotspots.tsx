@@ -1,26 +1,17 @@
-import type { SceneHotspot } from '../game/types'
+import type { ResolvedSceneItem } from '../game/types'
+import { SceneProp } from './SceneProp'
 
 interface SceneHotspotsProps {
-  hotspots: SceneHotspot[]
+  hotspots: ResolvedSceneItem[]
   inspected: string[]
   disabled: boolean
-  onInspect: (hotspot: SceneHotspot) => void
+  onInspect: (hotspot: ResolvedSceneItem) => void
 }
 
 export function SceneHotspots({ hotspots, inspected, disabled, onInspect }: SceneHotspotsProps) {
   return (
     <div className={`scene-hotspots ${disabled ? 'is-disabled' : ''}`}>
-      {hotspots.map((hotspot) => (
-        <button
-          type="button"
-          key={hotspot.id}
-          className={`scene-hotspot hotspot-${hotspot.id} ${inspected.includes(hotspot.id) ? 'is-inspected' : ''}`}
-          style={{ left: `${hotspot.x}%`, top: `${hotspot.y}%`, width: `${hotspot.width}%`, height: `${hotspot.height}%` }}
-          aria-label={hotspot.ariaLabel}
-          disabled={disabled}
-          onClick={() => onInspect(hotspot)}
-        ><span>{hotspot.label}</span></button>
-      ))}
+      {hotspots.map((hotspot) => <SceneProp key={hotspot.instanceId} item={hotspot} inspected={inspected.includes(hotspot.instanceId)} disabled={disabled} onClick={() => onInspect(hotspot)} />)}
     </div>
   )
 }
