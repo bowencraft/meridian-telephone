@@ -1,8 +1,8 @@
 # Telephone 完整开发计划
 
 最后更新：2026-07-17  
-项目目录：`/Users/bowenwang/Desktop/telephone`  
-参考项目：`/Users/bowenwang/Desktop/typewriter`
+项目目录：当前仓库根目录
+参考项目：同级 Typewriter 项目
 
 ## 目标
 
