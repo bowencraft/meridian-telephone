@@ -584,9 +584,13 @@ export function TelephoneScene() {
             <div className="intro-kicker"><span />LONDON · AFTER MIDNIGHT<span /></div>
             <h1>TELEPHONE</h1>
             <p className="intro-subtitle">子午礼仪交换所</p>
-            <blockquote>“如果电话先响了，别让它听出你在害怕。”</blockquote>
-            <p>伦敦的雨夜。一个不在地图上的公共电话亭。<br />台面每晚会留下 1–3 枚硬币：拿起硬币、投入三便士、再提起听筒拨号。来电可以直接接听。</p>
-            <button type="button" className="enter-booth" onClick={startExperience}><span>进入电话亭</span><small>建议开启声音 · 支持鼠标、触摸与数字键</small></button>
+            <blockquote>“午夜以后，交换台不再记录姓名。它只记录你借用了谁的声音。”</blockquote>
+            <p className="intro-premise">雨把伦敦冲成一片模糊的黑。<br />街角这座不在地图上的电话亭，却像是一直在等你。</p>
+            <div className="intro-protocol" aria-label="电话操作提示">
+              <span><b>OUTGOING</b>投币，拨出电话</span>
+              <span><b>INCOMING</b>铃响，拿起听筒接听</span>
+            </div>
+            <button type="button" className="enter-booth" onClick={startExperience}><span>进入电话亭</span><small>建议开启声音 · 线路正在等待</small></button>
             <div className="intro-progress">第 {loadProgress().attempts + 1} 次夜班</div>
           </div>
         </section>

@@ -250,6 +250,10 @@
 .intro-subtitle { margin: 12px 0 30px; color: #b69e6d; font: 11px/1 "Songti SC",Georgia,serif; letter-spacing: .32em; }
 .intro-card blockquote { margin: 0 auto 22px; color: #f0e8d7; font: italic 18px/1.7 Georgia,"Songti SC",serif; }
 .intro-card > p:not(.intro-subtitle) { margin: 0 auto; color: #aaa391; font: 12px/1.8 "Songti SC",serif; }
+.intro-premise { text-wrap: balance; }
+.intro-protocol { display:grid; grid-template-columns:1fr 1fr; gap:8px; width:min(440px,100%); margin:22px auto 0; }
+.intro-protocol span { display:grid; min-height:50px; align-content:center; gap:6px; padding:9px 12px; color:#d8cfba; border:1px solid rgba(181,153,94,.22); background:linear-gradient(180deg,rgba(62,54,39,.24),rgba(8,9,8,.32)); font:11px/1.25 "Songti SC",Georgia,serif; }
+.intro-protocol b { color:#907d56; font:6px/1 "Courier New",monospace; letter-spacing:.18em; }
 .enter-booth { display: grid; width: min(330px,100%); min-height: 66px; place-items: center; align-content: center; gap: 6px; margin: 30px auto 0; color: #211d17; border: 1px solid #d0b067; background: linear-gradient(150deg,#dfc784,#aa8845); box-shadow: inset 0 1px rgba(255,255,255,.5), 0 8px 24px rgba(0,0,0,.36); }
 .enter-booth:hover { background: #e6ce8a; translate: 0 -2px; }
 .enter-booth span { font: 700 13px/1 Georgia,"Songti SC",serif; letter-spacing: .12em; }
@@ -1059,7 +1063,7 @@
     width: 100%;
     height: 100dvh;
     min-height: 0;
-    overflow: hidden;
+    overflow: clip;
     overscroll-behavior: none;
     /* The fixed, clipped scene prevents page travel while still allowing
        explicitly scrollable overlays to opt into vertical touch panning. */
@@ -1101,7 +1105,7 @@
   .phone-assembly {
     position: absolute;
     left: 50%;
-    top: max(88px, calc(12dvh + 18px));
+    top: max(104px, calc(14dvh + 20px));
     width: min(78vw, 310px, calc((100dvh - 235px) * .7754));
     min-width: 0;
     height: auto;
@@ -1110,6 +1114,13 @@
     translate: -50% 0;
     transform: none !important;
     contain: layout;
+  }
+
+  /* Keep the lifted receiver below the transcript edge instead of letting the
+     full-width paper cover it. The cabinet moves as one physical object, so
+     the cord anchors and handset proportions remain coherent. */
+  .telephone-scene:is(.phase-inCall, .phase-awaitingChoice, .phase-timeoutWarning) .phone-assembly {
+    translate: -50% clamp(30px, 5dvh, 36px);
   }
 
   .rotary-dial {
@@ -1173,17 +1184,21 @@
   .call-text-overlay {
     left: 12px;
     right: 12px;
-    top: max(64px, calc(env(safe-area-inset-top) + 54px));
+    top: max(56px, calc(env(safe-area-inset-top) + 50px));
     max-height: 34dvh;
     width: auto;
     padding: 14px 15px 13px;
     overflow-y: auto;
+    overflow-x: hidden;
     overscroll-behavior: contain;
+    scrollbar-width: none;
     touch-action: pan-y;
     transform: none;
     z-index: 44;
   }
+  .call-text-overlay::-webkit-scrollbar { display: none; width: 0; height: 0; }
   .call-text-overlay p { margin-top: 10px; font-size: 13px; line-height: 1.48; }
+  .call-text-overlay p { overflow-wrap: anywhere; }
   .call-text-overlay footer { margin-top: 10px; }
 
   .choice-clouds {
@@ -1219,8 +1234,11 @@
   }
   .number-book { inset: 62px 14px 42px; }
   .clue-card { left: 14px; right: 14px; bottom: 44px; }
+  .intro-curtain { padding: 14px; }
   .intro-card { width: calc(100vw - 28px); padding: 32px 20px 28px; }
   .intro-card h1 { font-size: clamp(31px, 10.5vw, 40px); }
+  .intro-protocol { grid-template-columns:1fr; gap:5px; margin-top:17px; }
+  .intro-protocol span { min-height:42px; grid-template-columns:72px 1fr; align-items:center; gap:8px; padding:7px 10px; text-align:left; }
 
   .telephone-scene::after { mix-blend-mode: normal; }
   .street-reflection { opacity: .24; filter: none; }
@@ -1228,4 +1246,32 @@
   .rain-near::after { display: none; }
   .window-condensation i:nth-child(n + 4),
   .street-bokeh i:nth-child(n + 3) { display: none; }
+}
+
+@media (max-width: 360px) {
+  .phone-assembly {
+    width: min(72vw, 240px, calc((100dvh - 220px) * .72));
+  }
+}
+
+@media (max-width: 760px) and (max-height: 620px) {
+  /* On short phones the transcript becomes a compact, internally scrollable
+     strip so the lifted receiver still has a visible physical silhouette. */
+  .call-text-overlay {
+    top: max(48px, calc(env(safe-area-inset-top) + 44px));
+    max-height: 20dvh;
+    padding: 10px 12px 9px;
+  }
+  .call-text-overlay header { padding-bottom: 6px; }
+  .call-text-overlay p { margin-top: 7px; font-size: 12px; line-height: 1.36; }
+  .call-text-overlay footer { margin-top: 6px; }
+  .transcript-routing { display: none; }
+  .intro-card { padding: 21px 16px 17px; }
+  .intro-card h1 { margin-top: 16px; font-size: 30px; }
+  .intro-subtitle { margin: 8px 0 17px; }
+  .intro-card blockquote { margin-bottom: 13px; font-size: 14px; line-height: 1.5; }
+  .intro-card > p:not(.intro-subtitle) { font-size: 11px; line-height: 1.55; }
+  .intro-protocol { margin-top: 13px; }
+  .enter-booth { min-height: 52px; margin-top: 15px; }
+  .intro-progress { margin-top: 9px; }
 }
