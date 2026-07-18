@@ -1116,6 +1116,21 @@
     contain: layout;
   }
 
+  /* The cabinet scales down on phones, but LCD type keeps a readable minimum
+     size. Give both rows a real glass area instead of letting the grid collapse
+     the primary line to a clipped sliver. */
+  .lcd-display {
+    left: 22%;
+    right: 22%;
+    top: 5%;
+    height: max(12%, 32px);
+    padding: 3px;
+  }
+  .lcd-glass { padding: 2px 7px; }
+  .lcd-primary { font-size: 9px; line-height: 1; letter-spacing: .065em; }
+  .lcd-secondary { margin-top: 1px; font-size: 5px; line-height: 1; letter-spacing: .14em; }
+  .lcd-led { right: 4px; z-index: 2; }
+
   /* Keep the lifted receiver below the transcript edge instead of letting the
      full-width paper cover it. The cabinet moves as one physical object, so
      the cord anchors and handset proportions remain coherent. */
@@ -1251,6 +1266,7 @@
   .phone-assembly {
     width: min(72vw, 240px, calc((100dvh - 220px) * .72));
   }
+  .lcd-display { left: 20%; right: 20%; }
 }
 
 @media (max-width: 760px) and (max-height: 620px) {
