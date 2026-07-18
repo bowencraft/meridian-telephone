@@ -1,6 +1,7 @@
-import { AlertTriangle, ArrowLeft, Check, Download, RotateCcw, Save, Upload } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Check, Download, LockKeyhole, RotateCcw, Save, Upload } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { defaultTelephoneStory, loadStoryDefinition } from '../game/callEngine'
+import { clearAdminUnlock } from '../game/adminAuth'
 import { clearStoryOverride, saveStoryDefinitionFallback, saveStoryDefinitionToLocalApi } from '../game/storyPersistence'
 import { validateStoryDefinition } from '../game/storyValidation'
 import type { TelephoneStory } from '../game/types'
@@ -54,10 +55,15 @@ export function AdminPanel() {
     setStory(defaultTelephoneStory())
   }
 
+  function lockPanel() {
+    clearAdminUnlock()
+    window.location.assign('/admin')
+  }
+
   return (
     <main className="admin-shell">
       <header className="admin-topbar">
-        <a className="admin-back" href="#/"><ArrowLeft size={16} />返回电话亭</a>
+        <a className="admin-back" href="/" data-app-route><ArrowLeft size={16} />返回电话亭</a>
         <div className="admin-brand"><span>INTERACTIVE NARRATIVE SWITCHBOARD</span><h1>Telephone 剧情交换台</h1></div>
         <div className={`validation-summary ${errors.length ? 'invalid' : ''}`}>
           {errors.length ? <AlertTriangle size={14} /> : <Check size={14} />}
@@ -68,6 +74,7 @@ export function AdminPanel() {
           <input ref={fileRef} hidden type="file" accept="application/json,.json" onChange={(event) => importStory(event.target.files?.[0])} />
           <button type="button" onClick={exportStory}><Download size={15} />导出</button>
           <button type="button" onClick={reset}><RotateCcw size={15} />恢复源码</button>
+          <button type="button" onClick={lockPanel}><LockKeyhole size={15} />锁定后台</button>
           <button className="save-button" type="button" disabled={saveState === 'saving' || errors.length > 0} onClick={save}><Save size={15} />{saveState === 'saving' ? '保存中' : saveState === 'saved' ? '已写入源码' : saveState === 'fallback' ? '已保存到浏览器' : '保存剧情'}</button>
         </nav>
       </header>

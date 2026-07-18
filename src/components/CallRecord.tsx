@@ -28,9 +28,9 @@ export function CallRecord() {
   return (
     <main className="record-page">
       <header className="record-topbar">
-        <a href="#/"><ArrowLeft size={16} />返回电话亭</a>
+        <a href="/" data-app-route><ArrowLeft size={16} />返回电话亭</a>
         <div><span>MERIDIAN CALL ARCHIVE</span><strong>夜间线路档案室</strong></div>
-        <nav><a href="#/admin"><Settings2 size={15} />剧情后台</a><button type="button" onClick={clearAll}><Trash2 size={15} />清除档案</button></nav>
+        <nav><a href="/admin" data-app-route><Settings2 size={15} />剧情后台</a><button type="button" onClick={clearAll}><Trash2 size={15} />清除档案</button></nav>
       </header>
 
       <section className="record-overview">
@@ -42,7 +42,7 @@ export function CallRecord() {
 
       {!record ? (
         <section className="record-empty">
-          <PhoneCall size={34} /><h1>尚无终止通话</h1><p>完成任意结局后，交换机会在这里留下线路记录。</p><a href="#/">进入电话亭</a>
+          <PhoneCall size={34} /><h1>尚无终止通话</h1><p>完成任意结局后，交换机会在这里留下线路记录。</p><a href="/" data-app-route>进入电话亭</a>
         </section>
       ) : (
         <div className="record-layout">
@@ -83,7 +83,7 @@ export function CallRecord() {
                 })}
               </div>
             </section>
-            <a className="record-restart" href="#/"><RotateCcw size={16} />再次进入电话亭</a>
+            <a className="record-restart" href="/" data-app-route><RotateCcw size={16} />再次进入电话亭</a>
           </aside>
         </div>
       )}

@@ -99,4 +99,4 @@ npm install
 npm run dev
 ```
 
-访问 `#/` 开始游戏，`#/admin` 编辑剧情，`#/record` 查看档案；`#/print` 兼容指向档案页。
+访问 `/` 开始游戏，`/admin` 通过值班密钥进入剧情编辑，`/record` 查看档案；`/print` 兼容指向档案页。

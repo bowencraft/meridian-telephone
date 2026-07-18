@@ -1,0 +1,171 @@
+.admin-gate-shell {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  overflow: hidden;
+  padding: 76px 24px 46px;
+  color: #ded7c6;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(131, 92, 48, .2), transparent 30%),
+    linear-gradient(90deg, #421512 0 3.7%, #190f0f 3.8% 5.2%, transparent 5.3% 94.7%, #190f0f 94.8% 96.2%, #421512 96.3%),
+    linear-gradient(165deg, #111716 0%, #080b0b 54%, #0c1110 100%);
+  font-family: Georgia, "Songti SC", serif;
+  user-select: none;
+}
+.admin-gate-shell::before {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  content: "";
+  opacity: .26;
+  background:
+    linear-gradient(110deg, transparent 0 32%, rgba(221, 186, 104, .11) 43%, transparent 54%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 5px);
+  box-shadow: inset 0 0 150px 45px #020404;
+}
+.admin-gate-shell::after {
+  position: absolute;
+  z-index: -1;
+  left: 7%;
+  right: 7%;
+  bottom: -12%;
+  height: 38%;
+  content: "";
+  opacity: .45;
+  background: radial-gradient(ellipse at 50% 0, rgba(123, 86, 42, .26), transparent 66%);
+  filter: blur(16px);
+}
+.admin-gate-rain { position: absolute; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; }
+.admin-gate-rain i { position: absolute; top: -15%; width: 1px; height: 34%; opacity: .17; background: linear-gradient(transparent, #bfd1cb, transparent); rotate: 12deg; animation: admin-rain 3.4s linear infinite; }
+.admin-gate-rain i:nth-child(1) { left: 18%; animation-delay: -2.1s; }
+.admin-gate-rain i:nth-child(2) { left: 38%; height: 24%; animation-delay: -.6s; }
+.admin-gate-rain i:nth-child(3) { left: 69%; height: 31%; animation-delay: -1.4s; }
+.admin-gate-rain i:nth-child(4) { left: 87%; animation-delay: -2.8s; }
+@keyframes admin-rain { to { translate: -9vh 145vh; } }
+
+.admin-gate-back {
+  position: absolute;
+  top: 24px;
+  left: clamp(20px, 4vw, 60px);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 0;
+  color: #a69f90;
+  border-bottom: 1px solid transparent;
+  text-decoration: none;
+  font: 9px/1 "Courier New", monospace;
+  letter-spacing: .06em;
+  transition: color .18s ease, border-color .18s ease;
+}
+.admin-gate-back:hover { color: #e2d9c6; border-color: #8e7650; }
+
+.admin-gate-card {
+  position: relative;
+  width: min(590px, calc(100vw - 40px));
+  padding: 63px 68px 32px;
+  border: 1px solid #5f5e53;
+  border-radius: 4px;
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.055), transparent 19% 76%, rgba(0,0,0,.17)),
+    repeating-linear-gradient(96deg, transparent 0 4px, rgba(29,31,27,.024) 5px),
+    #c5c4b7;
+  box-shadow:
+    0 38px 90px rgba(0,0,0,.72),
+    0 4px 0 #171a17,
+    inset 0 1px rgba(255,255,255,.64),
+    inset 0 0 42px rgba(29,31,25,.15);
+  color: #262922;
+}
+.admin-gate-card::before {
+  position: absolute;
+  inset: 11px;
+  content: "";
+  border: 1px solid rgba(61, 63, 54, .38);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.admin-gate-card::after {
+  position: absolute;
+  top: 31px;
+  left: 50%;
+  width: 134px;
+  height: 12px;
+  content: "";
+  border: 1px solid #494c42;
+  border-radius: 1px;
+  background: linear-gradient(#20231f, #41443b 42%, #1d201c);
+  box-shadow: inset 0 2px 5px #101210, 0 1px rgba(255,255,255,.35);
+  translate: -50% 0;
+}
+.admin-gate-hardware { position: absolute; inset: 0; pointer-events: none; }
+.admin-gate-screw { position: absolute; width: 8px; height: 8px; border: 1px solid #6d6d61; border-radius: 50%; background: radial-gradient(circle at 37% 32%, #e1e0d2, #67685e 68%, #393c35); box-shadow: 0 1px 2px rgba(0,0,0,.45); }
+.admin-gate-screw::after { position:absolute; top:3px; left:1px; width:5px; height:1px; content:""; background:#44473f; rotate:-19deg; }
+.screw-a { top: 19px; left: 19px; }.screw-b { top: 19px; right: 19px; }.screw-c { bottom: 19px; left: 19px; }.screw-d { right: 19px; bottom: 19px; }
+.admin-gate-lock {
+  position: absolute;
+  top: 24px;
+  right: 38px;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  color: #4d5047;
+  border: 1px solid #77786d;
+  border-radius: 50%;
+  background: radial-gradient(circle at 37% 29%, #dddbcc, #898a7e 67%, #5b5d54);
+  box-shadow: 0 2px 4px rgba(0,0,0,.35), inset 0 1px rgba(255,255,255,.65);
+}
+.admin-gate-lamp { position:absolute; top:42px; left:43px; width:11px; height:11px; border:1px solid #2e3d31; border-radius:50%; background:#45684c; box-shadow:inset 0 1px 2px #122117,0 0 10px rgba(73,132,84,.28); }
+
+.admin-gate-copy { text-align: center; }
+.admin-gate-eyebrow { color:#62665c; font:7px/1 "Courier New",monospace; letter-spacing:.2em; }
+.admin-gate-copy h1 { margin:14px 0 13px; color:#1f231e; font:500 clamp(27px,4vw,37px)/1.05 Georgia,"Songti SC",serif; letter-spacing:.12em; text-shadow:0 1px rgba(255,255,255,.6); }
+.admin-gate-copy p { width:min(370px,100%); margin:0 auto; color:#5d6057; font:11px/1.8 "Songti SC",Georgia,serif; text-wrap:balance; }
+
+.admin-gate-form { display:grid; gap:10px; width:min(360px,100%); margin:31px auto 0; }
+.admin-gate-form > label { display:flex; align-items:center; gap:6px; color:#555950; font:7px/1 "Courier New",monospace; letter-spacing:.12em; }
+.admin-password-field { display:grid; grid-template-columns:1fr 43px; min-height:48px; border:1px solid #686b61; border-radius:2px; background:#ecebde; box-shadow:inset 0 2px 5px rgba(36,39,33,.13),0 1px rgba(255,255,255,.58); }
+.admin-password-field:focus-within { border-color:#6e5d3f; box-shadow:inset 0 2px 5px rgba(36,39,33,.13),0 0 0 2px rgba(122,99,60,.15); }
+.admin-password-field input { min-width:0; padding:0 14px; color:#262921; border:0; outline:0; background:transparent; font:13px/1 "Courier New",monospace; letter-spacing:.08em; }
+.admin-password-field input::placeholder { color:#9b9c91; letter-spacing:.2em; }
+.admin-password-field button { display:grid; place-items:center; color:#63665d; border:0; border-left:1px solid #b3b4a9; background:rgba(105,107,96,.06); }
+.admin-password-field button:hover { color:#272b25; background:rgba(105,107,96,.13); }
+.admin-gate-status { min-height:18px; color:#6d7068; font:8px/1.5 "Songti SC",sans-serif; }
+.admin-gate-submit { display:flex; min-height:46px; align-items:center; justify-content:center; gap:8px; margin-top:2px; color:#e8e3d5; border:1px solid #1c211c; border-radius:2px; background:linear-gradient(#3b443a,#252c25); box-shadow:inset 0 1px rgba(255,255,255,.12),0 2px 4px rgba(0,0,0,.28); font:700 10px/1 "Songti SC",Georgia,serif; letter-spacing:.12em; }
+.admin-gate-submit:hover:not(:disabled) { color:#fff; background:linear-gradient(#455044,#2a332a); translate:0 -1px; }
+.admin-gate-submit:disabled { opacity:.48; cursor:not-allowed; }
+.admin-gate-card.is-invalid { animation:admin-gate-denied .36s ease; }
+.admin-gate-card.is-invalid .admin-gate-lamp { background:#814841; box-shadow:inset 0 1px 2px #321412,0 0 12px rgba(143,56,48,.38); }
+.admin-gate-card.is-invalid .admin-gate-status { color:#893c35; }
+@keyframes admin-gate-denied { 20%,60% { translate:-5px 0; } 40%,80% { translate:5px 0; } }
+.admin-gate-unconfigured { display:flex; gap:12px; width:min(390px,100%); margin:31px auto 0; padding:15px 16px; color:#64413b; border:1px solid #a98d85; background:rgba(246,233,225,.64); }
+.admin-gate-unconfigured strong { display:block; font-size:11px; }.admin-gate-unconfigured p{margin:5px 0 0;font:9px/1.5 sans-serif}.admin-gate-unconfigured code{font-size:8px}
+.admin-gate-card footer { display:flex; justify-content:space-between; margin-top:31px; padding-top:15px; color:#74776d; border-top:1px solid rgba(81,84,75,.28); font:6px/1 "Courier New",monospace; letter-spacing:.12em; }
+
+@media (max-width: 560px) {
+  .admin-gate-shell { padding: 62px 16px 28px; }
+  .admin-gate-back { top: 15px; left: 18px; }
+  .admin-gate-card { width:100%; padding:59px 30px 25px; }
+  .admin-gate-lock { top:20px; right:29px; width:41px; height:41px; }
+  .admin-gate-lamp { top:36px; left:35px; }
+  .admin-gate-copy h1 { margin-top:12px; font-size:27px; }
+  .admin-gate-copy p { font-size:10px; }
+  .admin-gate-form { margin-top:25px; }
+  .admin-gate-card footer { margin-top:25px; }
+}
+
+@media (max-width: 360px) {
+  .admin-gate-shell { padding-inline:10px; }
+  .admin-gate-card { padding-inline:22px; }
+  .admin-gate-eyebrow { font-size:6px; letter-spacing:.13em; }
+  .admin-gate-copy h1 { font-size:24px; }
+  .admin-gate-card footer span:last-child { display:none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-gate-rain i { animation:none; }
+  .admin-gate-card.is-invalid { animation:none; }
+}

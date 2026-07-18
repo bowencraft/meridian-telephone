@@ -251,9 +251,9 @@
 .intro-card blockquote { margin: 0 auto 22px; color: #f0e8d7; font: italic 18px/1.7 Georgia,"Songti SC",serif; }
 .intro-card > p:not(.intro-subtitle) { margin: 0 auto; color: #aaa391; font: 12px/1.8 "Songti SC",serif; }
 .intro-premise { text-wrap: balance; }
-.intro-protocol { display:grid; grid-template-columns:1fr 1fr; gap:8px; width:min(440px,100%); margin:22px auto 0; }
-.intro-protocol span { display:grid; min-height:50px; align-content:center; gap:6px; padding:9px 12px; color:#d8cfba; border:1px solid rgba(181,153,94,.22); background:linear-gradient(180deg,rgba(62,54,39,.24),rgba(8,9,8,.32)); font:11px/1.25 "Songti SC",Georgia,serif; }
-.intro-protocol b { color:#907d56; font:6px/1 "Courier New",monospace; letter-spacing:.18em; }
+.intro-card > .intro-protocol-copy { position:relative; width:min(430px,100%); margin:22px auto 0; padding:0 28px; color:#c8bfae; font:11px/1.8 "Songti SC",Georgia,serif; text-wrap:balance; }
+.intro-protocol-copy::before,.intro-protocol-copy::after { position:absolute; top:.85em; width:18px; height:1px; content:""; background:rgba(173,147,91,.52); }
+.intro-protocol-copy::before { left:0; }.intro-protocol-copy::after { right:0; }
 .enter-booth { display: grid; width: min(330px,100%); min-height: 66px; place-items: center; align-content: center; gap: 6px; margin: 30px auto 0; color: #211d17; border: 1px solid #d0b067; background: linear-gradient(150deg,#dfc784,#aa8845); box-shadow: inset 0 1px rgba(255,255,255,.5), 0 8px 24px rgba(0,0,0,.36); }
 .enter-booth:hover { background: #e6ce8a; translate: 0 -2px; }
 .enter-booth span { font: 700 13px/1 Georgia,"Songti SC",serif; letter-spacing: .12em; }
@@ -1237,8 +1237,7 @@
   .intro-curtain { padding: 14px; }
   .intro-card { width: calc(100vw - 28px); padding: 32px 20px 28px; }
   .intro-card h1 { font-size: clamp(31px, 10.5vw, 40px); }
-  .intro-protocol { grid-template-columns:1fr; gap:5px; margin-top:17px; }
-  .intro-protocol span { min-height:42px; grid-template-columns:72px 1fr; align-items:center; gap:8px; padding:7px 10px; text-align:left; }
+  .intro-card > .intro-protocol-copy { margin-top:17px; }
 
   .telephone-scene::after { mix-blend-mode: normal; }
   .street-reflection { opacity: .24; filter: none; }
@@ -1271,7 +1270,7 @@
   .intro-subtitle { margin: 8px 0 17px; }
   .intro-card blockquote { margin-bottom: 13px; font-size: 14px; line-height: 1.5; }
   .intro-card > p:not(.intro-subtitle) { font-size: 11px; line-height: 1.55; }
-  .intro-protocol { margin-top: 13px; }
+  .intro-card > .intro-protocol-copy { margin-top:13px; padding-inline:20px; }
   .enter-booth { min-height: 52px; margin-top: 15px; }
   .intro-progress { margin-top: 9px; }
 }

@@ -496,14 +496,14 @@ export function TelephoneScene() {
       <div className="street-reflection" aria-hidden="true" />
 
       <header className="game-masthead">
-        <a className="game-wordmark" href="#/" aria-label="Telephone 主页">
+        <a className="game-wordmark" href="/" data-app-route aria-label="Telephone 主页">
           <span>GPO NIGHT SERVICE</span><strong>TELEPHONE</strong>
         </a>
         <nav aria-label="游戏工具">
           <button type="button" onClick={() => setNumberBookOpen((open) => !open)}><NotebookTabs size={16} /><span>号码簿</span></button>
           <button type="button" onClick={toggleMute}>{muted ? <VolumeX size={16} /> : <Volume2 size={16} />}<span>{muted ? '开启声音' : '静音'}</span></button>
-          <a href="#/record"><Headphones size={16} /><span>通话档案</span></a>
-          <a href="#/admin"><Settings2 size={16} /><span>剧情后台</span></a>
+          <a href="/record" data-app-route><Headphones size={16} /><span>通话档案</span></a>
+          <a href="/admin" data-app-route><Settings2 size={16} /><span>剧情后台</span></a>
         </nav>
       </header>
 
@@ -586,10 +586,7 @@ export function TelephoneScene() {
             <p className="intro-subtitle">子午礼仪交换所</p>
             <blockquote>“午夜以后，交换台不再记录姓名。它只记录你借用了谁的声音。”</blockquote>
             <p className="intro-premise">雨把伦敦冲成一片模糊的黑。<br />街角这座不在地图上的电话亭，却像是一直在等你。</p>
-            <div className="intro-protocol" aria-label="电话操作提示">
-              <span><b>OUTGOING</b>投币，拨出电话</span>
-              <span><b>INCOMING</b>铃响，拿起听筒接听</span>
-            </div>
+            <p className="intro-protocol-copy">要拨出电话，先投入一枚硬币；若铃声先在雨里响起，只需拿起听筒。</p>
             <button type="button" className="enter-booth" onClick={startExperience}><span>进入电话亭</span><small>建议开启声音 · 线路正在等待</small></button>
             <div className="intro-progress">第 {loadProgress().attempts + 1} 次夜班</div>
           </div>
@@ -605,7 +602,7 @@ export function TelephoneScene() {
             <div className="ending-rule" />
             <blockquote>{ending.description}</blockquote>
             <dl><div><dt>发现线路</dt><dd>{runtime.discoveredNumbers.length}</dd></div><div><dt>通话记录</dt><dd>{transcript.length}</dd></div><div><dt>通话时长</dt><dd>{elapsed}s</dd></div></dl>
-            <div className="ending-actions"><a href="#/record"><Headphones size={17} />查看通话档案</a><button type="button" onClick={restart}><RotateCcw size={17} />再次进入</button></div>
+            <div className="ending-actions"><a href="/record" data-app-route><Headphones size={17} />查看通话档案</a><button type="button" onClick={restart}><RotateCcw size={17} />再次进入</button></div>
           </div>
         </section>
       )}
