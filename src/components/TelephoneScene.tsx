@@ -6,14 +6,15 @@ import { formatPhoneNumber, shouldConnect } from '../game/dialModel'
 import { TelephoneAudio } from '../game/audio'
 import { BOOTH_OBJECTS, canDialWithCredit, createNightCoins, returnedCoin, type ShelfCoin } from '../game/boothItems'
 import { createSessionId, loadProgress, saveRecord } from '../game/record'
-import { hotspotById, visibleHotspots } from '../game/sceneInteractions'
+import { sceneItemBySlot, sceneItemCopy } from '../game/sceneInteractions'
+import { resolveNightScene } from '../game/sceneRandomizer'
 import { initialTelephoneState, telephoneReducer } from '../game/telephoneState'
 import type {
   CallRecordData,
   ChoiceView,
   DialLogEntry,
   EngineTransition,
-  SceneHotspot,
+  ResolvedSceneItem,
   TranscriptEntry,
 } from '../game/types'
 import { CallTextOverlay } from './CallTextOverlay'
@@ -52,6 +53,7 @@ export function TelephoneScene() {
   const [startedAt, setStartedAt] = useState(0)
   const [sessionId, setSessionId] = useState(createSessionId)
   const [coins, setCoins] = useState(() => createNightCoins(engine.state.sessionSeed))
+  const [sceneItems, setSceneItems] = useState(() => resolveNightScene(story, engine.state, progress))
   const [heldItemId, setHeldItemId] = useState<string | null>(null)
   const [coinCredit, setCoinCredit] = useState(0)
   const [spentCoins, setSpentCoins] = useState(0)
@@ -163,7 +165,7 @@ export function TelephoneScene() {
   useEffect(() => {
     if (!started || machine.phase !== 'idle') return
     const next = story.globals.phone.idleRingSchedule.find((ring) =>
-      !engine.state.handledRings.includes(ring.id) && conditionsMatch(ring.requires, engine.state, progress),
+      !engine.state.handledRings.includes(ring.id) && conditionsMatch(ring.requires, engine.state, progress, story),
     )
     if (!next) return
     const id = window.setTimeout(() => {
@@ -172,7 +174,7 @@ export function TelephoneScene() {
       audioRef.current.startRing()
     }, next.delayMs)
     return () => window.clearTimeout(id)
-  }, [engine, machine.phase, progress, runtime, started, story.globals.phone.idleRingSchedule])
+  }, [engine, machine.phase, progress, runtime, started, story])
 
   useEffect(() => {
     if (machine.phase !== 'ringing' || !machine.incomingEventId) return
@@ -303,7 +305,7 @@ export function TelephoneScene() {
     machineDispatch({ type: 'CONNECT' })
     audioRef.current.stopLoop('dialTone')
     audioRef.current.playConnectNoise()
-    const known = story.globals.phone.validNumbers.find((item) => item.number === number)
+    const known = story.globals.phone.directory.find((item) => item.number === number)
     connectTimerRef.current = window.setTimeout(() => {
       const transition = engine.dispatch({ type: 'dialNumber', value: number, createdAt: Date.now() })
       setDialLog((items) => [...items, { number, label: known?.label ?? '未登记号码', connected: !transition.fallback, createdAt: Date.now() }])
@@ -334,12 +336,17 @@ export function TelephoneScene() {
     applyTransition(transition)
   }
 
-  function inspect(hotspot: SceneHotspot) {
+  function inspect(hotspot: ResolvedSceneItem) {
     if (machine.phase !== 'idle') return
     audioRef.current.playReveal()
-    const transition = engine.dispatch({ type: 'sceneInspect', value: hotspot.id, createdAt: Date.now() })
-    setClueCard({ title: hotspot.label, body: transition.text })
-    setInspected((items) => items.includes(hotspot.id) ? items : [...items, hotspot.id])
+    const alreadyInspected = inspected.includes(hotspot.instanceId)
+    engine.discoverPhones(hotspot.prop.phoneRefs)
+    engine.applyEffects(hotspot.prop.effects)
+    if (hotspot.prop.sceneEvent && engine.availableEdges({ type: 'sceneInspect', value: hotspot.prop.sceneEvent }).length) {
+      engine.dispatch({ type: 'sceneInspect', value: hotspot.prop.sceneEvent, createdAt: Date.now() })
+    }
+    setClueCard({ title: hotspot.prop.label, body: sceneItemCopy(hotspot, alreadyInspected) })
+    setInspected((items) => items.includes(hotspot.instanceId) ? items : [...items, hotspot.instanceId])
     engine.returnToIdleNode()
     setRuntime(structuredClone(engine.state))
   }
@@ -405,7 +412,7 @@ export function TelephoneScene() {
       setClueCard({ title: '退回三便士', body: '机械闸门松开，硬币从下方槽口滚回台面。' })
       return
     }
-    const hotspot = hotspotById(story, 'coin-return')
+    const hotspot = sceneItemBySlot(sceneItems, 'coin-return')
     if (hotspot && machine.phase === 'idle') inspect(hotspot)
     else {
       audioRef.current.playCoinReturn()
@@ -451,6 +458,7 @@ export function TelephoneScene() {
     setProgress(nextProgress)
     setSessionId(createSessionId())
     setCoins(createNightCoins(nextEngine.state.sessionSeed))
+    setSceneItems(resolveNightScene(story, nextEngine.state, nextProgress))
     setHeldItemId(null)
     setCoinCredit(0)
     setSpentCoins(0)
@@ -461,11 +469,11 @@ export function TelephoneScene() {
     void audioRef.current.unlock().then(() => audioRef.current.startRain()).catch(() => undefined)
   }
 
-  const hotspots = visibleHotspots(story, runtime, progress).filter((hotspot) => hotspot.id !== 'coin-return')
+  const hotspots = sceneItems.filter((hotspot) => hotspot.slotId !== 'coin-return')
   const handsetDocked = ['intro', 'idle', 'ringing', 'hungUp'].includes(machine.phase)
   const callVisible = ['inCall', 'awaitingChoice', 'timeoutWarning', 'ending'].includes(machine.phase)
   const ending = runtime.ending ? story.extensions.telephone.endings[runtime.ending] : null
-  const discoveredDefinitions = story.globals.phone.validNumbers.filter((number) => runtime.discoveredNumbers.includes(number.number))
+  const discoveredDefinitions = story.globals.phone.directory.filter((number) => runtime.discoveredNumbers.includes(number.number))
 
   function moveAmbientLight(event: React.PointerEvent<HTMLElement>) {
     if (event.pointerType !== 'mouse') return
@@ -567,7 +575,7 @@ export function TelephoneScene() {
               <article key={number.number}><span>{number.category}</span><strong>{formatPhoneNumber(number.number)}</strong><h3>{number.label}</h3><p>{number.description}</p></article>
             ))}
           </div>
-          <footer>{discoveredDefinitions.length} / {story.globals.phone.validNumbers.length} 条线路已记录</footer>
+          <footer>{discoveredDefinitions.length} / {story.globals.phone.directory.length} 条线路已记录</footer>
         </aside>
       )}
 

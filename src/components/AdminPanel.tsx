@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from 'react'
 import { defaultTelephoneStory, loadStoryDefinition } from '../game/callEngine'
 import { clearAdminUnlock } from '../game/adminAuth'
 import { clearStoryOverride, saveStoryDefinitionFallback, saveStoryDefinitionToLocalApi } from '../game/storyPersistence'
+import { migrateTelephoneStory } from '../game/storyMigration'
 import { validateStoryDefinition } from '../game/storyValidation'
 import type { TelephoneStory } from '../game/types'
 import '../styles/admin.css'
@@ -37,7 +38,7 @@ export function AdminPanel() {
   async function importStory(file?: File) {
     if (!file) return
     try {
-      const parsed = JSON.parse(await file.text()) as TelephoneStory
+      const parsed = migrateTelephoneStory(JSON.parse(await file.text()))
       const importedIssues = validateStoryDefinition(parsed)
       if (importedIssues.some((issue) => issue.level === 'error')) throw new Error('导入文件包含结构错误，请先修复。')
       setStory(parsed)

@@ -1,4 +1,5 @@
 import defaultStory from '../story/telephone.rules.json'
+import { migrateTelephoneStory } from './storyMigration'
 import type {
   CallEvent,
   ChoiceView,
@@ -14,24 +15,26 @@ import type {
   TelephoneStory,
 } from './types'
 
-export const STORY_OVERRIDE_KEY = 'telephone.storyOverride.v1'
+export const STORY_OVERRIDE_KEY = 'telephone.storyOverride.v2'
+export const LEGACY_STORY_OVERRIDE_KEY = 'telephone.storyOverride.v1'
 
 function clone<T>(value: T): T {
   return structuredClone(value)
 }
 
 export function defaultTelephoneStory() {
-  return clone(defaultStory) as TelephoneStory
+  return migrateTelephoneStory(defaultStory)
 }
 
 export function loadStoryDefinition(storage?: Storage): TelephoneStory {
   const target = storage ?? (typeof window === 'undefined' ? undefined : window.localStorage)
-  const stored = target?.getItem(STORY_OVERRIDE_KEY)
+  const stored = target?.getItem(STORY_OVERRIDE_KEY) ?? target?.getItem(LEGACY_STORY_OVERRIDE_KEY)
   if (stored) {
     try {
-      return JSON.parse(stored) as TelephoneStory
+      return migrateTelephoneStory(JSON.parse(stored))
     } catch {
       target?.removeItem(STORY_OVERRIDE_KEY)
+      target?.removeItem(LEGACY_STORY_OVERRIDE_KEY)
     }
   }
   return defaultTelephoneStory()
@@ -43,19 +46,24 @@ export function nodeById(story: TelephoneStory, id: string): TelephoneNode {
   return node
 }
 
-export function conditionMatches(condition: GraphCondition, state: RuntimeState, progress?: ProgressData) {
-  const current = state.flags[condition.type === 'hasNumber' || condition.type === 'endingSeen' ? '' : condition.key]
+export function conditionMatches(condition: GraphCondition, state: RuntimeState, progress?: ProgressData, story?: TelephoneStory) {
+  const current = 'key' in condition ? state.flags[condition.key] : undefined
   switch (condition.type) {
     case 'stateEquals': return current === condition.value
     case 'stateNotEquals': return current !== condition.value
     case 'stateGte': return Number(current ?? 0) >= condition.value
     case 'hasNumber': return state.discoveredNumbers.includes(condition.value) || progress?.discoveredNumbers.includes(condition.value) === true
+    case 'phoneKnown': {
+      const number = story?.globals.phone.directory.find((entry) => entry.id === condition.phoneId)?.number
+      const known = Boolean(number && (state.discoveredNumbers.includes(number) || progress?.discoveredNumbers.includes(number) === true))
+      return known === condition.expected
+    }
     case 'endingSeen': return state.seenEndings.includes(condition.value) || progress?.seenEndings.includes(condition.value) === true
   }
 }
 
-export function conditionsMatch(conditions: GraphCondition[] | undefined, state: RuntimeState, progress?: ProgressData) {
-  return (conditions ?? []).every((condition) => conditionMatches(condition, state, progress))
+export function conditionsMatch(conditions: GraphCondition[] | undefined, state: RuntimeState, progress?: ProgressData, story?: TelephoneStory) {
+  return (conditions ?? []).every((condition) => conditionMatches(condition, state, progress, story))
 }
 
 function triggerMatches(edge: TelephoneEdge, event: CallEvent) {
@@ -89,7 +97,7 @@ function nodeText(node: TelephoneNode, state: RuntimeState) {
   return variants[index] ?? '…'
 }
 
-function applyEffect(state: RuntimeState, effect: GraphEffect) {
+function applyEffect(state: RuntimeState, effect: GraphEffect, story: TelephoneStory) {
   switch (effect.type) {
     case 'setState':
       state.flags = { ...state.flags, ...effect.values }
@@ -100,6 +108,11 @@ function applyEffect(state: RuntimeState, effect: GraphEffect) {
     case 'discoverNumber':
       if (!state.discoveredNumbers.includes(effect.number)) state.discoveredNumbers.push(effect.number)
       break
+    case 'discoverPhone': {
+      const number = story.globals.phone.directory.find((entry) => entry.id === effect.phoneId)?.number
+      if (number && !state.discoveredNumbers.includes(number)) state.discoveredNumbers.push(number)
+      break
+    }
     case 'addClue':
       if (!state.clues.includes(effect.clue)) state.clues.push(effect.clue)
       break
@@ -107,7 +120,7 @@ function applyEffect(state: RuntimeState, effect: GraphEffect) {
 }
 
 function initialState(story: TelephoneStory, progress?: ProgressData, seed = Date.now() % 1_000_000) : RuntimeState {
-  const initiallyKnown = story.globals.phone.validNumbers.filter((item) => item.initiallyKnown).map((item) => item.number)
+  const initiallyKnown = story.globals.phone.directory.filter((item) => item.initiallyKnown).map((item) => item.number)
   const persistedNumbers = progress?.discoveredNumbers ?? []
   return {
     currentNodeId: story.entryNodeId,
@@ -162,7 +175,7 @@ export class CallEngine {
     return this.story.edges
       .filter((edge) => edge.from === this.state.currentNodeId || globalIds.includes(edge.from))
       .filter((edge) => triggerMatches(edge, event))
-      .filter((edge) => conditionsMatch(edge.conditions, this.state, this.progress))
+      .filter((edge) => conditionsMatch(edge.conditions, this.state, this.progress, this.story))
       .sort((a, b) => b.priority - a.priority || a.id.localeCompare(b.id))
   }
 
@@ -171,7 +184,7 @@ export class CallEngine {
     return this.story.edges
       .filter((edge) => edge.from === this.state.currentNodeId || globalIds.includes(edge.from))
       .filter((edge) => edge.trigger.type === 'choice')
-      .filter((edge) => conditionsMatch(edge.conditions, this.state, this.progress))
+      .filter((edge) => conditionsMatch(edge.conditions, this.state, this.progress, this.story))
       .sort((a, b) => b.priority - a.priority || a.id.localeCompare(b.id))
       .filter((edge) => edge.choice)
       .map((edge) => ({
@@ -185,7 +198,7 @@ export class CallEngine {
 
   private transitionTo(targetId: string, event: CallEvent, edge: TelephoneEdge | null, candidates: string[], fallback: boolean): EngineTransition {
     const previousNode = this.currentNode()
-    if (edge?.effects) edge.effects.forEach((effect) => applyEffect(this.state, effect))
+    if (edge?.effects) edge.effects.forEach((effect) => applyEffect(this.state, effect, this.story))
     this.state.currentNodeId = targetId
     this.state.turn += 1
     this.state.visits[targetId] = (this.state.visits[targetId] ?? 0) + 1
@@ -214,7 +227,7 @@ export class CallEngine {
     if (winner) return this.transitionTo(winner.to, event, winner, candidates.map((edge) => edge.id), false)
 
     if (event.type === 'dialNumber') {
-      const knownNumber = this.story.globals.phone.validNumbers.some((entry) => entry.number === event.value)
+      const knownNumber = this.story.globals.phone.directory.some((entry) => entry.number === event.value)
       this.state.flags.wrongDials = Number(this.state.flags.wrongDials ?? 0) + 1
       const targetId = knownNumber ? this.story.globals.phone.busyNumberNodeId : this.story.globals.phone.wrongNumberNodeId
       return this.transitionTo(targetId, event, null, [], true)
@@ -256,6 +269,14 @@ export class CallEngine {
 
   setFlag(key: string, value: Scalar) {
     this.state.flags[key] = value
+  }
+
+  applyEffects(effects: GraphEffect[] = []) {
+    effects.forEach((effect) => applyEffect(this.state, effect, this.story))
+  }
+
+  discoverPhones(phoneIds: string[] = []) {
+    phoneIds.forEach((phoneId) => applyEffect(this.state, { type: 'discoverPhone', phoneId }, this.story))
   }
 }
 

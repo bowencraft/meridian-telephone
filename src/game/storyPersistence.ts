@@ -1,10 +1,11 @@
-import { STORY_OVERRIDE_KEY } from './callEngine'
+import { LEGACY_STORY_OVERRIDE_KEY, STORY_OVERRIDE_KEY } from './callEngine'
+import { migrateTelephoneStory } from './storyMigration'
 import type { TelephoneStory } from './types'
 
 export async function fetchStoryDefinitionFromLocalApi(): Promise<TelephoneStory | null> {
   try {
     const response = await fetch('/api/story-definition', { headers: { Accept: 'application/json' } })
-    return response.ok ? await response.json() as TelephoneStory : null
+    return response.ok ? migrateTelephoneStory(await response.json()) : null
   } catch {
     return null
   }
@@ -29,4 +30,5 @@ export function saveStoryDefinitionFallback(story: TelephoneStory, storage: Stor
 
 export function clearStoryOverride(storage: Storage = window.localStorage) {
   storage.removeItem(STORY_OVERRIDE_KEY)
+  storage.removeItem(LEGACY_STORY_OVERRIDE_KEY)
 }
