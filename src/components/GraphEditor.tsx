@@ -17,6 +17,7 @@ import '@xyflow/react/dist/style.css'
 import { BookOpen, Cable, Clock3, ContactRound, MapPin, Play, Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { CallEngine } from '../game/callEngine'
+import { graphFocusSelection } from '../game/graphFocus'
 import type {
   EngineTransition,
   RingEvent,
@@ -71,7 +72,7 @@ function JsonTextarea({ value, rows = 6, onCommit }: { value: unknown; rows?: nu
 }
 
 export function GraphEditor({ story, onChange }: GraphEditorProps) {
-  const [selectedNodeId, setSelectedNodeId] = useState(story.entryNodeId)
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(story.entryNodeId)
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null)
   const [tab, setTab] = useState<InspectorTab>('node')
   const [simEvent, setSimEvent] = useState<TriggerType>('dialNumber')
@@ -80,20 +81,52 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
   const [simState, setSimState] = useState(() => structuredClone(new CallEngine(story, undefined, 42).state))
   const [simLog, setSimLog] = useState<EngineTransition[]>([])
 
-  const flowNodes = useMemo<Node[]>(() => story.nodes.map((node) => ({
-    id: node.id,
-    position: node.position,
-    data: { label: `${node.label}\n${node.id}` },
-    type: 'default',
-    initialWidth: 178,
-    initialHeight: 64,
-    measured: { width: 178, height: 64 },
-    sourcePosition: Position.Bottom,
-    targetPosition: Position.Top,
-    className: `telephone-flow-node kind-${node.kind}`,
-    style: { background: nodeColor(node.kind), color: '#f2eee2', border: selectedNodeId === node.id ? '2px solid #e5b85c' : '1px solid #737b70', borderRadius: 6, width: 178, fontSize: 11, whiteSpace: 'pre-line' },
-  })), [selectedNodeId, story.nodes])
-  const flowEdges = useMemo<Edge[]>(() => story.edges.map((edge) => ({ id: edge.id, source: edge.from, target: edge.to, label: `${edge.label} · ${edge.trigger.type}`, animated: selectedEdgeId === edge.id, className: selectedEdgeId === edge.id ? 'selected-flow-edge' : '' })), [selectedEdgeId, story.edges])
+  const focusSelection = useMemo(() => graphFocusSelection(selectedNodeId, story.edges), [selectedNodeId, story.edges])
+  const flowNodes = useMemo<Node[]>(() => story.nodes.map((node) => {
+    const isSelected = selectedNodeId === node.id
+    const isDimmed = focusSelection !== null && !focusSelection.nodeIds.has(node.id)
+    return {
+      id: node.id,
+      position: node.position,
+      data: { label: `${node.label}\n${node.id}` },
+      type: 'default',
+      initialWidth: 178,
+      initialHeight: 64,
+      measured: { width: 178, height: 64 },
+      sourcePosition: Position.Bottom,
+      targetPosition: Position.Top,
+      className: `telephone-flow-node kind-${node.kind} ${isDimmed ? 'is-graph-dimmed' : focusSelection ? 'is-graph-focused' : ''}`,
+      style: {
+        background: nodeColor(node.kind),
+        color: '#f2eee2',
+        border: isSelected ? '2px solid #e5b85c' : '1px solid #737b70',
+        borderRadius: 6,
+        width: 178,
+        fontSize: 11,
+        whiteSpace: 'pre-line',
+        opacity: isDimmed ? .14 : 1,
+        filter: isDimmed ? 'grayscale(1) brightness(.62)' : 'none',
+      },
+    }
+  }), [focusSelection, selectedNodeId, story.nodes])
+  const flowEdges = useMemo<Edge[]>(() => story.edges.map((edge) => {
+    const isDimmed = focusSelection !== null && !focusSelection.edgeIds.has(edge.id)
+    const isFocused = focusSelection?.edgeIds.has(edge.id) ?? false
+    return {
+      id: edge.id,
+      source: edge.from,
+      target: edge.to,
+      label: `${edge.label} · ${edge.trigger.type}`,
+      animated: selectedEdgeId === edge.id,
+      className: `${selectedEdgeId === edge.id ? 'selected-flow-edge' : ''} ${isDimmed ? 'is-graph-dimmed' : isFocused ? 'is-graph-focused' : ''}`,
+      style: {
+        opacity: isDimmed ? .08 : 1,
+        stroke: isFocused ? '#d7b86c' : undefined,
+        strokeWidth: isFocused ? 1.8 : undefined,
+      },
+      labelStyle: { opacity: isDimmed ? 0 : 1 },
+    }
+  }), [focusSelection, selectedEdgeId, story.edges])
   const selectedNode = story.nodes.find((node) => node.id === selectedNodeId) ?? null
   const selectedEdge = story.edges.find((edge) => edge.id === selectedEdgeId) ?? null
   const simulatorNode = story.nodes.find((node) => node.id === simState.currentNodeId) ?? null
@@ -132,6 +165,7 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
     }
     addEdge({ id, source: connection.source, target: connection.target }, flowEdges)
     onChange({ ...story, edges: [...story.edges, edge] })
+    setSelectedNodeId(null)
     setSelectedEdgeId(id)
     setTab('edge')
   }
@@ -158,7 +192,7 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
     }
     if (!selectedNode || selectedNode.id === story.entryNodeId || selectedNode.kind === 'global') return
     onChange({ ...story, nodes: story.nodes.filter((node) => node.id !== selectedNode.id), edges: story.edges.filter((edge) => edge.from !== selectedNode.id && edge.to !== selectedNode.id) })
-    setSelectedNodeId(story.entryNodeId)
+    setSelectedNodeId(null)
   }
 
   function resetSimulator() {
@@ -198,7 +232,8 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
           onEdgesChange={onEdgesChange}
           onConnect={connect}
           onNodeClick={(_, selected) => { setSelectedNodeId(selected.id); setSelectedEdgeId(null); setTab('node') }}
-          onEdgeClick={(_, selected) => { setSelectedEdgeId(selected.id); setTab('edge') }}
+          onEdgeClick={(_, selected) => { setSelectedNodeId(null); setSelectedEdgeId(selected.id); setTab('edge') }}
+          onPaneClick={() => { setSelectedNodeId(null); setSelectedEdgeId(null) }}
         >
           <Background color="#727970" gap={22} size={1} />
           <MiniMap nodeColor={(flowNode) => nodeColor(story.nodes.find((node) => node.id === flowNode.id)?.kind ?? 'call')} pannable zoomable />
@@ -238,6 +273,7 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
               <label><span>结局类型（留空表示非结局）</span><input value={selectedNode.telephone?.ending ?? ''} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, ending: event.target.value as any || undefined } })} /></label>
             </CollapsibleAdminSection>
           </>}
+          {tab === 'node' && !selectedNode && <div className="empty-inspector">在画布中选择一个节点；点击空白处可恢复完整线路图。</div>}
 
           {tab === 'edge' && (selectedEdge ? <>
             <CollapsibleAdminSection title="转场身份">
