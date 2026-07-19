@@ -2848,45 +2848,1287 @@
         "refreshPolicy": "nightStart",
         "initialRoll": true,
         "stylePresets": [
-          { "id": "damp-service-card", "label": "潮湿公共服务卡", "kind": "paper-card", "defaults": { "presetId": "damp-service-card", "paperTone": "#b5a986", "inkColor": "#37362f", "accentColor": "#716348", "aging": 0.62, "moisture": 0.7, "crease": 0.28, "tear": 0.12, "opacity": 0.97, "typography": "typewriter" } },
-          { "id": "meridian-black-gold", "label": "Meridian 黑金广告", "kind": "classified-ad", "defaults": { "presetId": "meridian-black-gold", "paperTone": "#20211d", "inkColor": "#d0b46f", "accentColor": "#8d7443", "aging": 0.36, "moisture": 0.15, "crease": 0.12, "tear": 0.04, "opacity": 0.98, "typography": "serif" } },
-          { "id": "official-brass", "label": "氧化黄铜铭牌", "kind": "brass-plate", "defaults": { "presetId": "official-brass", "paperTone": "#91866d", "inkColor": "#28261f", "accentColor": "#b8ad90", "aging": 0.7, "moisture": 0.08, "crease": 0, "tear": 0, "opacity": 1, "typography": "official" } },
-          { "id": "torn-newsprint", "label": "撕裂旧报纸", "kind": "newspaper", "defaults": { "presetId": "torn-newsprint", "paperTone": "#aaa087", "inkColor": "#403c32", "accentColor": "#756d59", "aging": 0.76, "moisture": 0.34, "crease": 0.5, "tear": 0.82, "opacity": 0.98, "typography": "serif" } },
-          { "id": "mouldy-directory", "label": "发霉电话簿", "kind": "booklet", "defaults": { "presetId": "mouldy-directory", "paperTone": "#59462f", "inkColor": "#d1c5a5", "accentColor": "#2f271c", "aging": 0.86, "moisture": 0.74, "crease": 0.2, "tear": 0.18, "opacity": 1, "typography": "official" } },
-          { "id": "carbon-ticket", "label": "蓝灰回执", "kind": "ticket", "defaults": { "presetId": "carbon-ticket", "paperTone": "#8196a0", "inkColor": "#263943", "accentColor": "#b4c5c7", "aging": 0.44, "moisture": 0.42, "crease": 0.64, "tear": 0.25, "opacity": 0.96, "typography": "typewriter" } },
-          { "id": "faded-sticker", "label": "褪色贴纸", "kind": "sticker", "defaults": { "presetId": "faded-sticker", "paperTone": "#9b8464", "inkColor": "#4b2f25", "accentColor": "#b5a07a", "aging": 0.72, "moisture": 0.2, "crease": 0.18, "tear": 0.38, "opacity": 0.92, "typography": "official" } },
-          { "id": "pencil-note", "label": "铅笔手写纸条", "kind": "handwritten-note", "defaults": { "presetId": "pencil-note", "paperTone": "#c0b394", "inkColor": "#3e3a33", "accentColor": "#776d5a", "aging": 0.55, "moisture": 0.25, "crease": 0.72, "tear": 0.5, "opacity": 0.96, "typography": "handwritten" } }
+          {
+            "id": "damp-service-card",
+            "label": "潮湿公共服务卡",
+            "kind": "paper-card",
+            "defaults": {
+              "presetId": "damp-service-card",
+              "paperTone": "#b5a986",
+              "inkColor": "#37362f",
+              "accentColor": "#716348",
+              "aging": 0.62,
+              "moisture": 0.7,
+              "crease": 0.28,
+              "tear": 0.12,
+              "opacity": 0.97,
+              "typography": "typewriter"
+            }
+          },
+          {
+            "id": "meridian-black-gold",
+            "label": "Meridian 黑金广告",
+            "kind": "classified-ad",
+            "defaults": {
+              "presetId": "meridian-black-gold",
+              "paperTone": "#20211d",
+              "inkColor": "#d0b46f",
+              "accentColor": "#8d7443",
+              "aging": 0.36,
+              "moisture": 0.15,
+              "crease": 0.12,
+              "tear": 0.04,
+              "opacity": 0.98,
+              "typography": "serif"
+            }
+          },
+          {
+            "id": "official-brass",
+            "label": "氧化黄铜铭牌",
+            "kind": "brass-plate",
+            "defaults": {
+              "presetId": "official-brass",
+              "paperTone": "#91866d",
+              "inkColor": "#28261f",
+              "accentColor": "#b8ad90",
+              "aging": 0.7,
+              "moisture": 0.08,
+              "crease": 0,
+              "tear": 0,
+              "opacity": 1,
+              "typography": "official"
+            }
+          },
+          {
+            "id": "torn-newsprint",
+            "label": "撕裂旧报纸",
+            "kind": "newspaper",
+            "defaults": {
+              "presetId": "torn-newsprint",
+              "paperTone": "#aaa087",
+              "inkColor": "#403c32",
+              "accentColor": "#756d59",
+              "aging": 0.76,
+              "moisture": 0.34,
+              "crease": 0.5,
+              "tear": 0.82,
+              "opacity": 0.98,
+              "typography": "serif"
+            }
+          },
+          {
+            "id": "mouldy-directory",
+            "label": "发霉电话簿",
+            "kind": "booklet",
+            "defaults": {
+              "presetId": "mouldy-directory",
+              "paperTone": "#59462f",
+              "inkColor": "#d1c5a5",
+              "accentColor": "#2f271c",
+              "aging": 0.86,
+              "moisture": 0.74,
+              "crease": 0.2,
+              "tear": 0.18,
+              "opacity": 1,
+              "typography": "official"
+            }
+          },
+          {
+            "id": "carbon-ticket",
+            "label": "蓝灰回执",
+            "kind": "ticket",
+            "defaults": {
+              "presetId": "carbon-ticket",
+              "paperTone": "#8196a0",
+              "inkColor": "#263943",
+              "accentColor": "#b4c5c7",
+              "aging": 0.44,
+              "moisture": 0.42,
+              "crease": 0.64,
+              "tear": 0.25,
+              "opacity": 0.96,
+              "typography": "typewriter"
+            }
+          },
+          {
+            "id": "faded-sticker",
+            "label": "褪色贴纸",
+            "kind": "sticker",
+            "defaults": {
+              "presetId": "faded-sticker",
+              "paperTone": "#9b8464",
+              "inkColor": "#4b2f25",
+              "accentColor": "#b5a07a",
+              "aging": 0.72,
+              "moisture": 0.2,
+              "crease": 0.18,
+              "tear": 0.38,
+              "opacity": 0.92,
+              "typography": "official"
+            }
+          },
+          {
+            "id": "pencil-note",
+            "label": "铅笔手写纸条",
+            "kind": "handwritten-note",
+            "defaults": {
+              "presetId": "pencil-note",
+              "paperTone": "#c0b394",
+              "inkColor": "#3e3a33",
+              "accentColor": "#776d5a",
+              "aging": 0.55,
+              "moisture": 0.25,
+              "crease": 0.72,
+              "tear": 0.5,
+              "opacity": 0.96,
+              "typography": "handwritten"
+            }
+          }
         ],
         "props": [
-          { "id": "weather-card", "kind": "paper-card", "label": "天气服务卡", "ariaLabel": "检查潮湿的伦敦天气服务卡", "printedLines": ["LONDON WEATHER", "946 0264", "RAIN · RAIN · RAIN"], "copy": { "firstVariants": ["卡片被雨气泡软，印着天气服务号码 946 0264。", "这张天气卡的油墨仍很新：946 0264。背面却有二十年前的日期。"], "repeatVariants": ["天气卡背后的铅笔字仍是：它从不预报，只提问。"] }, "phoneRefs": ["weather-service"], "sceneEvent": "weather-card", "appearance": { "presetId": "damp-service-card", "rotation": -4 } },
-          { "id": "weather-folded-slip", "kind": "handwritten-note", "label": "折叠的雨况纸条", "ariaLabel": "检查用铅笔写满雨况的折叠纸条", "printedLines": ["RAIN?", "CALL 946 0264", "ANSWER POLITELY"], "copy": { "firstVariants": ["纸条要求接听者拨 946 0264，然后礼貌地确认正在下雨。", "铅笔字被反复描深：946 0264。每一遍的笔迹都像不同的人。"], "repeatVariants": ["折痕里写着：如果没有下雨，就再看一遍。"] }, "phoneRefs": ["weather-service"], "sceneEvent": "weather-card", "appearance": { "presetId": "pencil-note", "rotation": 2, "paperTone": "#b9ac8d" } },
-          { "id": "weather-window-sticker", "kind": "sticker", "label": "天气热线贴纸", "ariaLabel": "检查贴在玻璃上的褪色天气热线贴纸", "printedLines": ["AUTOMATIC WEATHER", "946 0264", "ALWAYS ACCURATE"], "copy": { "firstVariants": ["贴纸边缘已经翘起，但 946 0264 仍被透明胶仔细保护。"], "repeatVariants": ["“始终准确”下面有人添了一个问号。"] }, "phoneRefs": ["weather-service"], "sceneEvent": "weather-card", "appearance": { "presetId": "faded-sticker", "rotation": -1 } },
-
-          { "id": "meridian-ad", "kind": "classified-ad", "label": "Meridian 黑金广告", "ariaLabel": "检查烫金 Meridian 礼仪广告", "printedLines": ["MERIDIAN", "COURTESY EXCHANGE", "871 4000"], "copy": { "firstVariants": ["广告承诺免费改善你的说话方式：871 4000。", "黑纸上的金字写着：陌生人的一分钟也有价值。咨询 871 4000。"], "repeatVariants": ["纸上的模特笑得像从未挂断过电话。"] }, "phoneRefs": ["meridian-public"], "sceneEvent": "meridian-ad", "appearance": { "presetId": "meridian-black-gold", "rotation": 3 } },
-          { "id": "meridian-survey", "kind": "paper-card", "label": "家庭满意度调查卡", "ariaLabel": "检查 Meridian 家庭满意度调查卡", "printedLines": ["A POLITE HOME", "BEGINS WITH LISTENING", "871 4000"], "copy": { "firstVariants": ["调查卡没有问题，只有答案。最下方印着 871 4000。", "“您愿意听取更好的选择吗？”旁边所有方框都预先勾了“是”。号码是 871 4000。"], "repeatVariants": ["卡片背面列着你的电话亭位置。"] }, "phoneRefs": ["meridian-public"], "sceneEvent": "meridian-ad", "appearance": { "presetId": "damp-service-card", "rotation": -2, "paperTone": "#9d9278", "inkColor": "#5b261f" } },
-          { "id": "meridian-course-card", "kind": "ticket", "label": "礼貌训练试听券", "ariaLabel": "检查 Meridian 礼貌训练试听券", "printedLines": ["ONE FREE LESSON", "VOICE CORRECTION", "871 4000"], "copy": { "firstVariants": ["试听券允许你免费借用一种更受欢迎的声音。预约线是 871 4000。"], "repeatVariants": ["票根处盖着：已使用。姓名栏却是空的。"] }, "phoneRefs": ["meridian-public"], "sceneEvent": "meridian-ad", "appearance": { "presetId": "carbon-ticket", "rotation": 4, "paperTone": "#7f8f89", "inkColor": "#261f1c" } },
-
-          { "id": "scratched-plate", "kind": "brass-plate", "label": "被划铭牌", "ariaLabel": "检查电话机旁被刮花的维修铭牌", "printedLines": ["GPO MAINTENANCE", "EXT. 871 4019", "WITHDRAWN"], "copy": { "firstVariants": ["刮痕下藏着维修转接号 871 4019。", "“注销”字样盖得很重，下面的 871 4019 却还能辨认。"], "repeatVariants": ["有人故意想抹掉十九号，却没舍得用力。"] }, "phoneRefs": ["meridian-extension-19"], "sceneEvent": "scratched-plate", "appearance": { "presetId": "official-brass", "rotation": 1 } },
-          { "id": "repair-docket", "kind": "ticket", "label": "十九号维修回执", "ariaLabel": "检查从维修夹板撕下的十九号回执", "printedLines": ["FAULT DESK", "TRANSFER 19", "871 4019"], "copy": { "firstVariants": ["维修回执把故障转给十九号席位：871 4019。接线员签名被水洗掉了。"], "repeatVariants": ["复写纸下还有一句：不要让礼仪部接手。"] }, "phoneRefs": ["meridian-extension-19"], "sceneEvent": "scratched-plate", "appearance": { "presetId": "carbon-ticket", "rotation": -3 } },
-          { "id": "extension-note", "kind": "handwritten-note", "label": "接线员的十九号纸条", "ariaLabel": "检查塞在机壳缝里的手写转接纸条", "printedLines": ["871 4019", "ASK FOR NINETEEN", "DO NOT REPEAT"], "copy": { "firstVariants": ["纸条只留下 871 4019 和一句警告：不要重复录音要求你说的话。"], "repeatVariants": ["数字最后一位被描了十九遍。"] }, "phoneRefs": ["meridian-extension-19"], "sceneEvent": "scratched-plate", "appearance": { "presetId": "pencil-note", "rotation": 5 } },
-
-          { "id": "newspaper", "kind": "newspaper", "label": "午夜节目报纸剪角", "ariaLabel": "检查贴住的 Radio Nocturne 节目表", "printedLines": ["RADIO NOCTURNE", "MIDNIGHT REQUESTS", "794 1966"], "copy": { "firstVariants": ["午夜节目 Radio Nocturne 的点歌线是 794 1966。", "报纸节目表称 794 1966 会播放“最适合你现在听的歌”。"], "repeatVariants": ["节目旁边写着：听数字，不要听歌。"] }, "phoneRefs": ["radio-nocturne"], "sceneEvent": "newspaper", "appearance": { "presetId": "torn-newsprint", "rotation": 5 } },
-          { "id": "radio-ticket", "kind": "ticket", "label": "午夜点歌凭条", "ariaLabel": "检查 Radio Nocturne 午夜点歌凭条", "printedLines": ["REQUEST LINE", "794 1966", "ONE VOICE ONLY"], "copy": { "firstVariants": ["点歌凭条要求拨 794 1966，但曲名栏印着你的上一句回答。"], "repeatVariants": ["票背写着：接线员会替你选歌。"] }, "phoneRefs": ["radio-nocturne"], "sceneEvent": "newspaper", "appearance": { "presetId": "carbon-ticket", "rotation": -5, "paperTone": "#7c725f", "inkColor": "#241c19" } },
-          { "id": "midnight-classified", "kind": "classified-ad", "label": "午夜广播分类广告", "ariaLabel": "检查午夜广播的窄幅分类广告", "printedLines": ["ARE YOU AWAKE?", "CALL 794 1966", "WE ALREADY KNOW"], "copy": { "firstVariants": ["分类广告问你是否还醒着，并给出 794 1966。最后一行是：我们已经知道答案。"], "repeatVariants": ["纸面温热，像刚从印刷机里出来。"] }, "phoneRefs": ["radio-nocturne"], "sceneEvent": "newspaper", "appearance": { "presetId": "meridian-black-gold", "rotation": 2, "paperTone": "#312723", "inkColor": "#b9a785" } },
-
-          { "id": "phonebook", "kind": "booklet", "label": "发霉电话簿", "ariaLabel": "检查电话下方发霉的伦敦电话簿", "printedLines": ["LONDON DIRECTORY", "LOST PROPERTY", "301 1968"], "copy": { "firstVariants": ["失物招领 301 1968 被红笔圈了三遍。", "电话簿缺了许多页，唯独失物招领 301 1968 被布条固定住。"], "repeatVariants": ["认领单的姓名栏是空白的。"] }, "phoneRefs": ["lost-property"], "sceneEvent": "phonebook", "appearance": { "presetId": "mouldy-directory", "rotation": -3 } },
-          { "id": "lost-card", "kind": "paper-card", "label": "无名失物认领卡", "ariaLabel": "检查没有姓名的失物认领卡", "printedLines": ["LOST PROPERTY", "301 1968", "NAME: __________"], "copy": { "firstVariants": ["认领卡没有物品描述，只让失主拨 301 1968 并说出自己的姓名。"], "repeatVariants": ["姓名栏的压痕像是曾经写过你的名字。"] }, "phoneRefs": ["lost-property"], "sceneEvent": "phonebook", "appearance": { "presetId": "damp-service-card", "rotation": 3, "paperTone": "#aa9f83", "inkColor": "#542e28" } },
-          { "id": "directory-page", "kind": "newspaper", "label": "撕下的电话簿目录页", "ariaLabel": "检查撕下并用红笔圈画的电话簿目录页", "printedLines": ["L — LOST PROPERTY", "301 1968", "ASK WHAT WAS LOST"], "copy": { "firstVariants": ["目录页上的其他号码全被墨水覆盖，只剩 301 1968。"], "repeatVariants": ["红圈下面写着：他们会告诉你丢了什么。"] }, "phoneRefs": ["lost-property"], "sceneEvent": "phonebook", "appearance": { "presetId": "torn-newsprint", "rotation": -1, "tear": 0.92 } },
-
-          { "id": "coin-return-note", "kind": "handwritten-note", "label": "退币槽里的细纸条", "ariaLabel": "检查电话机退币槽里的卷曲纸条", "printedLines": ["IF YOU JOINED", "USE THEIR VOICE", "TRY AGAIN"], "copy": { "firstVariants": ["里面没有硬币，只有一张劝你用 Meridian 的声音撒谎的纸条。"], "repeatVariants": ["纸条背面多了一行：第一次失败不是浪费。"] }, "sceneEvent": "coin-return", "appearance": { "presetId": "pencil-note", "rotation": 0, "scale": 0.8 } }
+          {
+            "id": "weather-card",
+            "kind": "paper-card",
+            "label": "天气服务卡",
+            "ariaLabel": "检查潮湿的伦敦天气服务卡",
+            "printedLines": [
+              "LONDON WEATHER",
+              "946 0264",
+              "RAIN · RAIN · RAIN"
+            ],
+            "copy": {
+              "firstVariants": [
+                "卡片被雨气泡软，印着天气服务号码 946 0264。",
+                "这张天气卡的油墨仍很新：946 0264。背面却有二十年前的日期。"
+              ],
+              "repeatVariants": [
+                "天气卡背后的铅笔字仍是：它从不预报，只提问。"
+              ]
+            },
+            "phoneRefs": [
+              "weather-service"
+            ],
+            "sceneEvent": "weather-card",
+            "appearance": {
+              "presetId": "damp-service-card",
+              "rotation": -4
+            }
+          },
+          {
+            "id": "weather-folded-slip",
+            "kind": "handwritten-note",
+            "label": "折叠的雨况纸条",
+            "ariaLabel": "检查用铅笔写满雨况的折叠纸条",
+            "printedLines": [
+              "RAIN?",
+              "CALL 946 0264",
+              "ANSWER POLITELY"
+            ],
+            "copy": {
+              "firstVariants": [
+                "纸条要求接听者拨 946 0264，然后礼貌地确认正在下雨。",
+                "铅笔字被反复描深：946 0264。每一遍的笔迹都像不同的人。"
+              ],
+              "repeatVariants": [
+                "折痕里写着：如果没有下雨，就再看一遍。"
+              ]
+            },
+            "phoneRefs": [
+              "weather-service"
+            ],
+            "sceneEvent": "weather-card",
+            "appearance": {
+              "presetId": "pencil-note",
+              "rotation": 2,
+              "paperTone": "#b9ac8d"
+            }
+          },
+          {
+            "id": "weather-window-sticker",
+            "kind": "sticker",
+            "label": "天气热线贴纸",
+            "ariaLabel": "检查贴在玻璃上的褪色天气热线贴纸",
+            "printedLines": [
+              "AUTOMATIC WEATHER",
+              "946 0264",
+              "ALWAYS ACCURATE"
+            ],
+            "copy": {
+              "firstVariants": [
+                "贴纸边缘已经翘起，但 946 0264 仍被透明胶仔细保护。"
+              ],
+              "repeatVariants": [
+                "“始终准确”下面有人添了一个问号。"
+              ]
+            },
+            "phoneRefs": [
+              "weather-service"
+            ],
+            "sceneEvent": "weather-card",
+            "appearance": {
+              "presetId": "faded-sticker",
+              "rotation": -1
+            }
+          },
+          {
+            "id": "meridian-ad",
+            "kind": "classified-ad",
+            "label": "Meridian 黑金广告",
+            "ariaLabel": "检查烫金 Meridian 礼仪广告",
+            "printedLines": [
+              "MERIDIAN",
+              "COURTESY EXCHANGE",
+              "871 4000"
+            ],
+            "copy": {
+              "firstVariants": [
+                "广告承诺免费改善你的说话方式：871 4000。",
+                "黑纸上的金字写着：陌生人的一分钟也有价值。咨询 871 4000。"
+              ],
+              "repeatVariants": [
+                "纸上的模特笑得像从未挂断过电话。"
+              ]
+            },
+            "phoneRefs": [
+              "meridian-public"
+            ],
+            "sceneEvent": "meridian-ad",
+            "appearance": {
+              "presetId": "meridian-black-gold",
+              "rotation": 3
+            }
+          },
+          {
+            "id": "meridian-survey",
+            "kind": "paper-card",
+            "label": "家庭满意度调查卡",
+            "ariaLabel": "检查 Meridian 家庭满意度调查卡",
+            "printedLines": [
+              "A POLITE HOME",
+              "BEGINS WITH LISTENING",
+              "871 4000"
+            ],
+            "copy": {
+              "firstVariants": [
+                "调查卡没有问题，只有答案。最下方印着 871 4000。",
+                "“您愿意听取更好的选择吗？”旁边所有方框都预先勾了“是”。号码是 871 4000。"
+              ],
+              "repeatVariants": [
+                "卡片背面列着你的电话亭位置。"
+              ]
+            },
+            "phoneRefs": [
+              "meridian-public"
+            ],
+            "sceneEvent": "meridian-ad",
+            "appearance": {
+              "presetId": "damp-service-card",
+              "rotation": -2,
+              "paperTone": "#9d9278",
+              "inkColor": "#5b261f"
+            }
+          },
+          {
+            "id": "meridian-course-card",
+            "kind": "ticket",
+            "label": "礼貌训练试听券",
+            "ariaLabel": "检查 Meridian 礼貌训练试听券",
+            "printedLines": [
+              "ONE FREE LESSON",
+              "VOICE CORRECTION",
+              "871 4000"
+            ],
+            "copy": {
+              "firstVariants": [
+                "试听券允许你免费借用一种更受欢迎的声音。预约线是 871 4000。"
+              ],
+              "repeatVariants": [
+                "票根处盖着：已使用。姓名栏却是空的。"
+              ]
+            },
+            "phoneRefs": [
+              "meridian-public"
+            ],
+            "sceneEvent": "meridian-ad",
+            "appearance": {
+              "presetId": "carbon-ticket",
+              "rotation": 4,
+              "paperTone": "#7f8f89",
+              "inkColor": "#261f1c"
+            }
+          },
+          {
+            "id": "scratched-plate",
+            "kind": "brass-plate",
+            "label": "被划铭牌",
+            "ariaLabel": "检查电话机旁被刮花的维修铭牌",
+            "printedLines": [
+              "GPO MAINTENANCE",
+              "EXT. 871 4019",
+              "WITHDRAWN"
+            ],
+            "copy": {
+              "firstVariants": [
+                "刮痕下藏着维修转接号 871 4019。",
+                "“注销”字样盖得很重，下面的 871 4019 却还能辨认。"
+              ],
+              "repeatVariants": [
+                "有人故意想抹掉十九号，却没舍得用力。"
+              ]
+            },
+            "phoneRefs": [
+              "meridian-extension-19"
+            ],
+            "sceneEvent": "scratched-plate",
+            "appearance": {
+              "presetId": "official-brass",
+              "rotation": 2.3,
+              "typography": "official",
+              "aging": 0.66,
+              "moisture": 0.24,
+              "crease": 0.23,
+              "tear": 0.48
+            }
+          },
+          {
+            "id": "repair-docket",
+            "kind": "ticket",
+            "label": "十九号维修回执",
+            "ariaLabel": "检查从维修夹板撕下的十九号回执",
+            "printedLines": [
+              "FAULT DESK",
+              "TRANSFER 19",
+              "871 4019"
+            ],
+            "copy": {
+              "firstVariants": [
+                "维修回执把故障转给十九号席位：871 4019。接线员签名被水洗掉了。"
+              ],
+              "repeatVariants": [
+                "复写纸下还有一句：不要让礼仪部接手。"
+              ]
+            },
+            "phoneRefs": [
+              "meridian-extension-19"
+            ],
+            "sceneEvent": "scratched-plate",
+            "appearance": {
+              "presetId": "carbon-ticket",
+              "rotation": -3
+            }
+          },
+          {
+            "id": "extension-note",
+            "kind": "handwritten-note",
+            "label": "接线员的十九号纸条",
+            "ariaLabel": "检查塞在机壳缝里的手写转接纸条",
+            "printedLines": [
+              "871 4019",
+              "ASK FOR NINETEEN",
+              "DO NOT REPEAT"
+            ],
+            "copy": {
+              "firstVariants": [
+                "纸条只留下 871 4019 和一句警告：不要重复录音要求你说的话。"
+              ],
+              "repeatVariants": [
+                "数字最后一位被描了十九遍。"
+              ]
+            },
+            "phoneRefs": [
+              "meridian-extension-19"
+            ],
+            "sceneEvent": "scratched-plate",
+            "appearance": {
+              "presetId": "pencil-note",
+              "rotation": 5
+            }
+          },
+          {
+            "id": "newspaper",
+            "kind": "newspaper",
+            "label": "午夜节目报纸剪角",
+            "ariaLabel": "检查贴住的 Radio Nocturne 节目表",
+            "printedLines": [
+              "RADIO NOCTURNE",
+              "MIDNIGHT REQUESTS",
+              "794 1966"
+            ],
+            "copy": {
+              "firstVariants": [
+                "午夜节目 Radio Nocturne 的点歌线是 794 1966。",
+                "报纸节目表称 794 1966 会播放“最适合你现在听的歌”。"
+              ],
+              "repeatVariants": [
+                "节目旁边写着：听数字，不要听歌。"
+              ]
+            },
+            "phoneRefs": [
+              "radio-nocturne"
+            ],
+            "sceneEvent": "newspaper",
+            "appearance": {
+              "presetId": "torn-newsprint",
+              "rotation": 5
+            }
+          },
+          {
+            "id": "radio-ticket",
+            "kind": "ticket",
+            "label": "午夜点歌凭条",
+            "ariaLabel": "检查 Radio Nocturne 午夜点歌凭条",
+            "printedLines": [
+              "REQUEST LINE",
+              "794 1966",
+              "ONE VOICE ONLY"
+            ],
+            "copy": {
+              "firstVariants": [
+                "点歌凭条要求拨 794 1966，但曲名栏印着你的上一句回答。"
+              ],
+              "repeatVariants": [
+                "票背写着：接线员会替你选歌。"
+              ]
+            },
+            "phoneRefs": [
+              "radio-nocturne"
+            ],
+            "sceneEvent": "newspaper",
+            "appearance": {
+              "presetId": "carbon-ticket",
+              "rotation": -5,
+              "paperTone": "#7c725f",
+              "inkColor": "#241c19"
+            }
+          },
+          {
+            "id": "midnight-classified",
+            "kind": "classified-ad",
+            "label": "午夜广播分类广告",
+            "ariaLabel": "检查午夜广播的窄幅分类广告",
+            "printedLines": [
+              "ARE YOU AWAKE?",
+              "CALL 794 1966",
+              "WE ALREADY KNOW"
+            ],
+            "copy": {
+              "firstVariants": [
+                "分类广告问你是否还醒着，并给出 794 1966。最后一行是：我们已经知道答案。"
+              ],
+              "repeatVariants": [
+                "纸面温热，像刚从印刷机里出来。"
+              ]
+            },
+            "phoneRefs": [
+              "radio-nocturne"
+            ],
+            "sceneEvent": "newspaper",
+            "appearance": {
+              "presetId": "meridian-black-gold",
+              "rotation": 2,
+              "paperTone": "#312723",
+              "inkColor": "#b9a785"
+            }
+          },
+          {
+            "id": "phonebook",
+            "kind": "booklet",
+            "label": "发霉电话簿",
+            "ariaLabel": "检查电话下方发霉的伦敦电话簿",
+            "printedLines": [
+              "LONDON DIRECTORY",
+              "LOST PROPERTY",
+              "301 1968"
+            ],
+            "copy": {
+              "firstVariants": [
+                "失物招领 301 1968 被红笔圈了三遍。",
+                "电话簿缺了许多页，唯独失物招领 301 1968 被布条固定住。"
+              ],
+              "repeatVariants": [
+                "认领单的姓名栏是空白的。"
+              ]
+            },
+            "phoneRefs": [
+              "lost-property"
+            ],
+            "sceneEvent": "phonebook",
+            "appearance": {
+              "presetId": "meridian-black-gold",
+              "rotation": -3,
+              "paperTone": "#2d2715"
+            }
+          },
+          {
+            "id": "lost-card",
+            "kind": "paper-card",
+            "label": "无名失物认领卡",
+            "ariaLabel": "检查没有姓名的失物认领卡",
+            "printedLines": [
+              "LOST PROPERTY",
+              "301 1968",
+              "NAME: __________"
+            ],
+            "copy": {
+              "firstVariants": [
+                "认领卡没有物品描述，只让失主拨 301 1968 并说出自己的姓名。"
+              ],
+              "repeatVariants": [
+                "姓名栏的压痕像是曾经写过你的名字。"
+              ]
+            },
+            "phoneRefs": [
+              "lost-property"
+            ],
+            "sceneEvent": "phonebook",
+            "appearance": {
+              "presetId": "damp-service-card",
+              "rotation": 3,
+              "paperTone": "#aa9f83",
+              "inkColor": "#542e28"
+            }
+          },
+          {
+            "id": "directory-page",
+            "kind": "newspaper",
+            "label": "撕下的电话簿目录页",
+            "ariaLabel": "检查撕下并用红笔圈画的电话簿目录页",
+            "printedLines": [
+              "L — LOST PROPERTY",
+              "301 1968",
+              "ASK WHAT WAS LOST"
+            ],
+            "copy": {
+              "firstVariants": [
+                "目录页上的其他号码全被墨水覆盖，只剩 301 1968。"
+              ],
+              "repeatVariants": [
+                "红圈下面写着：他们会告诉你丢了什么。"
+              ]
+            },
+            "phoneRefs": [
+              "lost-property"
+            ],
+            "sceneEvent": "phonebook",
+            "appearance": {
+              "presetId": "torn-newsprint",
+              "rotation": -1,
+              "tear": 0.92
+            }
+          },
+          {
+            "id": "coin-return-note",
+            "kind": "handwritten-note",
+            "label": "退币槽里的细纸条",
+            "ariaLabel": "检查电话机退币槽里的卷曲纸条",
+            "printedLines": [
+              "IF YOU JOINED",
+              "USE THEIR VOICE",
+              "TRY AGAIN"
+            ],
+            "copy": {
+              "firstVariants": [
+                "里面没有硬币，只有一张劝你用 Meridian 的声音撒谎的纸条。"
+              ],
+              "repeatVariants": [
+                "纸条背面多了一行：第一次失败不是浪费。"
+              ]
+            },
+            "sceneEvent": "coin-return",
+            "appearance": {
+              "presetId": "pencil-note",
+              "rotation": 0,
+              "scale": 0.8
+            }
+          },
+          {
+            "id": "weather-rain-tally",
+            "kind": "handwritten-note",
+            "label": "雨夜记录残页",
+            "ariaLabel": "检查写满雨夜记录的潮湿残页",
+            "printedLines": [
+              "23:10 — RAIN",
+              "23:40 — STILL RAIN",
+              "00:10 — ASK AGAIN"
+            ],
+            "copy": {
+              "firstVariants": [
+                "残页没有电话号码，只记录了三次相同的雨况。最后一行换了笔迹：下一位接听者也会说正在下雨。"
+              ],
+              "repeatVariants": [
+                "每个时间后面都有一次很轻的电话铃铅笔印。"
+              ]
+            },
+            "sceneEvent": "weather-card",
+            "appearance": {
+              "presetId": "pencil-note",
+              "rotation": -3
+            }
+          },
+          {
+            "id": "meridian-etiquette-fragment",
+            "kind": "classified-ad",
+            "label": "礼貌训练残页",
+            "ariaLabel": "检查缺少联络方式的 Meridian 礼貌训练残页",
+            "printedLines": [
+              "LESSON IV",
+              "PAUSE · SMILE · AGREE",
+              "DO NOT IMPROVISE"
+            ],
+            "copy": {
+              "firstVariants": [
+                "这是训练手册的第四课，没有地址或号码。页边批注说：停顿两秒，听起来会更像你自己。"
+              ],
+              "repeatVariants": [
+                "“不要即兴回答”下面有一道被指甲反复划过的痕迹。"
+              ]
+            },
+            "sceneEvent": "meridian-ad",
+            "appearance": {
+              "presetId": "meridian-black-gold",
+              "rotation": 1
+            }
+          },
+          {
+            "id": "extension-routing-diagram",
+            "kind": "paper-card",
+            "label": "旧转接线路图",
+            "ariaLabel": "检查没有完整号码的旧转接线路图",
+            "printedLines": [
+              "FAULT → COMPLAINTS",
+              "COMPLAINTS → NINETEEN",
+              "NINETEEN → OPERATOR"
+            ],
+            "copy": {
+              "firstVariants": [
+                "线路图没有写出完整号码，只把故障台、投诉席和十九号画成一个闭环；总机在环外。"
+              ],
+              "repeatVariants": [
+                "通往总机的箭头是后来用蓝铅笔补上的。"
+              ]
+            },
+            "sceneEvent": "scratched-plate",
+            "appearance": {
+              "presetId": "damp-service-card",
+              "rotation": 2,
+              "typography": "official"
+            }
+          },
+          {
+            "id": "radio-lyrics-fragment",
+            "kind": "newspaper",
+            "label": "午夜歌词剪角",
+            "ariaLabel": "检查一段没有节目号码的午夜歌词剪角",
+            "printedLines": [
+              "…THE LINE REMAINS",
+              "…THE VOICE RETURNS",
+              "00:19"
+            ],
+            "copy": {
+              "firstVariants": [
+                "剪角上没有点歌号码，只有一句被圈起的歌词：线路留下来，声音会回来。播出时间是零点十九分。"
+              ],
+              "repeatVariants": [
+                "歌词末尾原本有一个姓名，已经被整齐裁掉。"
+              ]
+            },
+            "sceneEvent": "newspaper",
+            "appearance": {
+              "presetId": "torn-newsprint",
+              "rotation": -4
+            }
+          },
+          {
+            "id": "lost-property-description",
+            "kind": "paper-card",
+            "label": "未登记失物说明",
+            "ariaLabel": "检查一张没有认领号码的失物说明",
+            "printedLines": [
+              "ITEM: ONE VOICE",
+              "FOUND: PUBLIC CALL BOX",
+              "OWNER: UNCONFIRMED"
+            ],
+            "copy": {
+              "firstVariants": [
+                "认领卡没有号码。失物一栏写着“一种声音”，发现地点正是这座电话亭，失主尚未确认。"
+              ],
+              "repeatVariants": [
+                "纸背的复写压痕像是：请让失主先开口。"
+              ]
+            },
+            "sceneEvent": "phonebook",
+            "appearance": {
+              "presetId": "damp-service-card",
+              "rotation": 4,
+              "paperTone": "#a99e84"
+            }
+          },
+          {
+            "id": "counter-night-ticket",
+            "kind": "ticket",
+            "label": "末班车票",
+            "ariaLabel": "拿起被雨打湿的十五路末班车票",
+            "printedLines": [
+              "15 · NIGHT BUS",
+              "PUNCH 23:47"
+            ],
+            "copy": {
+              "firstVariants": [
+                "一张被雨打湿的 15 路末班车票。背面写着：如果电话响了两次，不要报出你的名字。"
+              ],
+              "repeatVariants": [
+                "打孔时间是 23:47；背面的警告没有留下署名。"
+              ]
+            },
+            "counterStyle": "night-ticket",
+            "appearance": {
+              "presetId": "damp-service-card",
+              "rotation": 6,
+              "paperTone": "#bbae8d",
+              "inkColor": "#514735"
+            }
+          },
+          {
+            "id": "counter-inspector-ticket",
+            "kind": "ticket",
+            "label": "检票员存根",
+            "ariaLabel": "拿起一张折过的夜班检票员存根",
+            "printedLines": [
+              "ROUTE 15",
+              "ONE PASSENGER MISSING",
+              "00:03"
+            ],
+            "copy": {
+              "firstVariants": [
+                "存根记录午夜后三分钟少了一名乘客。备注栏写着：他在红色电话亭下车，却没有离开。"
+              ],
+              "repeatVariants": [
+                "纸边粘着一小片和听筒线相同的黑色胶皮。"
+              ]
+            },
+            "counterStyle": "night-ticket",
+            "appearance": {
+              "presetId": "carbon-ticket",
+              "rotation": -5
+            }
+          },
+          {
+            "id": "counter-meridian-matches",
+            "kind": "classified-ad",
+            "label": "Meridian 火柴盒",
+            "ariaLabel": "拿起只剩一根火柴的 Meridian 火柴盒",
+            "printedLines": [
+              "MERIDIAN",
+              "COURTESY"
+            ],
+            "copy": {
+              "firstVariants": [
+                "火柴只剩一根。盒底印着子午礼仪交换所的旧标志，地址一栏被蓝墨水涂黑。"
+              ],
+              "repeatVariants": [
+                "唯一一根火柴被倒着装回去，磷头朝内。"
+              ]
+            },
+            "counterStyle": "meridian-matches",
+            "appearance": {
+              "presetId": "meridian-black-gold",
+              "rotation": -8,
+              "paperTone": "#76352a",
+              "inkColor": "#c4a66e",
+              "accentColor": "#3a1714"
+            }
+          },
+          {
+            "id": "counter-courtesy-matchbook",
+            "kind": "classified-ad",
+            "label": "礼仪俱乐部火柴簿",
+            "ariaLabel": "拿起一册受潮的礼仪俱乐部火柴簿",
+            "printedLines": [
+              "A WARM VOICE",
+              "OPENS EVERY DOOR"
+            ],
+            "copy": {
+              "firstVariants": [
+                "火柴簿上没有电话，只印着一句过分热情的格言。内页记着三个人的声调：温暖、顺从、可信。"
+              ],
+              "repeatVariants": [
+                "三个声调旁都盖着同一个小小的 M 印章。"
+              ]
+            },
+            "counterStyle": "meridian-matches",
+            "appearance": {
+              "presetId": "meridian-black-gold",
+              "rotation": 4,
+              "paperTone": "#463d2a",
+              "inkColor": "#d2bd88",
+              "accentColor": "#242016"
+            }
+          },
+          {
+            "id": "counter-locker-key",
+            "kind": "brass-plate",
+            "label": "黄铜钥匙",
+            "ariaLabel": "拿起挂着十九号牌的细小黄铜钥匙",
+            "printedLines": [
+              "19"
+            ],
+            "copy": {
+              "firstVariants": [
+                "细小的黄铜钥匙挂着 19 号牌，齿槽里有黑色电话线胶皮留下的碎屑。"
+              ],
+              "repeatVariants": [
+                "钥匙没有锈，像每个夜班都有人使用。"
+              ]
+            },
+            "counterStyle": "locker-key",
+            "appearance": {
+              "presetId": "official-brass",
+              "rotation": -13,
+              "paperTone": "#8b7545",
+              "inkColor": "#241b0e",
+              "accentColor": "#b39a5e"
+            }
+          },
+          {
+            "id": "counter-switch-key",
+            "kind": "brass-plate",
+            "label": "无号交换机钥匙",
+            "ariaLabel": "拿起没有号牌的磨亮交换机钥匙",
+            "printedLines": [
+              "GPO"
+            ],
+            "copy": {
+              "firstVariants": [
+                "钥匙的号牌被剪掉了。匙柄被磨得很亮，细齿却不像门锁，更像旧式交换机的检修锁。"
+              ],
+              "repeatVariants": [
+                "断口处残留一小段蓝线，曾经拴着某种标签。"
+              ]
+            },
+            "counterStyle": "locker-key",
+            "appearance": {
+              "presetId": "official-brass",
+              "rotation": 9,
+              "paperTone": "#766b4d",
+              "inkColor": "#201b12",
+              "accentColor": "#aa9561"
+            }
+          },
+          {
+            "id": "counter-operator-docket",
+            "kind": "ticket",
+            "label": "交换台回执",
+            "ariaLabel": "拿起从交换台撕下的蓝灰色回执",
+            "printedLines": [
+              "GPO TOLL DESK",
+              "TRANSFER 03",
+              "INITIAL ______"
+            ],
+            "copy": {
+              "firstVariants": [
+                "一张从交换台撕下的蓝灰色回执。接线员姓名被水浸开，只剩一句铅笔字：不要相信第三次转接。"
+              ],
+              "repeatVariants": [
+                "蓝灰复写层下面还压着一个极淡的十九。"
+              ]
+            },
+            "counterStyle": "operator-docket",
+            "appearance": {
+              "presetId": "carbon-ticket",
+              "rotation": 4
+            }
+          },
+          {
+            "id": "counter-silent-line-docket",
+            "kind": "ticket",
+            "label": "静线测试回执",
+            "ariaLabel": "拿起标记为静线测试的蓝灰回执",
+            "printedLines": [
+              "SILENT LINE TEST",
+              "RESULT: VOICE PRESENT",
+              "OPERATOR: —"
+            ],
+            "copy": {
+              "firstVariants": [
+                "测试回执记录线路在无人接听时仍检测到声音。接线员栏被一条平直的横线代替。"
+              ],
+              "repeatVariants": [
+                "回执背面写着：静线不等于空线。"
+              ]
+            },
+            "counterStyle": "operator-docket",
+            "appearance": {
+              "presetId": "carbon-ticket",
+              "rotation": -3,
+              "paperTone": "#71868f"
+            }
+          }
         ],
         "slots": [
-          { "id": "weather-card", "label": "左上玻璃广告位", "bounds": { "x": 9, "y": 18, "width": 15, "height": 17 }, "mobileBounds": { "x": 5, "y": 60, "width": 27, "height": 10 }, "spawnChance": 0.9, "candidates": [{ "propId": "weather-card", "weight": 5 }, { "propId": "weather-folded-slip", "weight": 3 }, { "propId": "weather-window-sticker", "weight": 2 }], "jitter": { "x": 0.7, "y": 0.6, "rotation": 1.4, "scale": 0.035 } },
-          { "id": "meridian-ad", "label": "右上广告位", "bounds": { "x": 76, "y": 14, "width": 16, "height": 22 }, "mobileBounds": { "x": 36.5, "y": 58, "width": 27, "height": 12 }, "spawnChance": 0.86, "candidates": [{ "propId": "meridian-ad", "weight": 5 }, { "propId": "meridian-survey", "weight": 3 }, { "propId": "meridian-course-card", "weight": 2 }], "jitter": { "x": 0.8, "y": 0.8, "rotation": 1.2, "scale": 0.04 } },
-          { "id": "scratched-plate", "label": "机身右侧维修位", "bounds": { "x": 72, "y": 53, "width": 12, "height": 10 }, "mobileBounds": { "x": 69, "y": 60, "width": 25, "height": 9 }, "spawnChance": 0.78, "candidates": [{ "propId": "scratched-plate", "weight": 5 }, { "propId": "repair-docket", "weight": 3 }, { "propId": "extension-note", "weight": 2 }], "jitter": { "x": 0.45, "y": 0.4, "rotation": 0.8, "scale": 0.025 } },
-          { "id": "newspaper", "label": "左下纸张位", "bounds": { "x": 5, "y": 70, "width": 18, "height": 20 }, "mobileBounds": { "x": 4, "y": 72, "width": 28, "height": 10 }, "spawnChance": 0.74, "candidates": [{ "propId": "newspaper", "weight": 5 }, { "propId": "radio-ticket", "weight": 3 }, { "propId": "midnight-classified", "weight": 2 }], "jitter": { "x": 0.8, "y": 0.7, "rotation": 1.6, "scale": 0.04 } },
-          { "id": "phonebook", "label": "右下目录位", "bounds": { "x": 73, "y": 77, "width": 19, "height": 14 }, "mobileBounds": { "x": 36, "y": 72, "width": 28, "height": 10 }, "spawnChance": 0.82, "candidates": [{ "propId": "phonebook", "weight": 5 }, { "propId": "lost-card", "weight": 3 }, { "propId": "directory-page", "weight": 2 }], "jitter": { "x": 0.7, "y": 0.55, "rotation": 1.3, "scale": 0.035 } },
-          { "id": "coin-return", "label": "实体退币槽", "bounds": { "x": 46, "y": 61, "width": 9, "height": 8 }, "mobileBounds": { "x": 69, "y": 72, "width": 24, "height": 9 }, "spawnChance": 0.92, "candidates": [{ "propId": "coin-return-note", "weight": 1 }] }
+          {
+            "id": "weather-card",
+            "label": "左上玻璃广告位",
+            "bounds": {
+              "x": 9,
+              "y": 18,
+              "width": 15,
+              "height": 17
+            },
+            "mobileBounds": {
+              "x": 2,
+              "y": 22,
+              "width": 30,
+              "height": 16
+            },
+            "spawnChance": 0.9,
+            "candidates": [
+              {
+                "propId": "weather-card",
+                "weight": 5
+              },
+              {
+                "propId": "weather-folded-slip",
+                "weight": 3
+              },
+              {
+                "propId": "weather-window-sticker",
+                "weight": 2
+              },
+              {
+                "propId": "weather-rain-tally",
+                "weight": 2
+              }
+            ],
+            "jitter": {
+              "x": 2.8,
+              "y": 2.2,
+              "rotation": 4.8,
+              "scale": 0.07
+            }
+          },
+          {
+            "id": "meridian-ad",
+            "label": "右上广告位",
+            "bounds": {
+              "x": 76,
+              "y": 14,
+              "width": 16,
+              "height": 22
+            },
+            "mobileBounds": {
+              "x": 69,
+              "y": 17,
+              "width": 29,
+              "height": 19
+            },
+            "spawnChance": 0.86,
+            "candidates": [
+              {
+                "propId": "meridian-ad",
+                "weight": 5
+              },
+              {
+                "propId": "meridian-survey",
+                "weight": 3
+              },
+              {
+                "propId": "meridian-course-card",
+                "weight": 2
+              },
+              {
+                "propId": "meridian-etiquette-fragment",
+                "weight": 2
+              }
+            ],
+            "jitter": {
+              "x": 2.5,
+              "y": 2.6,
+              "rotation": 4.2,
+              "scale": 0.065
+            }
+          },
+          {
+            "id": "scratched-plate",
+            "label": "机身右侧维修位",
+            "bounds": {
+              "x": 72,
+              "y": 53,
+              "width": 12,
+              "height": 10
+            },
+            "mobileBounds": {
+              "x": 72,
+              "y": 46,
+              "width": 25,
+              "height": 10
+            },
+            "spawnChance": 0.78,
+            "candidates": [
+              {
+                "propId": "scratched-plate",
+                "weight": 5
+              },
+              {
+                "propId": "repair-docket",
+                "weight": 3
+              },
+              {
+                "propId": "extension-note",
+                "weight": 2
+              },
+              {
+                "propId": "extension-routing-diagram",
+                "weight": 2
+              }
+            ],
+            "jitter": {
+              "x": 2.2,
+              "y": 1.8,
+              "rotation": 3.6,
+              "scale": 0.055
+            }
+          },
+          {
+            "id": "newspaper",
+            "label": "左下纸张位",
+            "bounds": {
+              "x": 5,
+              "y": 70,
+              "width": 18,
+              "height": 20
+            },
+            "mobileBounds": {
+              "x": 2,
+              "y": 61,
+              "width": 28,
+              "height": 18
+            },
+            "spawnChance": 0.74,
+            "candidates": [
+              {
+                "propId": "newspaper",
+                "weight": 5
+              },
+              {
+                "propId": "radio-ticket",
+                "weight": 3
+              },
+              {
+                "propId": "midnight-classified",
+                "weight": 2
+              },
+              {
+                "propId": "radio-lyrics-fragment",
+                "weight": 2
+              }
+            ],
+            "jitter": {
+              "x": 3.2,
+              "y": 2.6,
+              "rotation": 5.6,
+              "scale": 0.08
+            }
+          },
+          {
+            "id": "phonebook",
+            "label": "右下目录位",
+            "bounds": {
+              "x": 73,
+              "y": 77,
+              "width": 19,
+              "height": 14
+            },
+            "mobileBounds": {
+              "x": 70,
+              "y": 69,
+              "width": 28,
+              "height": 13
+            },
+            "spawnChance": 0.82,
+            "candidates": [
+              {
+                "propId": "phonebook",
+                "weight": 5
+              },
+              {
+                "propId": "lost-card",
+                "weight": 3
+              },
+              {
+                "propId": "directory-page",
+                "weight": 2
+              },
+              {
+                "propId": "lost-property-description",
+                "weight": 2
+              }
+            ],
+            "jitter": {
+              "x": 2.8,
+              "y": 2.1,
+              "rotation": 4.4,
+              "scale": 0.07
+            }
+          },
+          {
+            "id": "coin-return",
+            "label": "实体退币槽",
+            "bounds": {
+              "x": 46,
+              "y": 61,
+              "width": 9,
+              "height": 8
+            },
+            "mobileBounds": {
+              "x": 69,
+              "y": 72,
+              "width": 24,
+              "height": 9
+            },
+            "spawnChance": 0.92,
+            "candidates": [
+              {
+                "propId": "coin-return-note",
+                "weight": 1
+              }
+            ]
+          },
+          {
+            "id": "counter-matches",
+            "label": "柜台左侧火柴位",
+            "layer": "counter",
+            "bounds": {
+              "x": 5,
+              "y": 19,
+              "width": 7,
+              "height": 25
+            },
+            "mobileBounds": {
+              "x": 3,
+              "y": 18,
+              "width": 18,
+              "height": 28
+            },
+            "spawnChance": 0.82,
+            "candidates": [
+              {
+                "propId": "counter-meridian-matches",
+                "weight": 6
+              },
+              {
+                "propId": "counter-courtesy-matchbook",
+                "weight": 4
+              }
+            ],
+            "jitter": {
+              "x": 2.4,
+              "y": 3.2,
+              "rotation": 5,
+              "scale": 0.08
+            }
+          },
+          {
+            "id": "counter-docket",
+            "label": "柜台交换台回执位",
+            "layer": "counter",
+            "bounds": {
+              "x": 66,
+              "y": 22,
+              "width": 8,
+              "height": 22
+            },
+            "mobileBounds": {
+              "x": 48,
+              "y": 24,
+              "width": 21,
+              "height": 25
+            },
+            "spawnChance": 0.88,
+            "candidates": [
+              {
+                "propId": "counter-operator-docket",
+                "weight": 7
+              },
+              {
+                "propId": "counter-silent-line-docket",
+                "weight": 3
+              }
+            ],
+            "jitter": {
+              "x": 2.5,
+              "y": 2.6,
+              "rotation": 4.2,
+              "scale": 0.07
+            }
+          },
+          {
+            "id": "counter-key",
+            "label": "柜台黄铜钥匙位",
+            "layer": "counter",
+            "bounds": {
+              "x": 78,
+              "y": 15,
+              "width": 7,
+              "height": 20
+            },
+            "mobileBounds": {
+              "x": 68,
+              "y": 14,
+              "width": 20,
+              "height": 23
+            },
+            "spawnChance": 0.76,
+            "candidates": [
+              {
+                "propId": "counter-locker-key",
+                "weight": 7
+              },
+              {
+                "propId": "counter-switch-key",
+                "weight": 3
+              }
+            ],
+            "jitter": {
+              "x": 3.2,
+              "y": 3,
+              "rotation": 8,
+              "scale": 0.09
+            }
+          },
+          {
+            "id": "counter-ticket",
+            "label": "柜台末班车票位",
+            "layer": "counter",
+            "bounds": {
+              "x": 86,
+              "y": 31,
+              "width": 10,
+              "height": 23
+            },
+            "mobileBounds": {
+              "x": 75,
+              "y": 42,
+              "width": 24,
+              "height": 26
+            },
+            "spawnChance": 0.84,
+            "candidates": [
+              {
+                "propId": "counter-night-ticket",
+                "weight": 7
+              },
+              {
+                "propId": "counter-inspector-ticket",
+                "weight": 3
+              }
+            ],
+            "jitter": {
+              "x": 2.8,
+              "y": 3.4,
+              "rotation": 5.4,
+              "scale": 0.08
+            }
+          }
         ]
       },
       "audioProfile": {

@@ -4,7 +4,7 @@ import { CallEngine, conditionsMatch, loadStoryDefinition } from '../game/callEn
 import { elapsedSeconds } from '../game/callTimer'
 import { formatPhoneNumber, shouldConnect } from '../game/dialModel'
 import { TelephoneAudio } from '../game/audio'
-import { BOOTH_OBJECTS, canDialWithCredit, createNightCoins, returnedCoin, type ShelfCoin } from '../game/boothItems'
+import { canDialWithCredit, createNightCoins, returnedCoin, type ShelfCoin } from '../game/boothItems'
 import { createSessionId, loadProgress, saveRecord } from '../game/record'
 import { sceneItemBySlot, sceneItemCopy } from '../game/sceneInteractions'
 import { resolveNightScene } from '../game/sceneRandomizer'
@@ -361,16 +361,27 @@ export function TelephoneScene() {
     })
   }
 
-  function toggleBoothObject(itemId: string) {
+  function toggleBoothObject(item: ResolvedSceneItem) {
     if (machine.phase === 'ending') return
-    const item = BOOTH_OBJECTS.find((candidate) => candidate.id === itemId)
-    if (!item) return
-    const puttingDown = heldItemId === itemId
+    const puttingDown = heldItemId === item.instanceId
     audioRef.current.playObjectMove()
-    setHeldItemId(puttingDown ? null : itemId)
+    setHeldItemId(puttingDown ? null : item.instanceId)
+    if (!puttingDown) {
+      const alreadyInspected = inspected.includes(item.instanceId)
+      engine.discoverPhones(item.prop.phoneRefs)
+      engine.applyEffects(item.prop.effects)
+      if (item.prop.sceneEvent && engine.availableEdges({ type: 'sceneInspect', value: item.prop.sceneEvent }).length) {
+        engine.dispatch({ type: 'sceneInspect', value: item.prop.sceneEvent, createdAt: Date.now() })
+      }
+      setInspected((items) => items.includes(item.instanceId) ? items : [...items, item.instanceId])
+      engine.returnToIdleNode()
+      setRuntime(structuredClone(engine.state))
+      setClueCard({ title: item.prop.label, body: sceneItemCopy(item, alreadyInspected) })
+      return
+    }
     setClueCard({
-      title: puttingDown ? `放下${item.label}` : item.label,
-      body: puttingDown ? `${item.label}被留在台面原来的灰尘轮廓里。` : item.description,
+      title: `放下${item.prop.label}`,
+      body: `${item.prop.label}被留在台面原来的灰尘轮廓里。`,
     })
   }
 
@@ -469,7 +480,8 @@ export function TelephoneScene() {
     void audioRef.current.unlock().then(() => audioRef.current.startRain()).catch(() => undefined)
   }
 
-  const hotspots = sceneItems.filter((hotspot) => hotspot.slotId !== 'coin-return')
+  const hotspots = sceneItems.filter((hotspot) => hotspot.layer === 'wall' && hotspot.slotId !== 'coin-return')
+  const counterItems = sceneItems.filter((item) => item.layer === 'counter')
   const handsetDocked = ['intro', 'idle', 'ringing', 'hungUp'].includes(machine.phase)
   const callVisible = ['inCall', 'awaitingChoice', 'timeoutWarning', 'ending'].includes(machine.phase)
   const ending = runtime.ending ? story.extensions.telephone.endings[runtime.ending] : null
@@ -534,6 +546,7 @@ export function TelephoneScene() {
           coins={coins}
           heldItemId={heldItemId}
           coinCredit={coinCredit}
+          objects={counterItems}
           disabled={machine.phase === 'ending'}
           onToggleCoin={toggleCoin}
           onToggleObject={toggleBoothObject}

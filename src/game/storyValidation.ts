@@ -61,6 +61,9 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
     validateConditions(slot.requires, `extensions.telephone.scene.slots.${slot.id}.requires`)
     slot.candidates.forEach((candidate) => {
       if (!propIds.includes(candidate.propId)) issues.push({ level: 'error', path: `extensions.telephone.scene.slots.${slot.id}`, message: `候选物品 ${candidate.propId} 不存在。` })
+      const candidateProp = scene.props.find((prop) => prop.id === candidate.propId)
+      if (slot.layer === 'counter' && candidateProp && !candidateProp.counterStyle) issues.push({ level: 'warning', path: `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}`, message: '柜台点位引用了没有柜台拟物造型的物品。' })
+      if ((slot.layer ?? 'wall') === 'wall' && candidateProp?.counterStyle) issues.push({ level: 'warning', path: `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}`, message: '墙面点位引用了柜台专用物品。' })
       if (candidate.weight <= 0) issues.push({ level: 'warning', path: `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}.weight`, message: '候选权重应大于 0。' })
       if (candidate.appearanceOverrides?.presetId && !presetIds.includes(candidate.appearanceOverrides.presetId)) issues.push({ level: 'error', path: `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}.appearanceOverrides`, message: `候选覆盖预设 ${candidate.appearanceOverrides.presetId} 不存在。` })
       validateConditions(candidate.requires, `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}.requires`)

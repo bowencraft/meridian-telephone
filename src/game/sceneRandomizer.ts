@@ -38,8 +38,14 @@ function copyVariant(values: string[] | undefined, roll: number) {
 
 function resolvedAppearance(story: TelephoneStory, slot: SceneSlot, candidate: SceneCandidate, propAppearance: SceneAppearance, seed: number, generation: number) {
   const presetId = candidate.appearanceOverrides?.presetId ?? propAppearance.presetId
+  const propPreset = story.extensions.telephone.scene.stylePresets.find((item) => item.id === propAppearance.presetId)
   const preset = story.extensions.telephone.scene.stylePresets.find((item) => item.id === presetId)
-  const appearance = mergeSceneAppearance(preset?.defaults, propAppearance, candidate.appearanceOverrides, { presetId })
+  const candidateOverrides = candidate.appearanceOverrides
+    ? Object.fromEntries(Object.entries(candidate.appearanceOverrides).filter(([key]) => key !== 'presetId'))
+    : undefined
+  const appearance = candidate.appearanceOverrides?.presetId
+    ? mergeSceneAppearance(propPreset?.defaults, propAppearance, preset?.defaults, candidateOverrides, { presetId })
+    : mergeSceneAppearance(preset?.defaults, propAppearance, candidateOverrides, { presetId })
   appearance.rotation = jitter(appearance.rotation ?? 0, slot.jitter?.rotation, fraction(seed, generation, slot.id, 'rotation'))
   appearance.scale = Math.max(.55, jitter(appearance.scale ?? 1, slot.jitter?.scale, fraction(seed, generation, slot.id, 'scale')))
   return appearance
@@ -57,9 +63,18 @@ export function resolveSceneCandidatePreview(
   return {
     instanceId: `${generation}:${slot.id}:${prop.id}`,
     slotId: slot.id,
+    layer: slot.layer ?? 'wall',
     prop,
-    bounds: { ...slot.bounds },
-    mobileBounds: slot.mobileBounds ? { ...slot.mobileBounds } : undefined,
+    bounds: {
+      ...slot.bounds,
+      x: jitter(slot.bounds.x, slot.jitter?.x, fraction(seed, generation, slot.id, 'x')),
+      y: jitter(slot.bounds.y, slot.jitter?.y, fraction(seed, generation, slot.id, 'y')),
+    },
+    mobileBounds: slot.mobileBounds ? {
+      ...slot.mobileBounds,
+      x: jitter(slot.mobileBounds.x, slot.jitter?.x, fraction(seed, generation, slot.id, 'mobile-x')),
+      y: jitter(slot.mobileBounds.y, slot.jitter?.y, fraction(seed, generation, slot.id, 'mobile-y')),
+    } : undefined,
     appearance: resolvedAppearance(story, slot, candidate, prop.appearance, seed, generation),
     firstCopy: copyVariant(prop.copy.firstVariants, fraction(seed, generation, slot.id, 'first-copy')) ?? '这件东西没有留下可辨认的内容。',
     repeatCopy: copyVariant(prop.copy.repeatVariants, fraction(seed, generation, slot.id, 'repeat-copy')),
@@ -81,21 +96,7 @@ export function resolveSceneLayout(
     if (!candidate) return []
     const preview = resolveSceneCandidatePreview(story, slot, candidate, state.sessionSeed, generation)
     if (!preview) return []
-    const bounds = {
-      ...slot.bounds,
-      x: jitter(slot.bounds.x, slot.jitter?.x, fraction(state.sessionSeed, generation, slot.id, 'x')),
-      y: jitter(slot.bounds.y, slot.jitter?.y, fraction(state.sessionSeed, generation, slot.id, 'y')),
-    }
-    const mobileBounds = slot.mobileBounds ? {
-      ...slot.mobileBounds,
-      x: jitter(slot.mobileBounds.x, slot.jitter?.x, fraction(state.sessionSeed, generation, slot.id, 'mobile-x')),
-      y: jitter(slot.mobileBounds.y, slot.jitter?.y, fraction(state.sessionSeed, generation, slot.id, 'mobile-y')),
-    } : undefined
-    return [{
-      ...preview,
-      bounds,
-      mobileBounds,
-    }]
+    return [preview]
   })
 }
 

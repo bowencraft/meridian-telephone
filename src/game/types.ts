@@ -109,6 +109,8 @@ export type ScenePropKind =
   | 'handwritten-note'
 
 export type SceneTypography = 'serif' | 'typewriter' | 'handwritten' | 'official'
+export type SceneLayer = 'wall' | 'counter'
+export type CounterPropStyle = 'night-ticket' | 'meridian-matches' | 'locker-key' | 'operator-docket'
 
 export interface SceneAppearance {
   presetId: string
@@ -145,6 +147,7 @@ export interface ScenePropDefinition {
   phoneRefs?: string[]
   effects?: GraphEffect[]
   sceneEvent?: string
+  counterStyle?: CounterPropStyle
   appearance: SceneAppearance
 }
 
@@ -158,6 +161,7 @@ export interface SceneCandidate {
 export interface SceneSlot {
   id: string
   label: string
+  layer?: SceneLayer
   bounds: { x: number; y: number; width: number; height: number }
   mobileBounds?: { x: number; y: number; width: number; height: number }
   spawnChance: number
@@ -177,6 +181,7 @@ export interface SceneDefinition {
 export interface ResolvedSceneItem {
   instanceId: string
   slotId: string
+  layer: SceneLayer
   prop: ScenePropDefinition
   bounds: SceneSlot['bounds']
   mobileBounds?: SceneSlot['mobileBounds']

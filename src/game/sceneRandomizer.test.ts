@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { CallEngine, defaultTelephoneStory } from './callEngine'
-import { candidatePercentages, resolveNightScene } from './sceneRandomizer'
+import { candidatePercentages, resolveNightScene, resolveSceneCandidatePreview } from './sceneRandomizer'
 
 describe('night-shift scene randomization', () => {
   it('is deterministic for an entire night, independent of call activity', () => {
@@ -45,5 +45,32 @@ describe('night-shift scene randomization', () => {
     engine.discoverPhones(weatherProps[0].phoneRefs)
     engine.discoverPhones(weatherProps[1].phoneRefs)
     expect(engine.state.discoveredNumbers.filter((number) => number === '9460264')).toHaveLength(1)
+  })
+
+  it('applies position jitter to the same forced preview used by the admin', () => {
+    const story = defaultTelephoneStory()
+    const slot = story.extensions.telephone.scene.slots.find((item) => item.id === 'weather-card')!
+    const preview = resolveSceneCandidatePreview(story, slot, slot.candidates[0], 42)!
+
+    expect(preview.bounds.x).not.toBe(slot.bounds.x)
+    expect(preview.bounds.y).not.toBe(slot.bounds.y)
+    expect(preview.mobileBounds?.x).not.toBe(slot.mobileBounds?.x)
+  })
+
+  it('lets a candidate preset replace the original material palette', () => {
+    const story = defaultTelephoneStory()
+    const slot = story.extensions.telephone.scene.slots.find((item) => item.id === 'weather-card')!
+    const preview = resolveSceneCandidatePreview(story, slot, {
+      propId: 'weather-card',
+      weight: 1,
+      appearanceOverrides: { presetId: 'carbon-ticket' },
+    }, 42)!
+
+    expect(preview.appearance).toMatchObject({
+      presetId: 'carbon-ticket',
+      paperTone: '#8196a0',
+      inkColor: '#263943',
+      accentColor: '#b4c5c7',
+    })
   })
 })

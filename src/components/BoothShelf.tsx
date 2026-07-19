@@ -1,19 +1,23 @@
 import type { CSSProperties } from 'react'
-import { BOOTH_OBJECTS, type ShelfCoin } from '../game/boothItems'
+import type { ShelfCoin } from '../game/boothItems'
+import type { ResolvedSceneItem } from '../game/types'
+import { CounterSceneProp } from './CounterSceneProp'
 
 interface BoothShelfProps {
   coins: ShelfCoin[]
   heldItemId: string | null
   coinCredit: number
+  objects: ResolvedSceneItem[]
   disabled?: boolean
   onToggleCoin: (coin: ShelfCoin) => void
-  onToggleObject: (itemId: string) => void
+  onToggleObject: (item: ResolvedSceneItem) => void
 }
 
 export function BoothShelf({
   coins,
   heldItemId,
   coinCredit,
+  objects,
   disabled,
   onToggleCoin,
   onToggleObject,
@@ -42,18 +46,14 @@ export function BoothShelf({
           </button>
         ))}
 
-        {BOOTH_OBJECTS.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            className={`shelf-object shelf-object-${item.id} ${heldItemId === item.id ? 'is-held' : ''}`}
-            aria-label={`${heldItemId === item.id ? '放下' : '拿起并查看'}${item.label}`}
-            aria-pressed={heldItemId === item.id}
+        {objects.map((item) => (
+          <CounterSceneProp
+            key={item.instanceId}
+            item={item}
+            held={heldItemId === item.instanceId}
             disabled={disabled}
-            onClick={() => onToggleObject(item.id)}
-          >
-            <span>{item.label}</span>
-          </button>
+            onClick={() => onToggleObject(item)}
+          />
         ))}
       </div>
 

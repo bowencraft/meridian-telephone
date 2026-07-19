@@ -19,7 +19,6 @@ import { useMemo, useState } from 'react'
 import { CallEngine } from '../game/callEngine'
 import type {
   EngineTransition,
-  PhoneDirectoryEntry,
   RingEvent,
   TelephoneEdge,
   TelephoneNode,
@@ -28,6 +27,8 @@ import type {
   TriggerType,
 } from '../game/types'
 import { SceneAdminEditor } from './SceneAdminEditor'
+import { CollapsibleAdminSection } from './CollapsibleAdminSection'
+import { PhoneDirectoryEditor } from './PhoneDirectoryEditor'
 
 interface GraphEditorProps { story: TelephoneStory; onChange: (story: TelephoneStory) => void }
 type InspectorTab = 'node' | 'edge' | 'simulate' | 'phone' | 'directory' | 'scene'
@@ -173,15 +174,12 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
     setSimLog((items) => [...items, transition])
   }
 
-  function updateNumber(index: number, patch: Partial<PhoneDirectoryEntry>) {
-    const directory = story.globals.phone.directory.map((number, itemIndex) => itemIndex === index ? { ...number, ...patch } : number)
-    onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, directory } } })
-  }
   function updateRing(index: number, patch: Partial<RingEvent>) {
     const idleRingSchedule = story.globals.phone.idleRingSchedule.map((ring, itemIndex) => itemIndex === index ? { ...ring, ...patch } : ring)
     onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, idleRingSchedule } } })
   }
   if (tab === 'scene') return <SceneAdminEditor story={story} onChange={onChange} onExit={() => setTab('node')} />
+  if (tab === 'directory') return <PhoneDirectoryEditor story={story} onChange={onChange} onExit={() => setTab('node')} />
 
   return (
     <section className="graph-editor-shell">
@@ -214,88 +212,74 @@ export function GraphEditor({ story, onChange }: GraphEditorProps) {
           <button className={tab === 'edge' ? 'active' : ''} onClick={() => setTab('edge')}><Cable size={13} />转场</button>
           <button className={tab === 'simulate' ? 'active' : ''} onClick={() => setTab('simulate')}><Play size={13} />运行预览</button>
           <button className={tab === 'phone' ? 'active' : ''} onClick={() => setTab('phone')}><Clock3 size={13} />线路与超时</button>
-          <button className={tab === 'directory' ? 'active' : ''} onClick={() => setTab('directory')}><ContactRound size={13} />电话簿</button>
+          <button onClick={() => setTab('directory')}><ContactRound size={13} />电话簿</button>
           <button onClick={() => setTab('scene')}><MapPin size={13} />夜班场景</button>
         </nav>
 
         <div className="inspector-scroll">
           {tab === 'node' && selectedNode && <>
-            <fieldset><legend>节点身份</legend>
+            <CollapsibleAdminSection title="节点身份">
               <label><span>ID（保持稳定）</span><input value={selectedNode.id} disabled /></label>
               <label><span>名称</span><input value={selectedNode.label} onChange={(event) => updateNode({ label: event.target.value })} /></label>
               <label><span>类型</span><select value={selectedNode.kind} onChange={(event) => updateNode({ kind: event.target.value as TelephoneNodeKind })}>{NODE_KINDS.map((kind) => <option key={kind}>{kind}</option>)}</select></label>
               <label><span>标签（逗号分隔）</span><input value={(selectedNode.tags ?? []).join(', ')} onChange={(event) => updateNode({ tags: event.target.value.split(',').map((value) => value.trim()).filter(Boolean) })} /></label>
-            </fieldset>
-            <fieldset><legend>通话内容</legend>
+            </CollapsibleAdminSection>
+            <CollapsibleAdminSection title="通话内容">
               <label><span>文本 variants（每行一条）</span><textarea rows={7} value={selectedNode.body.variants.join('\n')} onChange={(event) => updateNode({ body: { ...selectedNode.body, variants: lines(event.target.value) } })} /></label>
               <label><span>Fallback（每行一条）</span><textarea rows={4} value={(selectedNode.body.fallbackVariants ?? []).join('\n')} onChange={(event) => updateNode({ body: { ...selectedNode.body, fallbackVariants: lines(event.target.value) } })} /></label>
               <label><span>剧情目标 / 备注</span><textarea rows={3} value={selectedNode.body.notes ?? ''} onChange={(event) => updateNode({ body: { ...selectedNode.body, notes: event.target.value } })} /></label>
-            </fieldset>
-            <fieldset><legend>电话适配字段</legend>
+            </CollapsibleAdminSection>
+            <CollapsibleAdminSection title="电话适配字段">
               <label><span>说话者类型</span><select value={selectedNode.telephone?.speaker ?? 'operator'} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, speaker: event.target.value as typeof SPEAKERS[number] } })}>{SPEAKERS.map((speaker) => <option key={speaker}>{speaker}</option>)}</select></label>
               <label><span>说话者显示名</span><input value={selectedNode.telephone?.speakerLabel ?? ''} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, speakerLabel: event.target.value } })} /></label>
               <label><span>LCD 覆盖文本</span><input value={selectedNode.telephone?.lcd ?? ''} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, lcd: event.target.value } })} /></label>
               <div className="two-fields"><label><span>自动推进（毫秒）</span><input type="number" value={selectedNode.telephone?.autoAdvanceMs ?? ''} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, autoAdvanceMs: event.target.value ? Number(event.target.value) : undefined } })} /></label><label><span>线路失真（0–1）</span><input type="number" min="0" max="1" step="0.05" value={selectedNode.telephone?.corruption ?? 0} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, corruption: Number(event.target.value) } })} /></label></div>
               <label className="checkbox-line"><input type="checkbox" checked={selectedNode.telephone?.canHangUp !== false} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, canHangUp: event.target.checked } })} /><span>允许玩家挂断</span></label>
               <label><span>结局类型（留空表示非结局）</span><input value={selectedNode.telephone?.ending ?? ''} onChange={(event) => updateNode({ telephone: { ...selectedNode.telephone, ending: event.target.value as any || undefined } })} /></label>
-            </fieldset>
+            </CollapsibleAdminSection>
           </>}
 
           {tab === 'edge' && (selectedEdge ? <>
-            <fieldset><legend>转场身份</legend>
+            <CollapsibleAdminSection title="转场身份">
               <label><span>ID</span><input value={selectedEdge.id} disabled /></label>
               <label><span>名称</span><input value={selectedEdge.label} onChange={(event) => updateEdge({ label: event.target.value })} /></label>
               <div className="two-fields"><label><span>From</span><select value={selectedEdge.from} onChange={(event) => updateEdge({ from: event.target.value })}>{story.nodes.map((node) => <option key={node.id}>{node.id}</option>)}</select></label><label><span>To</span><select value={selectedEdge.to} onChange={(event) => updateEdge({ to: event.target.value })}>{story.nodes.map((node) => <option key={node.id}>{node.id}</option>)}</select></label></div>
               <label><span>优先级</span><input type="number" value={selectedEdge.priority} onChange={(event) => updateEdge({ priority: Number(event.target.value) })} /></label>
-            </fieldset>
-            <fieldset><legend>事件触发</legend>
+            </CollapsibleAdminSection>
+            <CollapsibleAdminSection title="事件触发">
               <label><span>触发类型</span><select value={selectedEdge.trigger.type} onChange={(event) => updateEdge({ trigger: { ...selectedEdge.trigger, type: event.target.value as TriggerType } })}>{TRIGGERS.map((trigger) => <option key={trigger}>{trigger}</option>)}</select></label>
               <label><span>触发值（号码 / 选项 ID / 热点 ID）</span><input value={selectedEdge.trigger.value ?? ''} onChange={(event) => updateEdge({ trigger: { ...selectedEdge.trigger, value: event.target.value || undefined } })} /></label>
               <label><span>样例事件（每行一条）</span><textarea rows={3} value={(selectedEdge.samples ?? []).join('\n')} onChange={(event) => updateEdge({ samples: lines(event.target.value) })} /></label>
               {selectedEdge.trigger.type === 'choice' && <><label><span>玩家可见选项</span><textarea rows={3} value={selectedEdge.choice?.text ?? ''} onChange={(event) => updateEdge({ choice: { ...selectedEdge.choice, text: event.target.value, tone: selectedEdge.choice?.tone ?? 'plain' } })} /></label><label><span>选项语气</span><select value={selectedEdge.choice?.tone ?? 'plain'} onChange={(event) => updateEdge({ choice: { text: selectedEdge.choice?.text ?? selectedEdge.label, tone: event.target.value as any } })}><option>plain</option><option>warm</option><option>defiant</option><option>compliant</option></select></label><label className="checkbox-line"><input type="checkbox" checked={selectedEdge.choice?.hidden ?? false} onChange={(event) => updateEdge({ choice: { text: selectedEdge.choice?.text ?? selectedEdge.label, tone: selectedEdge.choice?.tone ?? 'plain', hidden: event.target.checked } })} /><span>默认隐藏该选项</span></label></>}
-            </fieldset>
-            <fieldset><legend>条件与效果（JSON）</legend>
+            </CollapsibleAdminSection>
+            <CollapsibleAdminSection title="条件与效果（JSON）">
               <label><span>conditions</span><JsonTextarea rows={7} value={selectedEdge.conditions ?? []} onCommit={(conditions) => updateEdge({ conditions })} /></label>
               <label><span>effects</span><JsonTextarea rows={7} value={selectedEdge.effects ?? []} onCommit={(effects) => updateEdge({ effects })} /></label>
-            </fieldset>
+            </CollapsibleAdminSection>
           </> : <div className="empty-inspector">在画布中选择一条转场连线。</div>)}
 
           {tab === 'simulate' && <>
-            <fieldset><legend>事件模拟器</legend>
+            <CollapsibleAdminSection title="事件模拟器">
               <div className="two-fields"><label><span>事件</span><select value={simEvent} onChange={(event) => setSimEvent(event.target.value as TriggerType)}>{TRIGGERS.map((trigger) => <option key={trigger}>{trigger}</option>)}</select></label><label><span>值</span><input value={simValue} onChange={(event) => setSimValue(event.target.value)} /></label></div>
               <div className="sim-actions"><button type="button" onClick={runSimulation}><Play size={14} />执行事件</button><button type="button" onClick={resetSimulator}><RotateCcw size={14} />重置</button></div>
-            </fieldset>
+            </CollapsibleAdminSection>
             <dl className="sim-state"><div><dt>当前节点</dt><dd>{simState.currentNodeId}</dd></div><div><dt>LCD</dt><dd>{simulatorNode?.telephone?.lcd ?? 'LINE OPEN'}</dd></div><div><dt>回合</dt><dd>{simState.turn}</dd></div><div><dt>结局</dt><dd>{simState.ending ?? '—'}</dd></div><div><dt>Flags</dt><dd><code>{JSON.stringify(simState.flags)}</code></dd></div></dl>
             <div className="sim-transcript">{simLog.length ? simLog.map((item, index) => <article key={`${item.event.type}-${index}`}><span>{item.event.type}</span><strong>{item.node.label}</strong><p>{item.text}</p><small>{item.edge ? `命中 ${item.edge.id}` : 'Fallback / 无匹配边'} · 候选 {item.candidates.join(', ') || '无'}</small></article>) : <p className="muted-copy">从任意号码、来电、选择、超时、挂断或场景事件开始测试。</p>}</div>
           </>}
 
           {tab === 'phone' && <>
-            <fieldset><legend>线路目标</legend>
+            <CollapsibleAdminSection title="线路目标">
               <label><span>空号节点</span><select value={story.globals.phone.wrongNumberNodeId} onChange={(event) => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, wrongNumberNodeId: event.target.value } } })}>{story.nodes.map((node) => <option key={node.id}>{node.id}</option>)}</select></label>
               <label><span>忙音节点</span><select value={story.globals.phone.busyNumberNodeId} onChange={(event) => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, busyNumberNodeId: event.target.value } } })}>{story.nodes.map((node) => <option key={node.id}>{node.id}</option>)}</select></label>
               <label><span>紧急号码（逗号分隔）</span><input value={(story.globals.phone.emergencyNumbers ?? []).join(', ')} onChange={(event) => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, emergencyNumbers: event.target.value.split(',').map((value) => value.replace(/\D/g, '')).filter(Boolean) } } })} /></label>
-            </fieldset>
-            <fieldset><legend>超时配置（毫秒）</legend>
+            </CollapsibleAdminSection>
+            <CollapsibleAdminSection title="超时配置（毫秒）">
               {Object.entries(story.globals.timeout).map(([key, value]) => <label key={key}><span>{key}</span><input type="number" value={value} onChange={(event) => onChange({ ...story, globals: { ...story.globals, timeout: { ...story.globals.timeout, [key]: Number(event.target.value) } } })} /></label>)}
-            </fieldset>
-            <div className="admin-list-heading"><div><span>INCOMING SWITCHBOARD</span><h3>主动来电排程</h3></div><button type="button" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, idleRingSchedule: [...story.globals.phone.idleRingSchedule, { id: `incoming-${story.globals.phone.idleRingSchedule.length + 1}`, label: '新来电', delayMs: 12000, nodeId: story.entryNodeId, requires: [] }] } } })}><Plus size={13} />新增</button></div>
-            <div className="admin-number-list">{story.globals.phone.idleRingSchedule.map((ring, index) => <article key={`${ring.id}-${index}`}><div className="two-fields"><label><span>ID</span><input value={ring.id} onChange={(event) => updateRing(index, { id: event.target.value })} /></label><label><span>显示名称</span><input value={ring.label} onChange={(event) => updateRing(index, { label: event.target.value })} /></label></div><div className="two-fields"><label><span>来电节点</span><select value={ring.nodeId} onChange={(event) => updateRing(index, { nodeId: event.target.value })}>{story.nodes.map((node) => <option key={node.id}>{node.id}</option>)}</select></label><label><span>等待时间（毫秒）</span><input type="number" value={ring.delayMs} onChange={(event) => updateRing(index, { delayMs: Number(event.target.value) })} /></label></div><label><span>触发条件</span><JsonTextarea rows={5} value={ring.requires ?? []} onCommit={(requires) => updateRing(index, { requires })} /></label><button type="button" className="inline-delete" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, idleRingSchedule: story.globals.phone.idleRingSchedule.filter((_, itemIndex) => itemIndex !== index) } } })}><Trash2 size={13} />删除</button></article>)}</div>
-          </>}
-
-          {tab === 'directory' && <>
-            <div className="admin-list-heading"><div><span>PHONE DIRECTORY / INDEPENDENT DATA</span><h3>电话簿</h3></div><button type="button" onClick={() => {
-              const id = uniqueId('phone', story.globals.phone.directory.map((number) => number.id))
-              onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, directory: [...story.globals.phone.directory, { id, number: '0000000', label: '新号码', description: '', category: 'strange' }] } } })
-            }}><Plus size={13} />新增电话</button></div>
-            <p className="admin-help directory-help">电话簿只描述线路；场景物品通过稳定 ID 引用它。这样多张不同小广告可以揭示同一个电话，号码变更时也无需逐个修改热点。</p>
-            <div className="admin-number-list">{story.globals.phone.directory.map((number, index) => <article key={number.id}>
-              <div className="two-fields"><label><span>稳定 ID</span><input value={number.id} disabled /></label><label><span>号码</span><input value={number.number} onChange={(event) => updateNumber(index, { number: event.target.value.replace(/\D/g, '') })} /></label></div>
-              <div className="two-fields"><label><span>名称</span><input value={number.label} onChange={(event) => updateNumber(index, { label: event.target.value })} /></label><label><span>分类</span><select value={number.category ?? 'strange'} onChange={(event) => updateNumber(index, { category: event.target.value as PhoneDirectoryEntry['category'] })}><option>public</option><option>meridian</option><option>internal</option><option>emergency</option><option>strange</option></select></label></div>
-              <label><span>说明</span><textarea rows={3} value={number.description} onChange={(event) => updateNumber(index, { description: event.target.value })} /></label>
-              <label className="checkbox-line"><input type="checkbox" checked={number.initiallyKnown ?? false} onChange={(event) => updateNumber(index, { initiallyKnown: event.target.checked })} /><span>新夜班开始时已经记录在玩家号码簿</span></label>
-              <div className="directory-ref-summary"><span>被场景物品引用</span><strong>{story.extensions.telephone.scene.props.filter((prop) => prop.phoneRefs?.includes(number.id)).length} 次</strong></div>
-              <button type="button" className="inline-delete" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, directory: story.globals.phone.directory.filter((_, itemIndex) => itemIndex !== index) } } })}><Trash2 size={13} />删除</button>
-            </article>)}</div>
+            </CollapsibleAdminSection>
+            <CollapsibleAdminSection title="主动来电排程">
+              <div className="admin-list-heading"><div><span>INCOMING SWITCHBOARD</span><h3>来电列表</h3></div><button type="button" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, idleRingSchedule: [...story.globals.phone.idleRingSchedule, { id: `incoming-${story.globals.phone.idleRingSchedule.length + 1}`, label: '新来电', delayMs: 12000, nodeId: story.entryNodeId, requires: [] }] } } })}><Plus size={13} />新增</button></div>
+              <div className="admin-number-list">{story.globals.phone.idleRingSchedule.map((ring, index) => <article key={`${ring.id}-${index}`}><div className="two-fields"><label><span>ID</span><input value={ring.id} onChange={(event) => updateRing(index, { id: event.target.value })} /></label><label><span>显示名称</span><input value={ring.label} onChange={(event) => updateRing(index, { label: event.target.value })} /></label></div><div className="two-fields"><label><span>来电节点</span><select value={ring.nodeId} onChange={(event) => updateRing(index, { nodeId: event.target.value })}>{story.nodes.map((node) => <option key={node.id}>{node.id}</option>)}</select></label><label><span>等待时间（毫秒）</span><input type="number" value={ring.delayMs} onChange={(event) => updateRing(index, { delayMs: Number(event.target.value) })} /></label></div><label><span>触发条件</span><JsonTextarea rows={5} value={ring.requires ?? []} onCommit={(requires) => updateRing(index, { requires })} /></label><button type="button" className="inline-delete" onClick={() => onChange({ ...story, globals: { ...story.globals, phone: { ...story.globals.phone, idleRingSchedule: story.globals.phone.idleRingSchedule.filter((_, itemIndex) => itemIndex !== index) } } })}><Trash2 size={13} />删除</button></article>)}</div>
+            </CollapsibleAdminSection>
           </>}
         </div>
       </aside>

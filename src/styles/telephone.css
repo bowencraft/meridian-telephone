@@ -1306,3 +1306,49 @@
   .enter-booth { min-height: 52px; margin-top: 15px; }
   .intro-progress { margin-top: 9px; }
 }
+
+/* Night-shift counter props retain the original tactile silhouettes while
+   allowing the scene data/preset to drive their real material colour. */
+.shelf-object.is-scene-counter-prop {
+  right:auto;
+  transform:rotate(var(--counter-rotation)) scale(var(--counter-scale));
+  transform-origin:50% 64%;
+}
+.shelf-object.is-scene-counter-prop:hover:not(:disabled),
+.shelf-object.is-scene-counter-prop:focus-visible,
+.shelf-object.is-scene-counter-prop.is-held {
+  filter:drop-shadow(0 14px 9px rgba(0,0,0,.74)) brightness(1.12);
+  transform:translateY(-12px) rotate(calc(var(--counter-rotation) * .2)) scale(calc(var(--counter-scale) * 1.04));
+}
+.shelf-object.is-scene-counter-prop.is-selected { outline:1px solid rgba(229,184,92,.88); outline-offset:4px; }
+.shelf-object.is-scene-counter-prop .counter-prop-print { position:absolute; z-index:2; display:grid; align-content:center; gap:1px; color:var(--counter-ink); text-align:center; pointer-events:none; }
+.shelf-object.is-scene-counter-prop .counter-prop-print b { display:block; overflow:hidden; font-weight:400; letter-spacing:.03em; white-space:nowrap; text-overflow:clip; }
+.shelf-object.is-scene-counter-prop .counter-prop-label::before { content:none; }
+.shelf-object-night-ticket.is-scene-counter-prop {
+  border-color:color-mix(in srgb,var(--counter-ink),transparent 28%);
+  background:repeating-linear-gradient(180deg,var(--counter-paper) 0 7px,color-mix(in srgb,var(--counter-paper),var(--counter-ink) 17%) 8px);
+}
+.shelf-object-night-ticket.is-scene-counter-prop::before { color:transparent; }
+.shelf-object-night-ticket.is-scene-counter-prop .counter-prop-print { inset:17% 9%; font:5px/1.3 "Courier New",monospace; }
+.shelf-object-meridian-matches.is-scene-counter-prop {
+  border-color:color-mix(in srgb,var(--counter-ink),#100 35%);
+  background:linear-gradient(145deg,var(--counter-paper),var(--counter-accent) 72%);
+}
+.shelf-object-meridian-matches.is-scene-counter-prop::before { color:transparent; border-color:color-mix(in srgb,var(--counter-ink),transparent 64%); }
+.shelf-object-meridian-matches.is-scene-counter-prop .counter-prop-print { inset:15%; place-content:center; font:5px/1.3 Georgia,serif; }
+.shelf-object-locker-key.is-scene-counter-prop::before { border-color:var(--counter-paper); box-shadow:inset 0 0 3px var(--counter-ink),0 2px 3px #000; }
+.shelf-object-locker-key.is-scene-counter-prop::after { background:linear-gradient(var(--counter-accent),color-mix(in srgb,var(--counter-paper),#21170d 48%)); }
+.shelf-object-locker-key.is-scene-counter-prop .counter-prop-print { left:5%; top:18%; width:28%; height:42%; color:color-mix(in srgb,var(--counter-ink),#6c4f20 45%); font:700 6px/1 Georgia,serif; }
+.shelf-object-operator-docket.is-scene-counter-prop { border-color:color-mix(in srgb,var(--counter-ink),transparent 15%); background:linear-gradient(154deg,var(--counter-paper),color-mix(in srgb,var(--counter-paper),var(--counter-ink) 40%) 70%,var(--counter-ink)); }
+.shelf-object-operator-docket.is-scene-counter-prop::before,.shelf-object-operator-docket.is-scene-counter-prop::after { color:transparent; }
+.shelf-object-operator-docket.is-scene-counter-prop .counter-prop-print { inset:14% 10%; align-content:start; color:var(--counter-ink); border-top:1px solid color-mix(in srgb,var(--counter-ink),transparent 56%); border-bottom:1px solid color-mix(in srgb,var(--counter-accent),transparent 70%); font:4px/1.35 "Courier New",monospace; text-align:left; }
+
+@media (max-width:760px) {
+  .counter-items .shelf-object.is-scene-counter-prop {
+    left:var(--counter-mobile-left)!important;
+    right:auto!important;
+    top:var(--counter-mobile-top)!important;
+    width:var(--counter-mobile-width)!important;
+    height:var(--counter-mobile-height)!important;
+  }
+}
