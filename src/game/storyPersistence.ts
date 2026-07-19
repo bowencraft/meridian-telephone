@@ -1,4 +1,4 @@
-import { LEGACY_STORY_OVERRIDE_KEY, STORY_OVERRIDE_KEY } from './callEngine'
+import { LEGACY_STORY_OVERRIDE_KEYS, STORY_OVERRIDE_KEY } from './callEngine'
 import { migrateTelephoneStory } from './storyMigration'
 import type { TelephoneStory } from './types'
 
@@ -30,5 +30,5 @@ export function saveStoryDefinitionFallback(story: TelephoneStory, storage: Stor
 
 export function clearStoryOverride(storage: Storage = window.localStorage) {
   storage.removeItem(STORY_OVERRIDE_KEY)
-  storage.removeItem(LEGACY_STORY_OVERRIDE_KEY)
+  LEGACY_STORY_OVERRIDE_KEYS.forEach((key) => storage.removeItem(key))
 }

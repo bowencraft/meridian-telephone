@@ -1,8 +1,28 @@
 import { describe, expect, it } from 'vitest'
-import { CallEngine, defaultTelephoneStory } from './callEngine'
+import { CallEngine, defaultTelephoneStory, loadStoryDefinition, STORY_OVERRIDE_KEY } from './callEngine'
 import type { ProgressData } from './types'
 
 describe('Telephone event graph engine', () => {
+  it('ignores and clears stale v2 browser story overrides', () => {
+    const values = new Map<string, string>([
+      ['telephone.storyOverride.v2', JSON.stringify({ format: 'stale-story' })],
+    ])
+    const storage = {
+      get length() { return values.size },
+      clear: () => values.clear(),
+      getItem: (key: string) => values.get(key) ?? null,
+      key: (index: number) => [...values.keys()][index] ?? null,
+      removeItem: (key: string) => { values.delete(key) },
+      setItem: (key: string, value: string) => { values.set(key, value) },
+    } satisfies Storage
+
+    const story = loadStoryDefinition(storage)
+
+    expect(story.extensions.telephone.scene.slots.some((slot) => slot.layer === 'counter')).toBe(true)
+    expect(storage.getItem('telephone.storyOverride.v2')).toBeNull()
+    expect(STORY_OVERRIDE_KEY).toBe('telephone.storyOverride.v3')
+  })
+
   it('routes known and unknown dialled numbers', () => {
     const known = new CallEngine(defaultTelephoneStory(), undefined, 10)
     expect(known.dispatch({ type: 'dialNumber', value: '9460264' }).node.id).toBe('weather_intro')

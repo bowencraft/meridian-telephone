@@ -15,8 +15,8 @@ import type {
   TelephoneStory,
 } from './types'
 
-export const STORY_OVERRIDE_KEY = 'telephone.storyOverride.v2'
-export const LEGACY_STORY_OVERRIDE_KEY = 'telephone.storyOverride.v1'
+export const STORY_OVERRIDE_KEY = 'telephone.storyOverride.v3'
+export const LEGACY_STORY_OVERRIDE_KEYS = ['telephone.storyOverride.v2', 'telephone.storyOverride.v1'] as const
 
 function clone<T>(value: T): T {
   return structuredClone(value)
@@ -28,13 +28,13 @@ export function defaultTelephoneStory() {
 
 export function loadStoryDefinition(storage?: Storage): TelephoneStory {
   const target = storage ?? (typeof window === 'undefined' ? undefined : window.localStorage)
-  const stored = target?.getItem(STORY_OVERRIDE_KEY) ?? target?.getItem(LEGACY_STORY_OVERRIDE_KEY)
+  const stored = target?.getItem(STORY_OVERRIDE_KEY)
+  LEGACY_STORY_OVERRIDE_KEYS.forEach((key) => target?.removeItem(key))
   if (stored) {
     try {
       return migrateTelephoneStory(JSON.parse(stored))
     } catch {
       target?.removeItem(STORY_OVERRIDE_KEY)
-      target?.removeItem(LEGACY_STORY_OVERRIDE_KEY)
     }
   }
   return defaultTelephoneStory()
