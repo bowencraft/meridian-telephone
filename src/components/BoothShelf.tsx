@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode, Ref } from 'react'
 import type { ShelfCoin } from '../game/boothItems'
 import type { ResolvedSceneItem } from '../game/types'
 import { CounterSceneProp } from './CounterSceneProp'
@@ -9,6 +9,9 @@ interface BoothShelfProps {
   coinCredit: number
   objects: ResolvedSceneItem[]
   disabled?: boolean
+  preview?: boolean
+  counterItemsRef?: Ref<HTMLDivElement>
+  overlay?: ReactNode
   onToggleCoin: (coin: ShelfCoin) => void
   onToggleObject: (item: ResolvedSceneItem) => void
 }
@@ -19,18 +22,21 @@ export function BoothShelf({
   coinCredit,
   objects,
   disabled,
+  preview = false,
+  counterItemsRef,
+  overlay,
   onToggleCoin,
   onToggleObject,
 }: BoothShelfProps) {
   return (
-    <section className="booth-counter" aria-label="电话亭置物台">
+    <section className={`booth-counter ${preview ? 'is-fixture-preview' : ''}`} aria-label="电话亭置物台">
       <div className="counter-back-rail" aria-hidden="true"><i /><i /><i /></div>
       <div className="counter-surface" aria-hidden="true" />
       <div className="counter-light-pool" aria-hidden="true" />
       <div className="counter-wear" aria-hidden="true"><i /><i /><i /><i /></div>
       <div className="counter-front" aria-hidden="true"><span>GPO PROPERTY · KEEP CLEAR</span></div>
 
-      <div className="counter-items">
+      <div ref={counterItemsRef} className="counter-items">
         {coins.map((coin) => (
           <button
             key={coin.id}
@@ -55,6 +61,7 @@ export function BoothShelf({
             onClick={() => onToggleObject(item)}
           />
         ))}
+        {overlay}
       </div>
 
       <div className={`credit-witness ${coinCredit ? 'is-ready' : ''}`} aria-live="polite">

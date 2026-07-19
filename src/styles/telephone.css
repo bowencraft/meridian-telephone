@@ -1352,3 +1352,86 @@
     height:var(--counter-mobile-height)!important;
   }
 }
+
+/* Shared scene-fixture geometry. The editor and the game consume the same
+   position variables; only the viewport profile changes. Furniture dimensions
+   are intentionally CSS-locked so editors can move, but never deform, it. */
+.game-stage {
+  --fixture-phone-x: 50%;
+  --fixture-phone-y: 1.5%;
+  --fixture-phone-mobile-x: 50%;
+  --fixture-phone-mobile-y: 12.5%;
+  --fixture-counter-x: 50%;
+  --fixture-counter-y: 75%;
+  --fixture-counter-mobile-x: 50%;
+  --fixture-counter-mobile-y: 80%;
+  display: block;
+}
+
+:is(.game-stage, .scene-admin-fixture-stage) > .phone-assembly {
+  position: absolute;
+  left: var(--fixture-phone-x);
+  top: var(--fixture-phone-y);
+  width: min(33.44%, 535px);
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 107 / 138;
+  translate: -50% 0;
+  transform: none !important;
+}
+
+:is(.game-stage, .scene-admin-fixture-stage) > .booth-counter {
+  position: absolute;
+  left: var(--fixture-counter-x);
+  top: var(--fixture-counter-y);
+  bottom: auto;
+  width: min(65%, 1040px);
+  height: 25%;
+  translate: -50% 0;
+  transform: none;
+}
+
+/* Slot coordinates now describe the usable wooden plane, not the whole front
+   fascia. This keeps coins, tickets and generated props physically on top. */
+.counter-items {
+  left: 1%;
+  right: 1%;
+  top: 18%;
+  bottom: auto;
+  height: 50%;
+  z-index: 7;
+}
+
+.phone-assembly.is-fixture-preview,
+.booth-counter.is-fixture-preview { pointer-events: none; }
+.phone-assembly.is-fixture-preview * { pointer-events: none !important; }
+.booth-counter.is-fixture-preview .credit-witness { display: none; }
+
+@media (max-width:760px) {
+  :is(.game-stage, .scene-admin-fixture-stage) > .phone-assembly {
+    left: var(--fixture-phone-mobile-x);
+    top: var(--fixture-phone-mobile-y);
+    width: min(78%, 310px, calc((100dvh - 235px) * .7754));
+    translate: -50% 0;
+  }
+
+  :is(.game-stage, .scene-admin-fixture-stage) > .booth-counter {
+    left: var(--fixture-counter-mobile-x);
+    top: var(--fixture-counter-mobile-y);
+    bottom: auto;
+    width: 100%;
+    height: 19%;
+    translate: -50% 0;
+  }
+
+  .telephone-scene:is(.phase-inCall, .phase-awaitingChoice, .phase-timeoutWarning) .game-stage > .phone-assembly {
+    translate: -50% clamp(30px, 5dvh, 36px);
+  }
+}
+
+@media (max-width:360px) {
+  :is(.game-stage, .scene-admin-fixture-stage) > .phone-assembly {
+    width: min(72%, 240px, calc((100dvh - 220px) * .72));
+  }
+}

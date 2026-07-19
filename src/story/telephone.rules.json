@@ -2847,6 +2847,28 @@
       "scene": {
         "refreshPolicy": "nightStart",
         "initialRoll": true,
+        "fixtures": {
+          "phone": {
+            "desktop": {
+              "x": 50,
+              "y": 1.5
+            },
+            "mobile": {
+              "x": 50,
+              "y": 12.5
+            }
+          },
+          "counter": {
+            "desktop": {
+              "x": 50,
+              "y": 75
+            },
+            "mobile": {
+              "x": 50,
+              "y": 80
+            }
+          }
+        },
         "stylePresets": [
           {
             "id": "damp-service-card",

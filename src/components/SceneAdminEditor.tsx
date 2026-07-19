@@ -1,5 +1,6 @@
 import { ArrowLeft, Dice5, Eye, Grip, MapPin, Plus, Trash2 } from 'lucide-react'
-import { useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
+import { createNightCoins } from '../game/boothItems'
 import { CallEngine } from '../game/callEngine'
 import { candidatePercentages, resolveSceneCandidatePreview, resolveSceneLayout } from '../game/sceneRandomizer'
 import type {
@@ -7,12 +8,14 @@ import type {
   SceneCandidate,
   ScenePropDefinition,
   ScenePropKind,
+  SceneFixturePosition,
   SceneSlot,
   SceneTypography,
   TelephoneStory,
 } from '../game/types'
 import { CollapsibleAdminSection } from './CollapsibleAdminSection'
-import { CounterSceneProp } from './CounterSceneProp'
+import { BoothShelf } from './BoothShelf'
+import { PhoneBooth } from './PhoneBooth'
 import { SceneProp } from './SceneProp'
 
 interface SceneAdminEditorProps {
@@ -43,7 +46,8 @@ function clampChance(value: number) {
   return clamp(Number.isFinite(value) ? value : 0, 0, 1)
 }
 
-interface DragState {
+interface SlotDragState {
+  kind: 'slot'
   slotId: string
   offsetX: number
   offsetY: number
@@ -52,18 +56,29 @@ interface DragState {
   layer: 'wall' | 'counter'
 }
 
+interface FixtureDragState {
+  kind: 'fixture'
+  fixture: 'phone' | 'counter'
+  offsetX: number
+  offsetY: number
+}
+
+type DragState = SlotDragState | FixtureDragState
+
 export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorProps) {
   const scene = story.extensions.telephone.scene
   const [selectedSlotId, setSelectedSlotId] = useState(scene.slots[0]?.id ?? '')
+  const [selectedFixture, setSelectedFixture] = useState<'phone' | 'counter' | null>(null)
   const [previewPropId, setPreviewPropId] = useState<string | null>(null)
   const [seed, setSeed] = useState(42)
   const [mobilePreview, setMobilePreview] = useState(false)
   const [brushChance, setBrushChance] = useState<number | null>(null)
   const stageRef = useRef<HTMLDivElement>(null)
+  const fixtureStageRef = useRef<HTMLDivElement>(null)
   const counterLayerRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<DragState | null>(null)
 
-  const selectedSlot = scene.slots.find((slot) => slot.id === selectedSlotId) ?? scene.slots[0]
+  const selectedSlot = scene.slots.find((slot) => slot.id === selectedSlotId)
   const selectedCandidateIndex = selectedSlot
     ? Math.max(0, selectedSlot.candidates.findIndex((candidate) => candidate.propId === previewPropId))
     : -1
@@ -79,11 +94,14 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
   const previewItems = useMemo(() => {
     const state = new CallEngine(story, undefined, seed).state
     const rolled = resolveSceneLayout(story, state, undefined, 0)
-    if (!selectedSlot || !selectedCandidate) return rolled
-    const forced = resolveSceneCandidatePreview(story, selectedSlot, selectedCandidate, seed)
+    const previewSlot = story.extensions.telephone.scene.slots.find((slot) => slot.id === selectedSlotId)
+    const previewCandidate = previewSlot?.candidates.find((candidate) => candidate.propId === previewPropId)
+    if (!previewSlot || !previewCandidate) return rolled
+    const forced = resolveSceneCandidatePreview(story, previewSlot, previewCandidate, seed)
     if (!forced) return rolled
-    return [...rolled.filter((item) => item.slotId !== selectedSlot.id), forced]
-  }, [seed, selectedCandidate, selectedSlot, story])
+    return [...rolled.filter((item) => item.slotId !== previewSlot.id), forced]
+  }, [previewPropId, seed, selectedSlotId, story])
+  const previewCoins = useMemo(() => createNightCoins(seed), [seed])
 
   function updateScene(nextScene: typeof scene) {
     onChange({
@@ -101,6 +119,20 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
 
   function updateSlot(patch: Partial<SceneSlot>) {
     if (selectedSlot) updateSlotById(selectedSlot.id, patch)
+  }
+
+  function updateFixture(fixture: 'phone' | 'counter', patch: Partial<SceneFixturePosition>) {
+    const viewport = mobilePreview ? 'mobile' : 'desktop'
+    updateScene({
+      ...scene,
+      fixtures: {
+        ...scene.fixtures,
+        [fixture]: {
+          ...scene.fixtures[fixture],
+          [viewport]: { ...scene.fixtures[fixture][viewport], ...patch },
+        },
+      },
+    })
   }
 
   function updateCandidate(index: number, patch: Partial<SceneCandidate>) {
@@ -131,6 +163,7 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
   }
 
   function selectSlot(slot: SceneSlot) {
+    setSelectedFixture(null)
     setSelectedSlotId(slot.id)
     setPreviewPropId(slot.candidates[0]?.propId ?? null)
     if (brushChance !== null) updateSlotById(slot.id, { spawnChance: brushChance })
@@ -160,6 +193,7 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
       jitter: { x: 1, y: 1, rotation: 2, scale: .03 },
     }
     updateScene({ ...scene, slots: [...scene.slots, slot] })
+    setSelectedFixture(null)
     setSelectedSlotId(id)
     setPreviewPropId(propId ?? null)
   }
@@ -203,6 +237,7 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
     const rect = container.getBoundingClientRect()
     const bounds = mobilePreview ? slot.mobileBounds ?? slot.bounds : slot.bounds
     dragRef.current = {
+      kind: 'slot',
       slotId: slot.id,
       offsetX: (event.clientX - rect.left) / rect.width * 100 - bounds.x,
       offsetY: (event.clientY - rect.top) / rect.height * 100 - bounds.y,
@@ -214,7 +249,7 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
 
   function dragSlot(event: ReactPointerEvent<HTMLButtonElement>) {
     const drag = dragRef.current
-    if (!drag) return
+    if (!drag || drag.kind !== 'slot') return
     const container = drag.layer === 'counter' ? counterLayerRef.current : stageRef.current
     if (!container) return
     const rect = container.getBoundingClientRect()
@@ -229,6 +264,41 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
   function endDrag(event: ReactPointerEvent<HTMLButtonElement>) {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
     dragRef.current = null
+  }
+
+  function selectFixture(fixture: 'phone' | 'counter') {
+    setSelectedFixture(fixture)
+    setSelectedSlotId('')
+    setPreviewPropId(null)
+    setBrushChance(null)
+  }
+
+  function beginFixtureDrag(event: ReactPointerEvent<HTMLButtonElement>, fixture: 'phone' | 'counter') {
+    event.preventDefault()
+    event.currentTarget.setPointerCapture(event.pointerId)
+    selectFixture(fixture)
+    const container = fixtureStageRef.current
+    if (!container) return
+    const rect = container.getBoundingClientRect()
+    const viewport = mobilePreview ? 'mobile' : 'desktop'
+    const position = scene.fixtures[fixture][viewport]
+    dragRef.current = {
+      kind: 'fixture',
+      fixture,
+      offsetX: (event.clientX - rect.left) / rect.width * 100 - position.x,
+      offsetY: (event.clientY - rect.top) / rect.height * 100 - position.y,
+    }
+  }
+
+  function dragFixture(event: ReactPointerEvent<HTMLButtonElement>) {
+    const drag = dragRef.current
+    const container = fixtureStageRef.current
+    if (!drag || drag.kind !== 'fixture' || !container) return
+    const rect = container.getBoundingClientRect()
+    updateFixture(drag.fixture, {
+      x: clamp((event.clientX - rect.left) / rect.width * 100 - drag.offsetX, 0, 100),
+      y: clamp((event.clientY - rect.top) / rect.height * 100 - drag.offsetY, 0, 100),
+    })
   }
 
   function renderSlotOutline(slot: SceneSlot) {
@@ -255,6 +325,21 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
   const counterSlots = scene.slots.filter((slot) => slot.layer === 'counter')
   const wallItems = previewItems.filter((item) => item.layer === 'wall')
   const counterItems = previewItems.filter((item) => item.layer === 'counter')
+  const fixtures = scene.fixtures
+  const fixtureStyle = {
+    '--fixture-phone-x': `${fixtures.phone.desktop.x}%`,
+    '--fixture-phone-y': `${fixtures.phone.desktop.y}%`,
+    '--fixture-phone-mobile-x': `${fixtures.phone.mobile.x}%`,
+    '--fixture-phone-mobile-y': `${fixtures.phone.mobile.y}%`,
+    '--fixture-counter-x': `${fixtures.counter.desktop.x}%`,
+    '--fixture-counter-y': `${fixtures.counter.desktop.y}%`,
+    '--fixture-counter-mobile-x': `${fixtures.counter.mobile.x}%`,
+    '--fixture-counter-mobile-y': `${fixtures.counter.mobile.y}%`,
+  } as CSSProperties
+  const selectedFixturePosition = selectedFixture
+    ? fixtures[selectedFixture][mobilePreview ? 'mobile' : 'desktop']
+    : null
+  const noop = () => undefined
 
   return (
     <section className="graph-editor-shell scene-admin-shell">
@@ -276,14 +361,63 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
           <div ref={stageRef} className="scene-admin-stage" aria-label="场景热点实时预览">
             <div className="scene-admin-lamp" aria-hidden="true" />
             <div className="scene-admin-rain" aria-hidden="true" />
-            <div className="scene-admin-phone-ghost" aria-hidden="true"><i /><span /></div>
             {wallItems.map((item) => <SceneProp key={item.instanceId} item={item} selected={item.slotId === selectedSlot?.id} preview />)}
-            {wallSlots.map(renderSlotOutline)}
-            <div ref={counterLayerRef} className="scene-admin-counter-layer">
-              <div className="scene-admin-counter-edge" aria-hidden="true" />
-              {counterItems.map((item) => <CounterSceneProp key={item.instanceId} item={item} selected={item.slotId === selectedSlot?.id} />)}
-              {counterSlots.map(renderSlotOutline)}
+            <div ref={fixtureStageRef} className="scene-admin-fixture-stage" style={fixtureStyle}>
+              <PhoneBooth
+                preview
+                phase="idle"
+                dialWarning={false}
+                dialedNumber=""
+                elapsed={0}
+                node={null}
+                handsetDocked
+                coinCredit={0}
+                heldCoin={false}
+                mechanicalPulse={null}
+                onLift={noop}
+                onHangup={noop}
+                onInsertCoin={noop}
+                onReturnCoin={noop}
+                onLineTest={noop}
+                onDigit={noop}
+                onDialTick={noop}
+                onDialReturn={noop}
+                onDialError={noop}
+              />
+              <BoothShelf
+                preview
+                coins={previewCoins}
+                heldItemId={null}
+                coinCredit={0}
+                objects={counterItems}
+                disabled
+                counterItemsRef={counterLayerRef}
+                overlay={counterSlots.map(renderSlotOutline)}
+                onToggleCoin={noop}
+                onToggleObject={noop}
+              />
+              <button
+                type="button"
+                className={`scene-fixture-outline fixture-phone ${selectedFixture === 'phone' ? 'is-selected' : ''}`}
+                onClick={() => selectFixture('phone')}
+                onPointerDown={(event) => beginFixtureDrag(event, 'phone')}
+                onPointerMove={dragFixture}
+                onPointerUp={endDrag}
+                onPointerCancel={endDrag}
+                aria-label="移动电话机（固定尺寸）"
+              ><Grip size={14} /><span>电话机 · 仅位置</span></button>
+              <button
+                type="button"
+                className={`scene-fixture-outline fixture-counter ${selectedFixture === 'counter' ? 'is-selected' : ''}`}
+                onClick={() => selectFixture('counter')}
+                onPointerDown={(event) => beginFixtureDrag(event, 'counter')}
+                onPointerMove={dragFixture}
+                onPointerUp={endDrag}
+                onPointerCancel={endDrag}
+                aria-label="移动柜台（固定尺寸）"
+              ><Grip size={14} /><span>柜台 · 仅位置</span></button>
             </div>
+            {wallSlots.map(renderSlotOutline)}
             <div className="scene-admin-caption"><span>LIVE BOOTH PROOF</span><strong>这一夜将出现 {previewItems.length} 件物品</strong><small>同一夜班内快照不会变化</small></div>
           </div>
         </div>
@@ -295,6 +429,20 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
           <button type="button" onClick={addSlot}><Plus size={13} />新增点位</button>
         </header>
         <div className="inspector-scroll">
+          <CollapsibleAdminSection title="固定设施位置">
+            <p className="admin-help">电话机与柜台只能移动，尺寸、比例、旋转和删除均已锁定；这里的坐标直接用于正式游戏。</p>
+            <div className="scene-fixture-list">
+              <button className={selectedFixture === 'phone' ? 'active' : ''} type="button" onClick={() => selectFixture('phone')}><Grip size={12} /><span>公共电话机</span><small>固定比例</small></button>
+              <button className={selectedFixture === 'counter' ? 'active' : ''} type="button" onClick={() => selectFixture('counter')}><Grip size={12} /><span>置物柜台</span><small>固定比例</small></button>
+            </div>
+            {selectedFixture && selectedFixturePosition && (
+              <div className="fixture-position-fields">
+                <label><span>{mobilePreview ? '手机' : '桌面'} X（中心）%</span><input type="number" step=".1" value={selectedFixturePosition.x} onChange={(event) => updateFixture(selectedFixture, { x: Number(event.target.value) })} /></label>
+                <label><span>{mobilePreview ? '手机' : '桌面'} Y（顶边）%</span><input type="number" step=".1" value={selectedFixturePosition.y} onChange={(event) => updateFixture(selectedFixture, { y: Number(event.target.value) })} /></label>
+              </div>
+            )}
+          </CollapsibleAdminSection>
+
           <CollapsibleAdminSection title="概率刷">
             <p className="admin-help">选择概率后，点击左侧任一点位即可快速刷入；“选择”模式可拖动点位。</p>
             <div className="probability-brushes">

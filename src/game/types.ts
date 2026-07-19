@@ -170,9 +170,22 @@ export interface SceneSlot {
   jitter?: { x?: number; y?: number; rotation?: number; scale?: number }
 }
 
+export interface SceneFixturePosition {
+  /** Horizontal centre, expressed as a percentage of the playable stage. */
+  x: number
+  /** Top edge, expressed as a percentage of the playable stage. */
+  y: number
+}
+
+export interface SceneFixtureLayout {
+  phone: { desktop: SceneFixturePosition; mobile: SceneFixturePosition }
+  counter: { desktop: SceneFixturePosition; mobile: SceneFixturePosition }
+}
+
 export interface SceneDefinition {
   refreshPolicy: 'nightStart'
   initialRoll: boolean
+  fixtures: SceneFixtureLayout
   stylePresets: SceneStylePreset[]
   props: ScenePropDefinition[]
   slots: SceneSlot[]

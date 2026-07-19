@@ -2,12 +2,24 @@ import type {
   PhoneDirectoryEntry,
   SceneAppearance,
   SceneDefinition,
+  SceneFixtureLayout,
   SceneHotspot,
   ScenePropDefinition,
   ScenePropKind,
   SceneStylePreset,
   TelephoneStory,
 } from './types'
+
+export const DEFAULT_SCENE_FIXTURES: SceneFixtureLayout = {
+  phone: {
+    desktop: { x: 50, y: 1.5 },
+    mobile: { x: 50, y: 12.5 },
+  },
+  counter: {
+    desktop: { x: 50, y: 75 },
+    mobile: { x: 50, y: 80 },
+  },
+}
 
 const KNOWN_PHONE_IDS: Record<string, string> = {
   '999': 'emergency-services',
@@ -84,6 +96,7 @@ function migrateLegacyScene(hotspots: SceneHotspot[], directory: PhoneDirectoryE
   return {
     refreshPolicy: 'nightStart',
     initialRoll: true,
+    fixtures: structuredClone(DEFAULT_SCENE_FIXTURES),
     stylePresets: structuredClone(DEFAULT_SCENE_STYLE_PRESETS),
     props,
     slots: hotspots.map((hotspot) => ({
@@ -111,6 +124,13 @@ export function migrateTelephoneStory(value: unknown): TelephoneStory {
     ?? migrateLegacyScene(source.extensions?.telephone?.sceneHotspots ?? [], directory)
   scene.refreshPolicy = 'nightStart'
   scene.initialRoll ??= true
+  scene.fixtures ??= structuredClone(DEFAULT_SCENE_FIXTURES)
+  scene.fixtures.phone ??= structuredClone(DEFAULT_SCENE_FIXTURES.phone)
+  scene.fixtures.counter ??= structuredClone(DEFAULT_SCENE_FIXTURES.counter)
+  scene.fixtures.phone.desktop ??= structuredClone(DEFAULT_SCENE_FIXTURES.phone.desktop)
+  scene.fixtures.phone.mobile ??= structuredClone(DEFAULT_SCENE_FIXTURES.phone.mobile)
+  scene.fixtures.counter.desktop ??= structuredClone(DEFAULT_SCENE_FIXTURES.counter.desktop)
+  scene.fixtures.counter.mobile ??= structuredClone(DEFAULT_SCENE_FIXTURES.counter.mobile)
   scene.stylePresets ??= structuredClone(DEFAULT_SCENE_STYLE_PRESETS)
 
   delete source.globals.phone.validNumbers

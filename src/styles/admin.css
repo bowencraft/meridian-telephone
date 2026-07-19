@@ -68,7 +68,40 @@
 .scene-admin-stage-wrap.is-mobile .scene-admin-phone-ghost { left:25%; top:31%; width:50%; height:46%; }
 .scene-admin-stage-wrap.is-mobile .scene-prop { left:var(--prop-mobile-left)!important;top:var(--prop-mobile-top)!important;width:var(--prop-mobile-width)!important;height:var(--prop-mobile-height)!important; }
 .scene-admin-stage .scene-hotspot { z-index:5; }.scene-admin-stage .scene-prop-print>span{font-size:clamp(4px,.7vw,8px)}
+.scene-admin-fixture-stage { position:absolute; inset:9.78% 0 6%; z-index:6; pointer-events:none; }
+.scene-admin-stage-wrap.is-mobile .scene-admin-fixture-stage { inset:0; }
+.scene-admin-stage-wrap.is-mobile .scene-admin-fixture-stage>.phone-assembly {
+  left:var(--fixture-phone-mobile-x);
+  top:var(--fixture-phone-mobile-y);
+  width:min(78%,310px);
+}
+.scene-admin-stage-wrap.is-mobile .scene-admin-fixture-stage>.booth-counter {
+  left:var(--fixture-counter-mobile-x);
+  top:var(--fixture-counter-mobile-y);
+  width:100%;
+  height:19%;
+}
+.scene-admin-stage-wrap.is-mobile .scene-admin-fixture-stage .counter-items .shelf-object.is-scene-counter-prop {
+  left:var(--counter-mobile-left)!important;
+  right:auto!important;
+  top:var(--counter-mobile-top)!important;
+  width:var(--counter-mobile-width)!important;
+  height:var(--counter-mobile-height)!important;
+}
+.scene-admin-fixture-stage>.phone-assembly { filter:drop-shadow(0 20px 20px rgba(0,0,0,.7)); }
+.scene-admin-fixture-stage>.booth-counter { filter:none; }
+.scene-admin-fixture-stage .counter-items { pointer-events:none; }
 .scene-slot-outline { position:absolute; z-index:10; display:grid; place-items:center; padding:0; color:#e7bd68; border:1px dashed rgba(217,181,102,.56); background:rgba(191,153,77,.035); cursor:grab; touch-action:none; pointer-events:auto; }.scene-slot-outline:active{cursor:grabbing}.scene-slot-outline>svg{opacity:0;filter:drop-shadow(0 1px 2px #000)}.scene-slot-outline span{position:absolute;right:2px;top:2px;padding:2px 3px;color:#d5b46f;background:rgba(7,9,8,.8);font:7px/1 "Courier New",monospace}.scene-slot-outline:hover,.scene-slot-outline.is-selected{border-style:solid;border-color:#e5b85c;box-shadow:0 0 0 1px rgba(229,184,92,.22),inset 0 0 20px rgba(216,172,82,.08)}.scene-slot-outline:hover>svg,.scene-slot-outline.is-selected>svg{opacity:.85}
+.scene-admin-fixture-stage .scene-slot-outline { z-index:18; }
+.scene-fixture-outline { position:absolute; z-index:16; display:grid; place-items:center; padding:0; color:#efd083; border:1px dashed rgba(235,194,104,.6); background:rgba(196,151,64,.025); cursor:grab; touch-action:none; pointer-events:auto; translate:-50% 0; }
+.scene-fixture-outline:active{cursor:grabbing}.scene-fixture-outline:hover,.scene-fixture-outline.is-selected{border-style:solid;border-color:#f0cb74;box-shadow:0 0 0 1px rgba(235,194,104,.28),inset 0 0 28px rgba(207,159,66,.09)}
+.scene-fixture-outline span{position:absolute;left:6px;top:6px;padding:4px 6px;color:#f1d28c;background:rgba(7,9,8,.9);font:7px/1 "Courier New",monospace;white-space:nowrap}.scene-fixture-outline>svg{opacity:.82;filter:drop-shadow(0 1px 2px #000)}
+.scene-fixture-outline.fixture-phone{left:var(--fixture-phone-x);top:var(--fixture-phone-y);width:min(33.44%,535px);aspect-ratio:107/138}
+.scene-fixture-outline.fixture-counter{left:var(--fixture-counter-x);top:var(--fixture-counter-y);width:118px;height:25px;translate:-50% -50%;background:rgba(12,14,12,.82)}
+.scene-admin-stage-wrap.is-mobile .scene-fixture-outline.fixture-phone{left:var(--fixture-phone-mobile-x);top:var(--fixture-phone-mobile-y);width:min(78%,310px,calc((100dvh - 235px) * .7754))}
+.scene-admin-stage-wrap.is-mobile .scene-fixture-outline.fixture-counter{left:var(--fixture-counter-mobile-x);top:var(--fixture-counter-mobile-y)}
+.scene-fixture-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}.scene-fixture-list button{display:grid;grid-template-columns:15px 1fr;gap:4px 6px;align-items:center;padding:8px;color:#596057;border:1px solid #c3c9bf;background:#f5f7f2;text-align:left;font-size:8px}.scene-fixture-list button.active{color:#f2f0e7;border-color:#424b40;background:#4c5749}.scene-fixture-list small{grid-column:2;color:inherit;font:7px/1 "Courier New",monospace;opacity:.68}
+.fixture-position-fields{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}
 .scene-admin-counter-layer { position:absolute; left:5%; right:5%; bottom:2.5%; z-index:7; height:22%; border:1px solid rgba(118,79,43,.7); border-radius:2px; background:linear-gradient(180deg,rgba(102,67,38,.76),rgba(43,28,18,.94) 48%,rgba(18,12,9,.98)); box-shadow:inset 0 1px rgba(255,228,176,.13),0 15px 23px rgba(0,0,0,.62); }
 .scene-admin-counter-edge { position:absolute; left:-2%; right:-2%; top:48%; height:17%; border-top:1px solid rgba(18,11,7,.9); border-bottom:1px solid rgba(150,105,66,.2); background:linear-gradient(180deg,#3e2819,#1d130d); box-shadow:0 7px 12px rgba(0,0,0,.5); }
 .scene-admin-counter-layer .shelf-object { z-index:5; pointer-events:none; }

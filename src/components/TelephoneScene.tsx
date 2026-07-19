@@ -1,5 +1,5 @@
 import { Headphones, NotebookTabs, RotateCcw, Settings2, Volume2, VolumeX, X } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type CSSProperties } from 'react'
 import { CallEngine, conditionsMatch, loadStoryDefinition } from '../game/callEngine'
 import { elapsedSeconds } from '../game/callTimer'
 import { formatPhoneNumber, shouldConnect } from '../game/dialModel'
@@ -482,6 +482,17 @@ export function TelephoneScene() {
 
   const hotspots = sceneItems.filter((hotspot) => hotspot.layer === 'wall' && hotspot.slotId !== 'coin-return')
   const counterItems = sceneItems.filter((item) => item.layer === 'counter')
+  const fixtures = story.extensions.telephone.scene.fixtures
+  const fixtureStyle = {
+    '--fixture-phone-x': `${fixtures.phone.desktop.x}%`,
+    '--fixture-phone-y': `${fixtures.phone.desktop.y}%`,
+    '--fixture-phone-mobile-x': `${fixtures.phone.mobile.x}%`,
+    '--fixture-phone-mobile-y': `${fixtures.phone.mobile.y}%`,
+    '--fixture-counter-x': `${fixtures.counter.desktop.x}%`,
+    '--fixture-counter-y': `${fixtures.counter.desktop.y}%`,
+    '--fixture-counter-mobile-x': `${fixtures.counter.mobile.x}%`,
+    '--fixture-counter-mobile-y': `${fixtures.counter.mobile.y}%`,
+  } as CSSProperties
   const handsetDocked = ['intro', 'idle', 'ringing', 'hungUp'].includes(machine.phase)
   const callVisible = ['inCall', 'awaitingChoice', 'timeoutWarning', 'ending'].includes(machine.phase)
   const ending = runtime.ending ? story.extensions.telephone.endings[runtime.ending] : null
@@ -541,7 +552,7 @@ export function TelephoneScene() {
         warning={machine.phase === 'timeoutWarning' ? machine.warningReason : null}
       />
 
-      <div className="game-stage">
+      <div className="game-stage" style={fixtureStyle}>
         <BoothShelf
           coins={coins}
           heldItemId={heldItemId}

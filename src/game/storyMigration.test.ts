@@ -8,7 +8,21 @@ describe('Telephone story migration', () => {
     const migrated = migrateTelephoneStory(story)
     expect(migrated.formatVersion).toBe(2)
     expect(migrated.extensions.telephone.scene.refreshPolicy).toBe('nightStart')
+    expect(migrated.extensions.telephone.scene.fixtures).toMatchObject({
+      phone: { desktop: { x: 50, y: 1.5 }, mobile: { x: 50, y: 12.5 } },
+      counter: { desktop: { x: 50, y: 75 }, mobile: { x: 50, y: 80 } },
+    })
     expect(migrated.globals.phone.directory[0].id).toBeTruthy()
+  })
+
+  it('backfills locked fixture positions for older v2 scene documents', () => {
+    const story = defaultTelephoneStory() as any
+    delete story.extensions.telephone.scene.fixtures
+
+    const migrated = migrateTelephoneStory(story)
+
+    expect(migrated.extensions.telephone.scene.fixtures.phone.mobile.y).toBe(12.5)
+    expect(migrated.extensions.telephone.scene.fixtures.counter.desktop.y).toBe(75)
   })
 
   it('upgrades a v1 hotspot and raw number into split scene and directory data', () => {
