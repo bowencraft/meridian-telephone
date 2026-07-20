@@ -31,6 +31,10 @@ export type GraphCondition =
   | { type: 'stateGte'; key: string; value: number }
   | { type: 'hasNumber'; value: string }
   | { type: 'phoneKnown'; phoneId: string; expected: boolean }
+  | { type: 'hasFact'; value: string; expected?: boolean }
+  | { type: 'durableEquals'; key: string; value: Scalar }
+  | { type: 'lastEndingEquals'; value: EndingType }
+  | { type: 'attemptsGte'; value: number }
   | { type: 'endingSeen'; value: EndingType }
 
 export type GraphEffect =
@@ -38,6 +42,8 @@ export type GraphEffect =
   | { type: 'increment'; key: string; amount: number }
   | { type: 'discoverNumber'; number: string }
   | { type: 'discoverPhone'; phoneId: string }
+  | { type: 'addFact'; fact: string }
+  | { type: 'setDurable'; values: Record<string, Scalar> }
   | { type: 'addClue'; clue: string }
 
 export interface GraphPosition { x: number; y: number }
@@ -80,6 +86,7 @@ export interface TelephoneEdge {
 export interface PhoneDirectoryEntry {
   id: string
   number: string
+  aliases?: string[]
   label: string
   description: string
   initiallyKnown?: boolean
@@ -95,6 +102,7 @@ export interface RingEvent {
   delayMs: number
   nodeId: string
   requires?: GraphCondition[]
+  missedEffects?: GraphEffect[]
 }
 
 export type ScenePropKind =
@@ -141,6 +149,8 @@ export interface ScenePropDefinition {
   ariaLabel: string
   printedLines?: string[]
   copy: {
+    summary?: string
+    style?: string
     firstVariants: string[]
     repeatVariants?: string[]
   }
@@ -154,6 +164,7 @@ export interface ScenePropDefinition {
 export interface SceneCandidate {
   propId: string
   weight: number
+  priority?: number
   requires?: GraphCondition[]
   appearanceOverrides?: Partial<SceneAppearance>
 }
@@ -262,6 +273,8 @@ export interface RuntimeState {
   flags: Record<string, Scalar>
   discoveredNumbers: string[]
   clues: string[]
+  facts: string[]
+  durableState: Record<string, Scalar>
   seenNodes: string[]
   handledRings: string[]
   missedRings: string[]
@@ -324,7 +337,15 @@ export interface TranscriptEntry {
   createdAt: number
 }
 
-export interface DialLogEntry { number: string; label: string; connected: boolean; createdAt: number }
+export interface DialLogEntry {
+  /** Digits the player actually entered; retained for old call-record compatibility. */
+  number: string
+  canonicalNumber?: string
+  phoneId?: string
+  label: string
+  connected: boolean
+  createdAt: number
+}
 
 export interface CallRecordData {
   sessionId: string
@@ -336,6 +357,8 @@ export interface CallRecordData {
   dialLog: DialLogEntry[]
   discoveredNumbers: string[]
   clues: string[]
+  facts: string[]
+  durableState: Record<string, Scalar>
   flags: Record<string, Scalar>
 }
 
@@ -343,5 +366,8 @@ export interface ProgressData {
   discoveredNumbers: string[]
   seenEndings: EndingType[]
   clues: string[]
+  facts: string[]
+  durableState: Record<string, Scalar>
+  lastEnding?: EndingType
   attempts: number
 }

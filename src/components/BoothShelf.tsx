@@ -9,6 +9,7 @@ interface BoothShelfProps {
   coinCredit: number
   objects: ResolvedSceneItem[]
   disabled?: boolean
+  objectsDisabled?: boolean
   preview?: boolean
   counterItemsRef?: Ref<HTMLDivElement>
   overlay?: ReactNode
@@ -22,6 +23,7 @@ export function BoothShelf({
   coinCredit,
   objects,
   disabled,
+  objectsDisabled,
   preview = false,
   counterItemsRef,
   overlay,
@@ -57,7 +59,7 @@ export function BoothShelf({
             key={item.instanceId}
             item={item}
             held={heldItemId === item.instanceId}
-            disabled={disabled}
+            disabled={disabled || objectsDisabled}
             onClick={() => onToggleObject(item)}
           />
         ))}

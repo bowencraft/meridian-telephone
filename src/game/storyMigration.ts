@@ -74,7 +74,12 @@ function legacyPrintedLines(hotspot: SceneHotspot) {
 }
 
 function migrateDirectory(entries: Array<Partial<PhoneDirectoryEntry> & { number: string; label: string; description: string }>) {
-  return entries.map((entry) => ({ ...entry, id: entry.id || phoneId(entry.number, entry.label) })) as PhoneDirectoryEntry[]
+  return entries.map((entry) => ({
+    ...entry,
+    number: entry.number.replace(/\D/g, ''),
+    ...(entry.aliases?.length ? { aliases: [...new Set(entry.aliases.map((alias) => alias.replace(/\D/g, '')).filter(Boolean))] } : {}),
+    id: entry.id || phoneId(entry.number, entry.label),
+  })) as PhoneDirectoryEntry[]
 }
 
 function migrateLegacyScene(hotspots: SceneHotspot[], directory: PhoneDirectoryEntry[]): SceneDefinition {
@@ -87,7 +92,12 @@ function migrateLegacyScene(hotspots: SceneHotspot[], directory: PhoneDirectoryE
       label: hotspot.label,
       ariaLabel: hotspot.ariaLabel,
       printedLines: legacyPrintedLines(hotspot),
-      copy: { firstVariants: [hotspot.body], ...(hotspot.repeatBody ? { repeatVariants: [hotspot.repeatBody] } : {}) },
+      copy: {
+        summary: hotspot.label,
+        style: '一件留在电话亭里的旧纸质记录。',
+        firstVariants: [hotspot.body],
+        ...(hotspot.repeatBody ? { repeatVariants: [hotspot.repeatBody] } : {}),
+      },
       ...(linked ? { phoneRefs: [linked] } : {}),
       sceneEvent: hotspot.id,
       appearance: { presetId: presetForKind(kind) },
@@ -132,6 +142,14 @@ export function migrateTelephoneStory(value: unknown): TelephoneStory {
   scene.fixtures.counter.desktop ??= structuredClone(DEFAULT_SCENE_FIXTURES.counter.desktop)
   scene.fixtures.counter.mobile ??= structuredClone(DEFAULT_SCENE_FIXTURES.counter.mobile)
   scene.stylePresets ??= structuredClone(DEFAULT_SCENE_STYLE_PRESETS)
+  scene.props = (scene.props ?? []).map((prop: ScenePropDefinition) => ({
+    ...prop,
+    copy: {
+      summary: prop.copy.summary ?? prop.label,
+      style: prop.copy.style ?? `外观采用“${prop.appearance?.presetId ?? '旧纸张'}”样式。`,
+      ...prop.copy,
+    },
+  }))
 
   delete source.globals.phone.validNumbers
   source.globals.phone.directory = directory

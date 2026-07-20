@@ -67,7 +67,7 @@ export function CallRecord() {
             <section>
               <span className="record-section-label">DIALED NUMBERS</span><h2>本次拨号</h2>
               <div className="dial-log-list">
-                {record.dialLog.length ? record.dialLog.map((item) => <article key={`${item.number}-${item.createdAt}`}><strong>{formatPhoneNumber(item.number)}</strong><span>{item.label}</span><i className={item.connected ? 'connected' : ''}>{item.connected ? '接通' : '未接通'}</i></article>) : <p>本次没有主动拨号。</p>}
+                {record.dialLog.length ? record.dialLog.map((item) => <article key={`${item.number}-${item.createdAt}`}><strong>{formatPhoneNumber(item.canonicalNumber ?? item.number)}</strong><span>{item.label}{item.canonicalNumber && item.canonicalNumber !== item.number ? ` · 拨入 ${formatPhoneNumber(item.number)}` : ''}</span><i className={item.connected ? 'connected' : ''}>{item.connected ? '接通' : '未接通'}</i></article>) : <p>本次没有主动拨号。</p>}
               </div>
             </section>
             <section>

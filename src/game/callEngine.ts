@@ -18,6 +18,24 @@ import type {
 export const STORY_OVERRIDE_KEY = 'telephone.storyOverride.v3'
 export const LEGACY_STORY_OVERRIDE_KEYS = ['telephone.storyOverride.v2', 'telephone.storyOverride.v1'] as const
 
+export function normalizeDialNumber(value: string) {
+  return value.replace(/\D/g, '')
+}
+
+export function canonicalDialNumber(story: TelephoneStory, value: string) {
+  const normalized = normalizeDialNumber(value)
+  return story.globals.phone.directory.find((entry) =>
+    entry.number === normalized || entry.aliases?.includes(normalized),
+  )?.number ?? normalized
+}
+
+export function phoneEntryForDial(story: TelephoneStory, value: string) {
+  const normalized = normalizeDialNumber(value)
+  return story.globals.phone.directory.find((entry) =>
+    entry.number === normalized || entry.aliases?.includes(normalized),
+  )
+}
+
 function clone<T>(value: T): T {
   return structuredClone(value)
 }
@@ -52,12 +70,22 @@ export function conditionMatches(condition: GraphCondition, state: RuntimeState,
     case 'stateEquals': return current === condition.value
     case 'stateNotEquals': return current !== condition.value
     case 'stateGte': return Number(current ?? 0) >= condition.value
-    case 'hasNumber': return state.discoveredNumbers.includes(condition.value) || progress?.discoveredNumbers.includes(condition.value) === true
+    case 'hasNumber': {
+      const number = story ? canonicalDialNumber(story, condition.value) : normalizeDialNumber(condition.value)
+      return state.discoveredNumbers.includes(number) || progress?.discoveredNumbers.includes(number) === true
+    }
     case 'phoneKnown': {
       const number = story?.globals.phone.directory.find((entry) => entry.id === condition.phoneId)?.number
       const known = Boolean(number && (state.discoveredNumbers.includes(number) || progress?.discoveredNumbers.includes(number) === true))
       return known === condition.expected
     }
+    case 'hasFact': {
+      const known = state.facts.includes(condition.value) || progress?.facts?.includes(condition.value) === true
+      return known === (condition.expected ?? true)
+    }
+    case 'durableEquals': return state.durableState[condition.key] === condition.value
+    case 'lastEndingEquals': return progress?.lastEnding === condition.value
+    case 'attemptsGte': return Number(progress?.attempts ?? 0) >= condition.value
     case 'endingSeen': return state.seenEndings.includes(condition.value) || progress?.seenEndings.includes(condition.value) === true
   }
 }
@@ -106,13 +134,22 @@ function applyEffect(state: RuntimeState, effect: GraphEffect, story: TelephoneS
       state.flags = { ...state.flags, [effect.key]: Number(state.flags[effect.key] ?? 0) + effect.amount }
       break
     case 'discoverNumber':
-      if (!state.discoveredNumbers.includes(effect.number)) state.discoveredNumbers.push(effect.number)
+      {
+        const number = canonicalDialNumber(story, effect.number)
+        if (!state.discoveredNumbers.includes(number)) state.discoveredNumbers.push(number)
+      }
       break
     case 'discoverPhone': {
       const number = story.globals.phone.directory.find((entry) => entry.id === effect.phoneId)?.number
       if (number && !state.discoveredNumbers.includes(number)) state.discoveredNumbers.push(number)
       break
     }
+    case 'addFact':
+      if (!state.facts.includes(effect.fact)) state.facts.push(effect.fact)
+      break
+    case 'setDurable':
+      state.durableState = { ...state.durableState, ...effect.values }
+      break
     case 'addClue':
       if (!state.clues.includes(effect.clue)) state.clues.push(effect.clue)
       break
@@ -121,12 +158,14 @@ function applyEffect(state: RuntimeState, effect: GraphEffect, story: TelephoneS
 
 function initialState(story: TelephoneStory, progress?: ProgressData, seed = Date.now() % 1_000_000) : RuntimeState {
   const initiallyKnown = story.globals.phone.directory.filter((item) => item.initiallyKnown).map((item) => item.number)
-  const persistedNumbers = progress?.discoveredNumbers ?? []
+  const persistedNumbers = (progress?.discoveredNumbers ?? []).map((number) => canonicalDialNumber(story, number))
   return {
     currentNodeId: story.entryNodeId,
     flags: { compliance: 0, suspicion: 0, wrongDials: 0, hangups: 0, inspected: 0 },
     discoveredNumbers: [...new Set([...initiallyKnown, ...persistedNumbers])],
     clues: [...(progress?.clues ?? [])],
+    facts: [...(progress?.facts ?? [])],
+    durableState: { ...(progress?.durableState ?? {}) },
     seenNodes: [story.entryNodeId],
     handledRings: [],
     missedRings: [],
@@ -187,6 +226,7 @@ export class CallEngine {
       .filter((edge) => conditionsMatch(edge.conditions, this.state, this.progress, this.story))
       .sort((a, b) => b.priority - a.priority || a.id.localeCompare(b.id))
       .filter((edge) => edge.choice)
+      .filter((edge, index, edges) => edges.findIndex((candidate) => (candidate.trigger.value ?? candidate.id) === (edge.trigger.value ?? edge.id)) === index)
       .map((edge) => ({
         edgeId: edge.id,
         value: edge.trigger.value ?? edge.id,
@@ -222,15 +262,18 @@ export class CallEngine {
   }
 
   dispatch(event: CallEvent): EngineTransition {
-    const candidates = this.availableEdges(event)
+    const normalizedEvent = event.type === 'dialNumber'
+      ? { ...event, value: canonicalDialNumber(this.story, event.value ?? '') }
+      : event
+    const candidates = this.availableEdges(normalizedEvent)
     const winner = candidates[0] ?? null
-    if (winner) return this.transitionTo(winner.to, event, winner, candidates.map((edge) => edge.id), false)
+    if (winner) return this.transitionTo(winner.to, normalizedEvent, winner, candidates.map((edge) => edge.id), false)
 
-    if (event.type === 'dialNumber') {
-      const knownNumber = this.story.globals.phone.directory.some((entry) => entry.number === event.value)
+    if (normalizedEvent.type === 'dialNumber') {
+      const knownNumber = this.story.globals.phone.directory.some((entry) => entry.number === normalizedEvent.value)
       this.state.flags.wrongDials = Number(this.state.flags.wrongDials ?? 0) + 1
       const targetId = knownNumber ? this.story.globals.phone.busyNumberNodeId : this.story.globals.phone.wrongNumberNodeId
-      return this.transitionTo(targetId, event, null, [], true)
+      return this.transitionTo(targetId, normalizedEvent, null, [], true)
     }
 
     const node = this.currentNode()
@@ -238,7 +281,7 @@ export class CallEngine {
     const text = fallbacks[this.state.turn % Math.max(1, fallbacks.length)] ?? '线路只留下了一阵静电。'
     this.state.turn += 1
     return {
-      event,
+      event: normalizedEvent,
       edge: null,
       previousNode: node,
       node,

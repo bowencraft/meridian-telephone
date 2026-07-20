@@ -1,6 +1,6 @@
 import { Headphones, NotebookTabs, RotateCcw, Settings2, Volume2, VolumeX, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type CSSProperties } from 'react'
-import { CallEngine, conditionsMatch, loadStoryDefinition } from '../game/callEngine'
+import { CallEngine, conditionsMatch, loadStoryDefinition, phoneEntryForDial } from '../game/callEngine'
 import { elapsedSeconds } from '../game/callTimer'
 import { formatPhoneNumber, shouldConnect } from '../game/dialModel'
 import { TelephoneAudio } from '../game/audio'
@@ -27,6 +27,22 @@ function nowId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
 
+interface ClueCardData {
+  title: string
+  body: string
+  summary?: string
+  style?: string
+}
+
+function clueForSceneItem(item: ResolvedSceneItem, alreadyInspected: boolean): ClueCardData {
+  return {
+    title: item.prop.label,
+    summary: item.prop.copy.summary || item.prop.label,
+    style: item.prop.copy.style || '外观没有留下额外可辨认的特征。',
+    body: sceneItemCopy(item, alreadyInspected),
+  }
+}
+
 export function TelephoneScene() {
   const sceneRef = useRef<HTMLElement>(null)
   const lightFrameRef = useRef<number | null>(null)
@@ -45,7 +61,7 @@ export function TelephoneScene() {
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([])
   const [dialLog, setDialLog] = useState<DialLogEntry[]>([])
   const [inspected, setInspected] = useState<string[]>([])
-  const [clueCard, setClueCard] = useState<{ title: string; body: string } | null>(null)
+  const [clueCard, setClueCard] = useState<ClueCardData | null>(null)
   const [numberBookOpen, setNumberBookOpen] = useState(false)
   const [muted, setMuted] = useState(false)
   const [elapsed, setElapsed] = useState(0)
@@ -62,6 +78,8 @@ export function TelephoneScene() {
   const connectTimerRef = useRef<number | null>(null)
   const idleDeadlineRef = useRef<{ key: string; at: number } | null>(null)
   const mechanicalTimerRef = useRef<number | null>(null)
+  const refundableCallRef = useRef(false)
+  const auditReturnSerialRef = useRef(0)
 
   const triggerMechanicalPulse = useCallback((pulse: 'coin-in' | 'coin-out' | 'line-test') => {
     if (mechanicalTimerRef.current) window.clearTimeout(mechanicalTimerRef.current)
@@ -72,6 +90,15 @@ export function TelephoneScene() {
       mechanicalTimerRef.current = null
     }, pulse === 'line-test' ? 520 : 760)
   }, [])
+
+  const refundAuditCoin = useCallback(() => {
+    if (!refundableCallRef.current) return
+    refundableCallRef.current = false
+    auditReturnSerialRef.current += 1
+    setCoins((items) => [...items, returnedCoin(`audit-return-${Date.now()}-${auditReturnSerialRef.current}`, items.length)])
+    triggerMechanicalPulse('coin-out')
+    audioRef.current.playCoinReturn()
+  }, [triggerMechanicalPulse])
 
   useEffect(() => () => {
     if (mechanicalTimerRef.current) window.clearTimeout(mechanicalTimerRef.current)
@@ -109,11 +136,12 @@ export function TelephoneScene() {
       hasChoices: nextChoices.some((choice) => !choice.hidden),
     })
     if (transition.node.telephone?.ending) {
+      refundAuditCoin()
       machineDispatch({ type: 'END', nodeId: transition.node.id })
       audioRef.current.stopAll()
       audioRef.current.playReveal()
     }
-  }, [appendTranscript, engine, story.globals.phone.busyNumberNodeId, story.globals.phone.wrongNumberNodeId])
+  }, [appendTranscript, engine, refundAuditCoin, story.globals.phone.busyNumberNodeId, story.globals.phone.wrongNumberNodeId])
 
   const hangUp = useCallback(() => {
     if (machine.phase === 'idle' || machine.phase === 'intro' || machine.phase === 'ending') return
@@ -122,6 +150,7 @@ export function TelephoneScene() {
       return
     }
     if (connectTimerRef.current) window.clearTimeout(connectTimerRef.current)
+    refundAuditCoin()
     audioRef.current.stopCallLoops()
     audioRef.current.playHangup()
     engine.setFlag('hangups', Number(engine.state.flags.hangups ?? 0) + 1)
@@ -140,7 +169,7 @@ export function TelephoneScene() {
     setChoices([])
     machineDispatch({ type: 'HANG_UP' })
     window.setTimeout(() => machineDispatch({ type: 'RESET_IDLE' }), 560)
-  }, [applyTransition, engine, machine.phase, node.telephone?.canHangUp])
+  }, [applyTransition, engine, machine.phase, node.telephone?.canHangUp, refundAuditCoin])
 
   const handleTimeout = useCallback((kind: 'choice' | 'call') => {
     const transition = engine.dispatch({ type: 'timeout', value: kind, createdAt: Date.now() })
@@ -180,6 +209,8 @@ export function TelephoneScene() {
     if (machine.phase !== 'ringing' || !machine.incomingEventId) return
     const incomingId = machine.incomingEventId
     const id = window.setTimeout(() => {
+      const missedRing = story.globals.phone.idleRingSchedule.find((ring) => ring.id === incomingId)
+      engine.applyEffects(missedRing?.missedEffects)
       engine.markRingMissed(incomingId)
       setRuntime(structuredClone(engine.state))
       audioRef.current.stopLoop('ring')
@@ -191,7 +222,7 @@ export function TelephoneScene() {
       window.setTimeout(() => machineDispatch({ type: 'RESET_IDLE' }), 420)
     }, 13500)
     return () => window.clearTimeout(id)
-  }, [engine, machine.incomingEventId, machine.phase, ringLabel])
+  }, [engine, machine.incomingEventId, machine.phase, ringLabel, story.globals.phone.idleRingSchedule])
 
   useEffect(() => {
     let kind: 'dial' | 'choice' | 'call' | null = null
@@ -257,6 +288,8 @@ export function TelephoneScene() {
       dialLog,
       discoveredNumbers: runtime.discoveredNumbers,
       clues: runtime.clues,
+      facts: runtime.facts,
+      durableState: runtime.durableState,
       flags: runtime.flags,
     }
     saveRecord(record)
@@ -300,15 +333,22 @@ export function TelephoneScene() {
     }
     setCoinCredit(0)
     setSpentCoins((value) => value + 1)
+    refundableCallRef.current = true
     engine.setFlag('coinsSpent', Number(engine.state.flags.coinsSpent ?? 0) + 1)
     setRuntime(structuredClone(engine.state))
     machineDispatch({ type: 'CONNECT' })
     audioRef.current.stopLoop('dialTone')
     audioRef.current.playConnectNoise()
-    const known = story.globals.phone.directory.find((item) => item.number === number)
+    const known = phoneEntryForDial(story, number)
     connectTimerRef.current = window.setTimeout(() => {
       const transition = engine.dispatch({ type: 'dialNumber', value: number, createdAt: Date.now() })
-      setDialLog((items) => [...items, { number, label: known?.label ?? '未登记号码', connected: !transition.fallback, createdAt: Date.now() }])
+      setDialLog((items) => [...items, {
+        number,
+        ...(known ? { canonicalNumber: known.number, phoneId: known.id } : {}),
+        label: known?.label ?? '未登记号码',
+        connected: !transition.fallback,
+        createdAt: Date.now(),
+      }])
       audioRef.current.startLineNoise()
       applyTransition(transition, number)
     }, 880)
@@ -345,7 +385,7 @@ export function TelephoneScene() {
     if (hotspot.prop.sceneEvent && engine.availableEdges({ type: 'sceneInspect', value: hotspot.prop.sceneEvent }).length) {
       engine.dispatch({ type: 'sceneInspect', value: hotspot.prop.sceneEvent, createdAt: Date.now() })
     }
-    setClueCard({ title: hotspot.prop.label, body: sceneItemCopy(hotspot, alreadyInspected) })
+    setClueCard(clueForSceneItem(hotspot, alreadyInspected))
     setInspected((items) => items.includes(hotspot.instanceId) ? items : [...items, hotspot.instanceId])
     engine.returnToIdleNode()
     setRuntime(structuredClone(engine.state))
@@ -362,7 +402,7 @@ export function TelephoneScene() {
   }
 
   function toggleBoothObject(item: ResolvedSceneItem) {
-    if (machine.phase === 'ending') return
+    if (machine.phase !== 'idle') return
     const puttingDown = heldItemId === item.instanceId
     audioRef.current.playObjectMove()
     setHeldItemId(puttingDown ? null : item.instanceId)
@@ -376,7 +416,7 @@ export function TelephoneScene() {
       setInspected((items) => items.includes(item.instanceId) ? items : [...items, item.instanceId])
       engine.returnToIdleNode()
       setRuntime(structuredClone(engine.state))
-      setClueCard({ title: item.prop.label, body: sceneItemCopy(item, alreadyInspected) })
+      setClueCard(clueForSceneItem(item, alreadyInspected))
       return
     }
     setClueCard({
@@ -473,6 +513,7 @@ export function TelephoneScene() {
     setHeldItemId(null)
     setCoinCredit(0)
     setSpentCoins(0)
+    refundableCallRef.current = false
     setMechanicalPulse(null)
     setStartedAt(Date.now())
     recordSavedRef.current = false
@@ -559,6 +600,7 @@ export function TelephoneScene() {
           coinCredit={coinCredit}
           objects={counterItems}
           disabled={machine.phase === 'ending'}
+          objectsDisabled={machine.phase !== 'idle'}
           onToggleCoin={toggleCoin}
           onToggleObject={toggleBoothObject}
         />
@@ -606,7 +648,12 @@ export function TelephoneScene() {
       {clueCard && (
         <aside className="clue-card" role="dialog" aria-modal="false" aria-label={`发现：${clueCard.title}`}>
           <button type="button" onClick={() => setClueCard(null)} aria-label="收起发现"><X size={16} /></button>
-          <span>BOOTH EVIDENCE</span><h2>{clueCard.title}</h2><p>{clueCard.body}</p>
+          <span>BOOTH EVIDENCE</span><h2>{clueCard.title}</h2>
+          {clueCard.summary && clueCard.style ? <dl className="clue-layers">
+            <div><dt>粗略</dt><dd>{clueCard.summary}</dd></div>
+            <div><dt>样式</dt><dd>{clueCard.style}</dd></div>
+            <div><dt>细节</dt><dd>{clueCard.body}</dd></div>
+          </dl> : <p>{clueCard.body}</p>}
         </aside>
       )}
 

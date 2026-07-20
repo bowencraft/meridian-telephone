@@ -20,7 +20,9 @@ function jitter(base: number, amount: number | undefined, roll: number) {
 }
 
 function chooseCandidate(candidates: SceneCandidate[], roll: number) {
-  const weighted = candidates.filter((candidate) => candidate.weight > 0)
+  const eligible = candidates.filter((candidate) => candidate.weight > 0)
+  const highestPriority = Math.max(...eligible.map((candidate) => candidate.priority ?? 0), 0)
+  const weighted = eligible.filter((candidate) => (candidate.priority ?? 0) === highestPriority)
   const total = weighted.reduce((sum, candidate) => sum + candidate.weight, 0)
   if (total <= 0) return undefined
   let cursor = roll * total
@@ -106,10 +108,19 @@ export function resolveNightScene(story: TelephoneStory, state: RuntimeState, pr
 }
 
 export function candidatePercentages(slot: SceneSlot) {
-  const total = slot.candidates.reduce((sum, candidate) => sum + Math.max(0, candidate.weight), 0)
   return slot.candidates.map((candidate) => ({
     propId: candidate.propId,
-    conditionalChance: total > 0 ? candidate.weight / total : 0,
-    absoluteChance: total > 0 ? slot.spawnChance * candidate.weight / total : 0,
+    conditionalChance: (() => {
+      const groupTotal = slot.candidates
+        .filter((item) => (item.priority ?? 0) === (candidate.priority ?? 0))
+        .reduce((sum, item) => sum + Math.max(0, item.weight), 0)
+      return groupTotal > 0 ? candidate.weight / groupTotal : 0
+    })(),
+    absoluteChance: (() => {
+      const groupTotal = slot.candidates
+        .filter((item) => (item.priority ?? 0) === (candidate.priority ?? 0))
+        .reduce((sum, item) => sum + Math.max(0, item.weight), 0)
+      return groupTotal > 0 ? slot.spawnChance * candidate.weight / groupTotal : 0
+    })(),
   }))
 }

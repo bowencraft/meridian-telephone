@@ -121,5 +121,5 @@ Status: active. 系统目标已创建，当前在 `codex/seedline-game-data` 分
 
 - Current branch: `codex/seedline-game-data`
 - Active system goal: Goal 2 — 游戏规则数据迁移、扩写、验证与盲玩
-- Last completed milestone: Goal 1在 `a020bbb`提交并归档；Goal 2五份Markdown实施源已完成，并经三个盲态技术Sub-agent审计后补入多发布周期、durableState/lastEnding、漏接effects、候选优先级、choice分组和精确发布门
-- Next work: 提交实施Markdown；完成底层facts/durableState、alias、投币关闭生命周期、三层物件、ring missedEffects和验证测试，再迁移六章主干JSON与七结局
+- Last completed milestone: Goal 2实施源已在 `32b932f`提交；底层facts/durableState/lastEnding、alias规范化、单次审计币退款、三层物件、ring missedEffects、候选优先级、choice分组、柜台通话锁与验证测试已实现，当前14个测试文件57项全过，lint/build通过
+- Next work: 提交底层能力；迁移六章主干JSON与七结局，补齐详细variants/fallback、新闻广播、物件、电话簿和场景，再执行图可达性与盲玩

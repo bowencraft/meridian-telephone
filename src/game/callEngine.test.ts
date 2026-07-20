@@ -61,7 +61,7 @@ describe('Telephone event graph engine', () => {
   })
 
   it('unlocks a cross-run counterfeit answer after recruitment', () => {
-    const progress: ProgressData = { attempts: 1, clues: [], discoveredNumbers: [], seenEndings: ['recruited'] }
+    const progress: ProgressData = { attempts: 1, clues: [], facts: [], durableState: {}, discoveredNumbers: [], seenEndings: ['recruited'] }
     const engine = new CallEngine(defaultTelephoneStory(), progress, 13)
     engine.dispatch({ type: 'dialNumber', value: '8714000' })
     engine.dispatch({ type: 'choice', value: 'continue' })
@@ -105,6 +105,55 @@ describe('Telephone event graph engine', () => {
     expect(engine.dispatch({ type: 'keywordAny', value: 'IS IT STILL RAINING?' }).node.id).toBe('weather_intro')
   })
 
+  it('normalizes a phone alias to its canonical dial edge', () => {
+    const story = defaultTelephoneStory()
+    const weather = story.globals.phone.directory.find((entry) => entry.number === '9460264')!
+    weather.aliases = ['9460265']
+    const engine = new CallEngine(story, undefined, 102)
+
+    const transition = engine.dispatch({ type: 'dialNumber', value: '946 0265' })
+
+    expect(transition.node.id).toBe('weather_intro')
+    expect(transition.event.value).toBe('9460264')
+  })
+
+  it('restores historical facts and overwritable durable state', () => {
+    const progress: ProgressData = {
+      attempts: 2,
+      clues: [],
+      facts: ['source-card-damaged'],
+      durableState: { sourceCard: 'rebuilt', peterToken: 'spent' },
+      discoveredNumbers: [],
+      seenEndings: ['worn', 'counterfeit'],
+      lastEnding: 'counterfeit',
+    }
+    const engine = new CallEngine(defaultTelephoneStory(), progress, 103)
+    engine.applyEffects([
+      { type: 'addFact', fact: 'source-card-damaged' },
+      { type: 'setDurable', values: { peterToken: 'available' } },
+    ])
+
+    expect(engine.state.facts).toEqual(['source-card-damaged'])
+    expect(engine.state.durableState).toMatchObject({ sourceCard: 'rebuilt', peterToken: 'available' })
+  })
+
+  it('shows only the highest-priority edge for one choice value', () => {
+    const story = defaultTelephoneStory()
+    story.edges.push({
+      id: 'weather_yes_explanation_fallback',
+      label: '同值低优先级说明',
+      from: 'weather_intro',
+      to: 'weather_deny',
+      priority: -10,
+      trigger: { type: 'choice', value: 'weather_yes' },
+      choice: { text: '是的，正在下雨。' },
+    })
+    const engine = new CallEngine(story, undefined, 104)
+    engine.dispatch({ type: 'dialNumber', value: '9460264' })
+
+    expect(engine.getChoices().filter((choice) => choice.value === 'weather_yes')).toHaveLength(1)
+  })
+
   it('keeps every shipped ending reachable through authored event routes', () => {
     const seen = new Set<string>()
 
@@ -122,7 +171,7 @@ describe('Telephone event graph engine', () => {
     weather.dispatch({ type: 'dialNumber', value: '9460264' })
     seen.add(weather.dispatch({ type: 'timeout', value: 'choice' }).state.ending ?? '')
 
-    const counterfeitProgress: ProgressData = { attempts: 1, clues: [], discoveredNumbers: [], seenEndings: ['recruited'] }
+    const counterfeitProgress: ProgressData = { attempts: 1, clues: [], facts: [], durableState: {}, discoveredNumbers: [], seenEndings: ['recruited'] }
     const counterfeit = new CallEngine(defaultTelephoneStory(), counterfeitProgress, 24)
     counterfeit.dispatch({ type: 'dialNumber', value: '8714000' })
     counterfeit.dispatch({ type: 'choice', value: 'continue' })
@@ -132,6 +181,8 @@ describe('Telephone event graph engine', () => {
     const operatorProgress: ProgressData = {
       attempts: 3,
       clues: [],
+      facts: [],
+      durableState: {},
       discoveredNumbers: ['7941966', '8714019'],
       seenEndings: ['disconnected', 'recruited'],
     }

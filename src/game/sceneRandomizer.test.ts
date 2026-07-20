@@ -73,4 +73,20 @@ describe('night-shift scene randomization', () => {
       accentColor: '#b4c5c7',
     })
   })
+
+  it('selects only from the highest eligible candidate priority', () => {
+    const story = defaultTelephoneStory()
+    const slot = story.extensions.telephone.scene.slots.find((item) => item.id === 'weather-card')!
+    slot.spawnChance = 1
+    slot.candidates = slot.candidates.slice(0, 2).map((candidate, index) => ({
+      ...candidate,
+      priority: index === 1 ? 5 : 0,
+    }))
+    const expected = slot.candidates[1].propId
+
+    for (let seed = 1; seed <= 20; seed += 1) {
+      const item = resolveNightScene(story, new CallEngine(story, undefined, seed).state).find((candidate) => candidate.slotId === slot.id)
+      expect(item?.prop.id).toBe(expected)
+    }
+  })
 })

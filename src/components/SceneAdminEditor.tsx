@@ -207,7 +207,12 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
       label: onCounter ? '新柜台遗留物' : '新遗留物',
       ariaLabel: onCounter ? '拿起一件新柜台遗留物' : '查看一件新遗留物',
       printedLines: onCounter ? ['GPO NIGHT DESK', 'UNFILED'] : ['LONDON', 'NO. 000'],
-      copy: { firstVariants: ['纸面受潮，字迹仍能辨认。'], repeatVariants: ['没有更多线索。'] },
+      copy: {
+        summary: onCounter ? '一件被留在夜班台面的工作物。' : '一件贴在电话亭里的纸质记录。',
+        style: '纸面受潮，边角磨损，印字仍可辨认。',
+        firstVariants: ['细看后能辨认出一条具体记录。'],
+        repeatVariants: ['没有更多线索。'],
+      },
       ...(onCounter ? { counterStyle: 'night-ticket' as const } : {}),
       appearance: { presetId: onCounter ? 'carbon-ticket' : scene.stylePresets[0]?.id ?? 'damp-service-card' },
     }
@@ -391,6 +396,7 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
                 coinCredit={0}
                 objects={counterItems}
                 disabled
+                objectsDisabled
                 counterItemsRef={counterLayerRef}
                 overlay={counterSlots.map(renderSlotOutline)}
                 onToggleCoin={noop}
@@ -473,9 +479,10 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
                 {selectedSlot.candidates.map((candidate, index) => {
                   const chance = percentages[index]?.absoluteChance ?? 0
                   return <article className={candidate.propId === selectedCandidate?.propId ? 'active' : ''} key={`${candidate.propId}-${index}`}>
-                    <button className="candidate-preview" type="button" onClick={() => setPreviewPropId(candidate.propId)}><Eye size={13} /><span>{scene.props.find((prop) => prop.id === candidate.propId)?.label ?? candidate.propId}</span><strong>{Math.round(chance * 1000) / 10}% / 夜</strong></button>
+                    <button className="candidate-preview" type="button" onClick={() => setPreviewPropId(candidate.propId)}><Eye size={13} /><span>{scene.props.find((prop) => prop.id === candidate.propId)?.label ?? candidate.propId}</span><strong>{Math.round(chance * 1000) / 10}% / 同优先级</strong></button>
                     <label><span>物品样式</span><select value={candidate.propId} onChange={(event) => { updateCandidate(index, { propId: event.target.value }); setPreviewPropId(event.target.value) }}>{compatibleProps.map((prop) => <option key={prop.id} value={prop.id}>{prop.label} · {prop.id}</option>)}</select></label>
                     <label><span>相对权重 · {candidate.weight}</span><input type="range" min="0" max="10" step=".1" value={candidate.weight} onChange={(event) => updateCandidate(index, { weight: Number(event.target.value) })} /></label>
+                    <label><span>阶段优先级</span><input type="number" min="0" step="1" value={candidate.priority ?? 0} onChange={(event) => updateCandidate(index, { priority: Math.max(0, Number(event.target.value) || 0) })} /></label>
                     <div className="two-fields"><label><span>该候选预设覆盖</span><select value={candidate.appearanceOverrides?.presetId ?? ''} onChange={(event) => updateCandidate(index, { appearanceOverrides: { ...candidate.appearanceOverrides, presetId: event.target.value || undefined } })}><option value="">继承物品</option>{scene.stylePresets.map((preset) => <option key={preset.id} value={preset.id}>{preset.label}</option>)}</select></label><label><span>旋转覆盖（°）</span><input type="number" value={candidate.appearanceOverrides?.rotation ?? ''} onChange={(event) => updateCandidate(index, { appearanceOverrides: { ...candidate.appearanceOverrides, rotation: event.target.value === '' ? undefined : Number(event.target.value) } })} /></label></div>
                     <button className="inline-delete" type="button" disabled={selectedSlot.candidates.length <= 1} onClick={() => updateSlot({ candidates: selectedSlot.candidates.filter((_, itemIndex) => itemIndex !== index) })}><Trash2 size={12} />移出候选池</button>
                   </article>
@@ -492,6 +499,8 @@ export function SceneAdminEditor({ story, onChange, onExit }: SceneAdminEditorPr
               {selectedSlot?.layer === 'counter' && <label><span>柜台拟物造型</span><select value={selectedProp.counterStyle ?? 'night-ticket'} onChange={(event) => updateProp({ counterStyle: event.target.value as ScenePropDefinition['counterStyle'] })}><option value="night-ticket">末班车票</option><option value="meridian-matches">火柴盒</option><option value="locker-key">黄铜钥匙</option><option value="operator-docket">交换台回执</option></select></label>}
               <label><span>无障碍描述</span><input value={selectedProp.ariaLabel} onChange={(event) => updateProp({ ariaLabel: event.target.value })} /></label>
               <label><span>物品表面印刷（每行一条）</span><textarea rows={4} value={(selectedProp.printedLines ?? []).join('\n')} onChange={(event) => updateProp({ printedLines: lines(event.target.value) })} /></label>
+              <label><span>粗略信息（它是什么）</span><textarea rows={2} value={selectedProp.copy.summary ?? ''} onChange={(event) => updateProp({ copy: { ...selectedProp.copy, summary: event.target.value } })} /></label>
+              <label><span>样式描述（可观察材质与痕迹）</span><textarea rows={3} value={selectedProp.copy.style ?? ''} onChange={(event) => updateProp({ copy: { ...selectedProp.copy, style: event.target.value } })} /></label>
               <label><span>首次查看文案 variants（每行一条）</span><textarea rows={5} value={selectedProp.copy.firstVariants.join('\n')} onChange={(event) => updateProp({ copy: { ...selectedProp.copy, firstVariants: lines(event.target.value) } })} /></label>
               <label><span>再次查看文案 variants（每行一条）</span><textarea rows={3} value={(selectedProp.copy.repeatVariants ?? []).join('\n')} onChange={(event) => updateProp({ copy: { ...selectedProp.copy, repeatVariants: lines(event.target.value) } })} /></label>
             </CollapsibleAdminSection>

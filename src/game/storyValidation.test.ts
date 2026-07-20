@@ -19,4 +19,15 @@ describe('Telephone graph validation', () => {
     expect(issues.some((issue) => issue.path === 'entryNodeId')).toBe(true)
     expect(issues.some((issue) => issue.path === `edges.${story.edges[0].id}.to`)).toBe(true)
   })
+
+  it('detects alias collisions and incoming-call metadata drift', () => {
+    const story = defaultTelephoneStory()
+    story.globals.phone.directory[1].aliases = [story.globals.phone.directory[0].number]
+    story.globals.phone.idleRingSchedule[0].nodeId = 'busy_line'
+
+    const issues = validateStoryDefinition(story)
+
+    expect(issues.some((issue) => issue.message.includes('alias'))).toBe(true)
+    expect(issues.some((issue) => issue.message.includes('incomingAnswer'))).toBe(true)
+  })
 })

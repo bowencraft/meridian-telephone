@@ -4,7 +4,7 @@ export const LAST_RECORD_KEY = 'telephone.lastRecord.v1'
 export const RECORD_ARCHIVE_KEY = 'telephone.recordArchive.v1'
 export const PROGRESS_KEY = 'telephone.progress.v1'
 
-const EMPTY_PROGRESS: ProgressData = { discoveredNumbers: [], seenEndings: [], clues: [], attempts: 0 }
+const EMPTY_PROGRESS: ProgressData = { discoveredNumbers: [], seenEndings: [], clues: [], facts: [], durableState: {}, attempts: 0 }
 
 function readJson<T>(storage: Storage, key: string, fallback: T): T {
   try {
@@ -22,7 +22,16 @@ export function createSessionId(storage: Storage = window.localStorage) {
 }
 
 export function loadProgress(storage: Storage = window.localStorage): ProgressData {
-  return readJson(storage, PROGRESS_KEY, structuredClone(EMPTY_PROGRESS))
+  const stored = readJson<Partial<ProgressData>>(storage, PROGRESS_KEY, structuredClone(EMPTY_PROGRESS))
+  return {
+    discoveredNumbers: stored.discoveredNumbers ?? [],
+    seenEndings: stored.seenEndings ?? [],
+    clues: stored.clues ?? [],
+    facts: stored.facts ?? [],
+    durableState: stored.durableState ?? {},
+    lastEnding: stored.lastEnding,
+    attempts: stored.attempts ?? 0,
+  }
 }
 
 export function saveRecord(record: CallRecordData, storage: Storage = window.localStorage) {
@@ -34,6 +43,9 @@ export function saveRecord(record: CallRecordData, storage: Storage = window.loc
     discoveredNumbers: [...new Set([...previous.discoveredNumbers, ...record.discoveredNumbers])],
     seenEndings: [...new Set<EndingType>([...previous.seenEndings, record.ending])],
     clues: [...new Set([...previous.clues, ...record.clues])],
+    facts: [...new Set([...previous.facts, ...record.facts])],
+    durableState: { ...previous.durableState, ...record.durableState },
+    lastEnding: record.ending,
     attempts: Math.max(previous.attempts + 1, Number(record.sessionId.split('-')[1] ?? 1)),
   }
   storage.setItem(PROGRESS_KEY, JSON.stringify(progress))

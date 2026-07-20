@@ -14,6 +14,10 @@ function uniqueId(prefix: string, existing: string[]) {
   return `${prefix}_${index}`
 }
 
+function aliasLines(value: string) {
+  return value.split(/[,，\n]/).map((alias) => alias.replace(/\D/g, '')).filter(Boolean)
+}
+
 export function PhoneDirectoryEditor({ story, onChange, onExit }: PhoneDirectoryEditorProps) {
   const directory = story.globals.phone.directory
   const scene = story.extensions.telephone.scene
@@ -55,6 +59,7 @@ export function PhoneDirectoryEditor({ story, onChange, onExit }: PhoneDirectory
                 </header>
                 <CollapsibleAdminSection title="线路资料">
                   <div className="two-fields"><label><span>稳定 ID</span><input value={number.id} disabled /></label><label><span>号码</span><input value={number.number} onChange={(event) => updateNumber(index, { number: event.target.value.replace(/\D/g, '') })} /></label></div>
+                  <label><span>号码 aliases（每行一个，仍归入同一联系人）</span><textarea rows={2} value={(number.aliases ?? []).join('\n')} onChange={(event) => updateNumber(index, { aliases: aliasLines(event.target.value) })} /></label>
                   <div className="two-fields"><label><span>名称</span><input value={number.label} onChange={(event) => updateNumber(index, { label: event.target.value })} /></label><label><span>分类</span><select value={number.category ?? 'strange'} onChange={(event) => updateNumber(index, { category: event.target.value as PhoneDirectoryEntry['category'] })}><option>public</option><option>meridian</option><option>internal</option><option>emergency</option><option>strange</option></select></label></div>
                   <label><span>说明</span><textarea rows={3} value={number.description} onChange={(event) => updateNumber(index, { description: event.target.value })} /></label>
                   <label className="checkbox-line"><input type="checkbox" checked={number.initiallyKnown ?? false} onChange={(event) => updateNumber(index, { initiallyKnown: event.target.checked })} /><span>新夜班开始时已经记录在玩家号码簿</span></label>

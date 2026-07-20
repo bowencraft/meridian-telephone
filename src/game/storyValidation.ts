@@ -13,21 +13,28 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
   const nodeSet = new Set(nodeIds)
   const directory = story.globals.phone.directory
   const numbers = directory.map((entry) => entry.number)
+  const dialNumbers = directory.flatMap((entry) => [entry.number, ...(entry.aliases ?? [])])
   const phoneIds = directory.map((entry) => entry.id)
   const scene = story.extensions.telephone.scene
   const propIds = scene.props.map((prop) => prop.id)
   const slotIds = scene.slots.map((slot) => slot.id)
   const presetIds = scene.stylePresets.map((preset) => preset.id)
+  const ringIds = story.globals.phone.idleRingSchedule.map((ring) => ring.id)
 
   function validateConditions(conditions: GraphCondition[] | undefined, path: string) {
     conditions?.forEach((condition, index) => {
       if (condition.type === 'phoneKnown' && !phoneIds.includes(condition.phoneId)) issues.push({ level: 'error', path: `${path}.${index}`, message: `条件引用的电话 ${condition.phoneId} 不存在。` })
+      if (condition.type === 'hasNumber' && !dialNumbers.includes(condition.value.replace(/\D/g, ''))) issues.push({ level: 'error', path: `${path}.${index}`, message: `条件引用的号码 ${condition.value} 不存在。` })
+      if (condition.type === 'hasFact' && !condition.value.trim()) issues.push({ level: 'error', path: `${path}.${index}`, message: '长期事实名称不能为空。' })
+      if (condition.type === 'attemptsGte' && condition.value < 0) issues.push({ level: 'error', path: `${path}.${index}`, message: '周目条件不能小于0。' })
     })
   }
 
   function validateEffects(effects: GraphEffect[] | undefined, path: string) {
     effects?.forEach((effect, index) => {
       if (effect.type === 'discoverPhone' && !phoneIds.includes(effect.phoneId)) issues.push({ level: 'error', path: `${path}.${index}`, message: `效果引用的电话 ${effect.phoneId} 不存在。` })
+      if (effect.type === 'discoverNumber' && !dialNumbers.includes(effect.number.replace(/\D/g, ''))) issues.push({ level: 'error', path: `${path}.${index}`, message: `效果发现的号码 ${effect.number} 不存在。` })
+      if (effect.type === 'addFact' && !effect.fact.trim()) issues.push({ level: 'error', path: `${path}.${index}`, message: '长期事实名称不能为空。' })
     })
   }
 
@@ -40,14 +47,20 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
   duplicateValues(nodeIds).forEach((id) => issues.push({ level: 'error', path: `nodes.${id}`, message: `节点 ID ${id} 重复。` }))
   duplicateValues(edgeIds).forEach((id) => issues.push({ level: 'error', path: `edges.${id}`, message: `转场 ID ${id} 重复。` }))
   duplicateValues(numbers).forEach((number) => issues.push({ level: 'error', path: 'globals.phone.directory', message: `号码 ${number} 重复。` }))
+  duplicateValues(dialNumbers).forEach((number) => issues.push({ level: 'error', path: 'globals.phone.directory', message: `号码或 alias ${number} 重复。` }))
   duplicateValues(phoneIds).forEach((id) => issues.push({ level: 'error', path: 'globals.phone.directory', message: `号码簿 ID ${id} 重复。` }))
   duplicateValues(propIds).forEach((id) => issues.push({ level: 'error', path: 'extensions.telephone.scene.props', message: `场景物品 ID ${id} 重复。` }))
   duplicateValues(slotIds).forEach((id) => issues.push({ level: 'error', path: 'extensions.telephone.scene.slots', message: `场景点位 ID ${id} 重复。` }))
   duplicateValues(presetIds).forEach((id) => issues.push({ level: 'error', path: 'extensions.telephone.scene.stylePresets', message: `外观预设 ID ${id} 重复。` }))
+  duplicateValues(ringIds).forEach((id) => issues.push({ level: 'error', path: `globals.phone.idleRingSchedule.${id}`, message: `来电 ID ${id} 重复。` }))
 
   directory.forEach((entry, index) => {
     if (!entry.id.trim()) issues.push({ level: 'error', path: `globals.phone.directory.${index}.id`, message: '电话 ID 不能为空。' })
     if (!entry.number.trim()) issues.push({ level: 'error', path: `globals.phone.directory.${entry.id}.number`, message: '电话号码不能为空。' })
+    if (!/^(\d{3}|\d{7})$/.test(entry.number)) issues.push({ level: 'error', path: `globals.phone.directory.${entry.id}.number`, message: '电话号码必须是三位紧急号或七位本地号。' })
+    entry.aliases?.forEach((alias, aliasIndex) => {
+      if (!/^(\d{3}|\d{7})$/.test(alias)) issues.push({ level: 'error', path: `globals.phone.directory.${entry.id}.aliases.${aliasIndex}`, message: '号码 alias 必须是三位紧急号或七位本地号。' })
+    })
     if (!entry.label.trim()) issues.push({ level: 'error', path: `globals.phone.directory.${entry.id}.label`, message: '电话名称不能为空。' })
   })
 
@@ -65,6 +78,7 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
       if (slot.layer === 'counter' && candidateProp && !candidateProp.counterStyle) issues.push({ level: 'warning', path: `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}`, message: '柜台点位引用了没有柜台拟物造型的物品。' })
       if ((slot.layer ?? 'wall') === 'wall' && candidateProp?.counterStyle) issues.push({ level: 'warning', path: `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}`, message: '墙面点位引用了柜台专用物品。' })
       if (candidate.weight <= 0) issues.push({ level: 'warning', path: `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}.weight`, message: '候选权重应大于 0。' })
+      if ((candidate.priority ?? 0) < 0) issues.push({ level: 'error', path: `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}.priority`, message: '候选优先级不能小于0。' })
       if (candidate.appearanceOverrides?.presetId && !presetIds.includes(candidate.appearanceOverrides.presetId)) issues.push({ level: 'error', path: `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}.appearanceOverrides`, message: `候选覆盖预设 ${candidate.appearanceOverrides.presetId} 不存在。` })
       validateConditions(candidate.requires, `extensions.telephone.scene.slots.${slot.id}.${candidate.propId}.requires`)
     })
@@ -72,10 +86,13 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
   scene.props.forEach((prop) => {
     if (!presetIds.includes(prop.appearance.presetId)) issues.push({ level: 'error', path: `extensions.telephone.scene.props.${prop.id}.appearance`, message: `外观预设 ${prop.appearance.presetId} 不存在。` })
     if (!prop.copy.firstVariants.length) issues.push({ level: 'warning', path: `extensions.telephone.scene.props.${prop.id}.copy`, message: '物品没有首次检查文案。' })
+    if (!prop.copy.summary?.trim()) issues.push({ level: 'error', path: `extensions.telephone.scene.props.${prop.id}.copy.summary`, message: '物品必须提供粗略信息。' })
+    if (!prop.copy.style?.trim()) issues.push({ level: 'error', path: `extensions.telephone.scene.props.${prop.id}.copy.style`, message: '物品必须提供可读的样式描述。' })
     prop.phoneRefs?.forEach((phoneId) => {
       if (!phoneIds.includes(phoneId)) issues.push({ level: 'error', path: `extensions.telephone.scene.props.${prop.id}.phoneRefs`, message: `号码引用 ${phoneId} 不存在。` })
     })
     validateEffects(prop.effects, `extensions.telephone.scene.props.${prop.id}.effects`)
+    if (prop.sceneEvent && !story.edges.some((edge) => edge.trigger.type === 'sceneInspect' && edge.trigger.value === prop.sceneEvent)) issues.push({ level: 'warning', path: `extensions.telephone.scene.props.${prop.id}.sceneEvent`, message: `场景事件 ${prop.sceneEvent} 没有匹配转场。` })
   })
 
   story.nodes.forEach((node) => {
@@ -89,7 +106,25 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
     validateConditions(edge.conditions, `edges.${edge.id}.conditions`)
     validateEffects(edge.effects, `edges.${edge.id}.effects`)
   })
-  story.globals.phone.idleRingSchedule.forEach((ring) => validateConditions(ring.requires, `globals.phone.idleRingSchedule.${ring.id}.requires`))
+  const choiceGroups = new Map<string, TelephoneStory['edges']>()
+  story.edges.filter((edge) => edge.trigger.type === 'choice').forEach((edge) => {
+    const key = `${edge.from}:${edge.trigger.value ?? edge.id}`
+    choiceGroups.set(key, [...(choiceGroups.get(key) ?? []), edge])
+  })
+  choiceGroups.forEach((edges, key) => {
+    const texts = new Set(edges.map((edge) => edge.choice?.text).filter(Boolean))
+    if (texts.size > 1) issues.push({ level: 'warning', path: `edges.${key}`, message: '同一 choice value 的条件分支使用了不同可见文案；前台只显示最高优先级分支。' })
+  })
+  story.globals.phone.idleRingSchedule.forEach((ring) => {
+    validateConditions(ring.requires, `globals.phone.idleRingSchedule.${ring.id}.requires`)
+    validateEffects(ring.missedEffects, `globals.phone.idleRingSchedule.${ring.id}.missedEffects`)
+    if (!nodeSet.has(ring.nodeId)) issues.push({ level: 'error', path: `globals.phone.idleRingSchedule.${ring.id}.nodeId`, message: `来电目标 ${ring.nodeId} 不存在。` })
+    const answerEdges = story.edges.filter((edge) => edge.trigger.type === 'incomingAnswer' && edge.trigger.value === ring.id)
+    if (answerEdges.length !== 1) issues.push({ level: 'error', path: `globals.phone.idleRingSchedule.${ring.id}`, message: `来电 ${ring.id} 必须恰有一条 incomingAnswer 转场。` })
+    if (answerEdges.length === 1 && answerEdges[0].to !== ring.nodeId) issues.push({ level: 'error', path: `globals.phone.idleRingSchedule.${ring.id}.nodeId`, message: `来电 ${ring.id} 的 nodeId 与 incomingAnswer 目标不一致。` })
+    const globalNodeIds = new Set(story.nodes.filter((node) => node.kind === 'global').map((node) => node.id))
+    if (answerEdges.length === 1 && answerEdges[0].from !== story.entryNodeId && !globalNodeIds.has(answerEdges[0].from)) issues.push({ level: 'error', path: `globals.phone.idleRingSchedule.${ring.id}`, message: `来电 ${ring.id} 的接听转场必须来自global或入口节点。` })
+  })
   if (!story.nodes.some((node) => node.telephone?.ending === 'disconnected')) issues.push({ level: 'error', path: 'nodes', message: '缺少“断线”成功结局。' })
   if (new Set(story.nodes.map((node) => node.telephone?.ending).filter(Boolean)).size < 5) issues.push({ level: 'warning', path: 'nodes', message: '建议至少提供五种不同结局。' })
   return issues
