@@ -34,6 +34,10 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
   const renderFrameCountRef = useRef(0)
   const returningRef = useRef(false)
   const timerRefs = useRef<number[]>([])
+  const digitQueueRef = useRef<string[]>([])
+  const settleDialRef = useRef<(digit: string, complete: boolean) => void>(() => undefined)
+  const suppressClickRef = useRef<string | null>(null)
+  const disabledRef = useRef(Boolean(disabled))
   const [activeDigit, setActiveDigit] = useState<string | null>(null)
   const [rotation, setRotation] = useState(0)
   const [returning, setReturning] = useState(false)
@@ -52,8 +56,24 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
       returningRef.current = false
       setReturning(false)
       if (complete) onDigit(digit)
+      const queued = digitQueueRef.current.shift()
+      if (queued && !disabledRef.current) settleDialRef.current(queued, true)
     }, 560))
   }, [onDigit, onError, onReturn])
+
+  useEffect(() => {
+    settleDialRef.current = settleDial
+    disabledRef.current = Boolean(disabled)
+  }, [disabled, settleDial])
+
+  const queueDigit = useCallback((digit: string) => {
+    if (disabledRef.current) return
+    if (returningRef.current || gestureRef.current) {
+      if (digitQueueRef.current.length < 10) digitQueueRef.current.push(digit)
+      return
+    }
+    settleDialRef.current(digit, true)
+  }, [])
 
   function flushDialFrame() {
     frameRef.current = null
@@ -121,6 +141,7 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
     // Physical dragging remains available, but a first-time player can also
     // click the printed hole once per digit without learning the gesture.
     const complete = moveCountRef.current === 0 || isDialComplete(digit, gesture.rotation)
+    if (event.type === 'pointerup') suppressClickRef.current = digit
     setActiveDigit(null)
     settleDial(digit, complete)
   }
@@ -129,13 +150,17 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
     function keyDial(event: KeyboardEvent) {
       const target = event.target
       const isTyping = target instanceof HTMLElement && Boolean(target.closest('input, textarea, select, [contenteditable="true"]'))
-      if (isTyping || disabled || returningRef.current || activeDigit || !/^\d$/.test(event.key)) return
+      if (isTyping || disabled || activeDigit || !/^\d$/.test(event.key)) return
       event.preventDefault()
-      settleDial(event.key, true)
+      queueDigit(event.key)
     }
     window.addEventListener('keydown', keyDial)
     return () => window.removeEventListener('keydown', keyDial)
-  }, [activeDigit, disabled, settleDial])
+  }, [activeDigit, disabled, queueDigit])
+
+  useEffect(() => {
+    if (disabled) digitQueueRef.current = []
+  }, [disabled])
 
   useEffect(() => () => {
     if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current)
@@ -181,6 +206,13 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
               onPointerMove={move}
               onPointerUp={finish}
               onPointerCancel={finish}
+              onClick={() => {
+                if (suppressClickRef.current === digit) {
+                  suppressClickRef.current = null
+                  return
+                }
+                queueDigit(digit)
+              }}
             ><span>{digit}</span></button>
           )
         })}

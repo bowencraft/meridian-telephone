@@ -91,9 +91,9 @@ function progressFrom(engine: CallEngine, ending: EndingType, attempts = 1): Pro
 }
 
 describe('Telephone event graph engine', () => {
-  it('ignores and clears stale v2 browser story overrides', () => {
+  it('ignores and clears browser story overrides from before Seedline', () => {
     const values = new Map<string, string>([
-      ['telephone.storyOverride.v2', JSON.stringify({ format: 'stale-story' })],
+      ['telephone.storyOverride.v3', JSON.stringify({ format: 'stale-story' })],
     ])
     const storage = {
       get length() { return values.size },
@@ -107,8 +107,8 @@ describe('Telephone event graph engine', () => {
     const story = loadStoryDefinition(storage)
 
     expect(story.extensions.telephone.scene.slots.some((slot) => slot.layer === 'counter')).toBe(true)
-    expect(storage.getItem('telephone.storyOverride.v2')).toBeNull()
-    expect(STORY_OVERRIDE_KEY).toBe('telephone.storyOverride.v3')
+    expect(storage.getItem('telephone.storyOverride.v3')).toBeNull()
+    expect(STORY_OVERRIDE_KEY).toBe('telephone.storyOverride.seedline.v1')
   })
 
   it('routes known early calls to recovery copy and unknown calls to fallback', () => {

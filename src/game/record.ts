@@ -1,8 +1,8 @@
 import type { CallRecordData, EndingType, ProgressData } from './types'
 
-export const LAST_RECORD_KEY = 'telephone.lastRecord.v1'
-export const RECORD_ARCHIVE_KEY = 'telephone.recordArchive.v1'
-export const PROGRESS_KEY = 'telephone.progress.v1'
+export const LAST_RECORD_KEY = 'telephone.seedline.lastRecord.v1'
+export const RECORD_ARCHIVE_KEY = 'telephone.seedline.recordArchive.v1'
+export const PROGRESS_KEY = 'telephone.seedline.progress.v1'
 
 const EMPTY_PROGRESS: ProgressData = { discoveredNumbers: [], seenEndings: [], clues: [], facts: [], durableState: {}, attempts: 0 }
 

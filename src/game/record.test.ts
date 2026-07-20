@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clearProgress, createSessionId, loadProgress, loadRecordArchive, saveRecord } from './record'
+import { clearProgress, createSessionId, loadProgress, loadRecordArchive, PROGRESS_KEY, saveRecord } from './record'
 import type { CallRecordData } from './types'
 
 class MemoryStorage implements Storage {
@@ -31,7 +31,15 @@ describe('call archive persistence', () => {
 
   it('migrates progress written before durable facts existed', () => {
     const storage = new MemoryStorage()
-    storage.setItem('telephone.progress.v1', JSON.stringify({ discoveredNumbers: [], seenEndings: [], clues: [], attempts: 2 }))
+    storage.setItem(PROGRESS_KEY, JSON.stringify({ discoveredNumbers: [], seenEndings: [], clues: [], attempts: 2 }))
     expect(loadProgress(storage)).toMatchObject({ attempts: 2, facts: [], durableState: {} })
+  })
+
+  it('does not import progress from the pre-Seedline story', () => {
+    const storage = new MemoryStorage()
+    storage.setItem('telephone.progress.v1', JSON.stringify({ attempts: 9, seenEndings: ['operator'] }))
+
+    expect(loadProgress(storage)).toMatchObject({ attempts: 0, seenEndings: [] })
+    expect(createSessionId(storage)).toBe('MCE-0001')
   })
 })

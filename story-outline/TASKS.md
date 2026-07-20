@@ -123,8 +123,8 @@ Status: active. 系统目标已创建，当前在 `codex/seedline-game-data` 分
 - Active system goal: Goal 2 — 游戏规则数据迁移、扩写、验证与盲玩
 - Completed Goal 2 commits: `32b932f docs: define Seedline game data migration`; `0bba5e0 feat: add replay-safe story graph primitives`; `6549455 feat: migrate six-chapter Seedline call graph`。
 - Current milestone: 六章主干、七结局、14个电话条目、99个节点、244条边、33件场景材料、10个场景点位与3个来电事件已写入 `src/story/telephone.rules.json`；37个节点有等价复访variants，53个节点有明确fallback。
-- Current verification: JSON可解析；规则校验0错误/0警告；15个测试文件69项全过，lint、生产构建与diff检查通过。路线测试已从同一六章证据链分别达成七结局，并覆盖磨损后三方修复、重复磨损不复用旧凭据、conditional签名重开、Maeve弱证据补强与跨周目改选结局。浏览器实测已修复第一章确认按钮假自环、柜台物件被电话机遮挡，以及末声铃附近接听与漏接计时器的竞态；alias现会显示规范号码转接提示，验证器强制所有非结局通话使用无条件`call` timeout安全返回待机。
+- Current verification: JSON可解析；规则校验0错误/0警告；15个测试文件72项全过，lint、生产构建与diff检查通过。路线测试已从同一六章证据链分别达成七结局，并覆盖磨损后三方修复、重复磨损不复用旧凭据、conditional签名重开、Maeve弱证据补强与跨周目改选结局。浏览器实测已修复第一章确认按钮假自环、柜台物件被电话机遮挡，以及末声铃附近接听与漏接计时器的竞态；alias现会显示规范号码转接提示，验证器强制所有非结局通话使用无条件`call` timeout安全返回待机。
 - Independent review: 分支韧性Sub-agent遍历101,199个可达状态，确认七结局、错号、无效选择、超时、挂断、漏接、弱证据与多周目均无软锁。最终玩家可见文本复审为0项阻断、0项主要问题；六项评分依次为易懂性8.8、人物动机9.2、转折衔接9.1、设定明确9.0、制度职场科幻悬疑9.4、科研组织理想与遗产感9.2。此前指出的随机variant拆分核心事实与Clara私人承诺未结清均已修正。
-- Blind UI playtest: 第一轮纯UI盲测发现首个真实阻断：虽然界面给出号码，新玩家无法发现必须拖动转盘，键盘输入又依赖焦点。现已允许逐孔单击、保留完整拖动、增加全局数字键，并在电话机说明牌写明`CLICK OR TURN DIGITS`；组件回归与真实浏览器已确认单击录入`9`、从听筒焦点按键录入`4`。盲测将从空档案重启。
+- Blind UI playtest: 第一轮纯UI盲测先发现转盘不可发现、快速输入吞键、来电与物件弹窗争抢时间等交互问题，随后虽抵达3个旧结局，却暴露`telephone.storyOverride.v3`与旧进度键仍覆盖仓库新规则，因此不能作为Seedline叙事验收。现已为Seedline规则覆盖、进度与通话档案建立独立版本命名空间；逐孔单击、完整拖动、全局数字键和快速输入队列均可用，来电延长至18秒并在号码簿/物件弹窗期间暂停，硬币说明只首次出现。真实浏览器已确认首个来电为圣西普里安医院急线、旧天气训练不再出现、快速键入`9460264`可正确接通。
 - Material sources: `materials/public-record-prop-docket.md` 已记录电话物件、无号码三层检查、离散支线、七类后果新闻与场景约束；`materials/scene-prop-catalog.md` 已同步。
-- Next work: 浏览器已实测来电、第一章、号码簿、alias提示、物件三层检查与后台99节点/14线路/33物件，结构校验显示0提醒；完成最终全量测试并提交详细交互与材料阶段。随后让完全不知道设定的Sub-agent从空档案开始真正盲玩多个结局并按报告迭代。
+- Next work: 完成新版命名空间与盲测交互修复的全量测试、提交；随后让同一完全不知道设定的Sub-agent再次从真正空白的Seedline档案开始，首轮必须从医院来电走完六章，并在重开后抵达至少两个不同结局。只有新版叙事与交互均PASS才完成目标。

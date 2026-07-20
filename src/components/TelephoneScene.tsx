@@ -27,6 +27,8 @@ function nowId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
 
+const INCOMING_RING_TIMEOUT_MS = 18_000
+
 interface ClueCardData {
   title: string
   body: string
@@ -81,6 +83,7 @@ export function TelephoneScene() {
   const mechanicalTimerRef = useRef<number | null>(null)
   const refundableCallRef = useRef(false)
   const auditReturnSerialRef = useRef(0)
+  const seenMechanicalHintsRef = useRef(new Set<string>())
 
   const triggerMechanicalPulse = useCallback((pulse: 'coin-in' | 'coin-out' | 'line-test') => {
     if (mechanicalTimerRef.current) window.clearTimeout(mechanicalTimerRef.current)
@@ -193,7 +196,7 @@ export function TelephoneScene() {
   }, [machine.callStartedAt])
 
   useEffect(() => {
-    if (!started || machine.phase !== 'idle') return
+    if (!started || machine.phase !== 'idle' || clueCard || numberBookOpen) return
     const next = story.globals.phone.idleRingSchedule.find((ring) =>
       !engine.state.handledRings.includes(ring.id) && conditionsMatch(ring.requires, engine.state, progress, story),
     )
@@ -204,7 +207,7 @@ export function TelephoneScene() {
       audioRef.current.startRing()
     }, next.delayMs)
     return () => window.clearTimeout(id)
-  }, [engine, machine.phase, progress, runtime, started, story])
+  }, [clueCard, engine, machine.phase, numberBookOpen, progress, runtime, started, story])
 
   useEffect(() => {
     if (machine.phase !== 'ringing' || !machine.incomingEventId) return
@@ -223,7 +226,7 @@ export function TelephoneScene() {
       }])
       machineDispatch({ type: 'HANG_UP' })
       window.setTimeout(() => machineDispatch({ type: 'RESET_IDLE' }), 420)
-    }, 13500)
+    }, INCOMING_RING_TIMEOUT_MS)
     return () => {
       if (incomingRingCycleRef.current === ringCycle) incomingRingCycleRef.current += 1
       window.clearTimeout(id)
@@ -410,11 +413,15 @@ export function TelephoneScene() {
   function toggleCoin(coin: ShelfCoin) {
     if (machine.phase === 'ending') return
     audioRef.current.playObjectMove()
-    setHeldItemId((current) => current === coin.id ? null : coin.id)
-    setClueCard({
-      title: heldItemId === coin.id ? '放下硬币' : '三便士硬币',
-      body: heldItemId === coin.id ? '硬币重新落在木台上，滚了半圈才停下。' : '边缘被磨得发亮，尺寸正好能通过电话机右上方的投币槽。',
-    })
+    const puttingDown = heldItemId === coin.id
+    setHeldItemId(puttingDown ? null : coin.id)
+    if (!puttingDown && !seenMechanicalHintsRef.current.has('coin-picked-up')) {
+      seenMechanicalHintsRef.current.add('coin-picked-up')
+      setClueCard({
+        title: '三便士硬币',
+        body: '边缘被磨得发亮，尺寸正好能通过电话机右上方的投币槽。以后拿取硬币不会重复打开这张说明。',
+      })
+    }
   }
 
   function toggleBoothObject(item: ResolvedSceneItem) {
@@ -465,7 +472,10 @@ export function TelephoneScene() {
     setRuntime(structuredClone(engine.state))
     audioRef.current.playCoinInsert()
     if (['offHook', 'dialing', 'timeoutWarning'].includes(machine.phase)) audioRef.current.startDialTone()
-    setClueCard({ title: 'CREDIT 3d', body: '硬币经过检验闸，绿色信用窗亮起。现在可以拨出一通电话。' })
+    if (!seenMechanicalHintsRef.current.has('coin-inserted')) {
+      seenMechanicalHintsRef.current.add('coin-inserted')
+      setClueCard({ title: 'CREDIT 3d', body: '硬币经过检验闸，绿色信用窗亮起。现在可以拨出一通电话；以后成功投币不会重复打开这张说明。' })
+    }
   }
 
   function returnCoinFromPhone() {
