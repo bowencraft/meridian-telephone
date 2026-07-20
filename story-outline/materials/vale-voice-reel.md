@@ -4,26 +4,26 @@ type: "material"
 title: "Vale未经处理的原声磁带"
 category: "object"
 status: "outline"
-source: "本次重构新增；承接现有‘您的声音’、自我转接与中央交换机录音线索"
+source: "第五章MCE-0本地创始人原声路由871 4036"
 canonical: true
-related_characters: ["char-evelyn-vale", "char-alistair-wren", "char-dorothy-haines"]
+related_characters: ["char-evelyn-vale", "char-alistair-wren", "char-leonard-campbell", "char-dorothy-haines"]
 related_macguffins: []
 plot_threads: ["plot-main", "plot-identity-recovery", "plot-meridian-containment"]
-used_in_chapters: []
+used_in_chapters: ["chapter-005", "chapter-006"]
 created: "2026-07-19"
-updated: "2026-07-19"
+updated: "2026-07-21"
 tags: ["磁带", "原声", "证据", "身份"]
 ---
 # Vale未经处理的原声磁带
 
 ## Idea
 
-阿利斯泰尔保存的一卷未经过礼仪协议处理的磁带，记录Vale最后一次提交异议。最关键的一句是：‘我同意建造它；我没有同意它后来变成的样子。’磁带保留她的东伦敦口音，与标准化旧接线员声音明显不同。
+MCE-0本地柜保存的四段未经礼仪层剪辑的历史工作录音，依次记录1981年地方诊所成功、1984年私有化会议、1986年长期分区试验与1989年六周拖延。录音同时保存Vale的理想、妥协、真实技术收益和没有及时公开的责任。
 
 ## Story Use
 
-中段由阿利斯泰尔用来诱导主角承认身份，后段可以成为认领姓名的证据，也能证明Vale既参与过项目又尝试停止它。若玩家只夺回磁带而不听完，会得到较自我保护的结局；若公开播放，则能帮助彼得和梅芙抵抗标准声音。
+第五章按时间顺序播放，只有听完第四段才取得版本说明与871 4127。第六章外部副本继续证明公开责任，但不替任何人物支持某个结局。Wren无法修改MCE-0原件，只能对访问记录和发布后果反制。
 
 ## Notes
 
-磁带不是灵魂容器，也不自动恢复记忆。它是一份录音证据和情感对照。避免用长篇说明；完整内容控制在三句以内。
+磁带不是灵魂容器，也不自动恢复记忆。每段必须包含具体工作动作和一次判断变化，避免成为只有年表的说明书。

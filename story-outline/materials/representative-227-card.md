@@ -9,24 +9,24 @@ canonical: true
 related_characters: ["char-peter-ward", "char-evelyn-vale", "char-alistair-wren"]
 related_macguffins: []
 plot_threads: ["plot-independent-callers", "plot-meridian-containment"]
-used_in_chapters: []
+used_in_chapters: ["chapter-002", "chapter-005", "chapter-006"]
 created: "2026-07-19"
-updated: "2026-07-19"
+updated: "2026-07-21"
 tags: ["名片", "Peter", "电话号码", "支线"]
 ---
 # Meridian第227代表名片
 
 ## Idea
 
-一张黑金名片，印着‘您的第227号礼仪代表’和871 4227，没有Peter姓名。他后来在背面用蓝笔补上‘P. Ward’，并写‘若我先说标准句，请先问工资袋’。
+一张Meridian内部回访卡，印第227夜班组与871 4227。Peter在正式投诉回执备注里写P. Ward，并要求以后先报工单号，不要把工号当姓名。
 
 ## Story Use
 
-让玩家在第二章后主动回拨Peter。正面号码可能通向正在执行脚本的代表227，只有引用工资袋或此前承诺才让Peter恢复真实说话方式。第五章可用其工号进入假代表路线，但也可能把MCE-0暴露给Wren。
+让玩家在第二章后主动回拨Peter。第五章只有在Vale提出班次摘要、退出评估和照护补贴不受退出威胁的具体条件后，Peter才提供仅限一次的发布队列确认码。第六章该码只能延迟队列，不能签版本或冒充Peter身份。
 
 ## Notes
 
 - 网页映射：kind=paper-card；layer=wall或counter；若置于counter使用counterStyle=operator-docket；phoneRefs=[meridian-representative-227]。
-- printedLines建议：YOUR COURTESY REPRESENTATIVE / 227 / 871 4227。
-- firstVariants发现背面姓名；repeatVariants提示用工资袋作为核验问题。
+- printedLines建议：PUBLIC CONTRACT NIGHT / REP. 227 / 871 4227。
+- firstVariants发现P. Ward和先报工单号；repeatVariants响应一次性队列码是否已使用。
 - 号码承担人物支线，不负责开启主章。

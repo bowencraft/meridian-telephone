@@ -27,8 +27,9 @@ tags: ["导航", "故事大纲", "Telephone"]
 8. [`outlines/010.chapter-number-network.md`](outlines/010.chapter-number-network.md)：主线号码、人物支线、恢复路径与章末交接。
 9. [`outlines/011.chapter-01-rain-question.md`](outlines/011.chapter-01-rain-question.md)至[`outlines/016.chapter-06-four-second-silence.md`](outlines/016.chapter-06-four-second-silence.md)：六章的现实任务、选择、人物后果和章末合同。
 10. [`outlines/020.reveal-ledger.md`](outlines/020.reveal-ledger.md)：各章读者知道、误读和仍待回答的内容。
-11. [`outlines/050.institutional-revision-direction.md`](outlines/050.institutional-revision-direction.md)与[`outlines/051.subagent-review-01.md`](outlines/051.subagent-review-01.md)：重构方向与Sub-agent第一轮审计。
-12. [`chapters/001.rain-question.md`](chapters/001.rain-question.md)至[`chapters/006.four-second-silence.md`](chapters/006.four-second-silence.md)：六章正文；当前正在按新框架逐章重写。
+11. [`outlines/040.manuscript-reader-audit.md`](outlines/040.manuscript-reader-audit.md)：六章读者理解、技术边界、人物独立性与七结局公平性审计。
+12. [`outlines/050.institutional-revision-direction.md`](outlines/050.institutional-revision-direction.md)至[`outlines/055.subagent-blind-draft-audit.md`](outlines/055.subagent-blind-draft-audit.md)：重构方向、基线、三轮分章审计与只看正文的全书盲读。
+13. [`chapters/001.rain-question.md`](chapters/001.rain-question.md)至[`chapters/006.four-second-silence.md`](chapters/006.four-second-silence.md)：已经按新框架完成的六章第二人称正文与七结局。
 
 ## Canon At A Glance
 
@@ -46,12 +47,12 @@ tags: ["导航", "故事大纲", "Telephone"]
 | Characters | 6名核心人物 |
 | Materials | 22项母题、线索、物件、号码入口、交班机制与故事账本 |
 | Plot | 1条中央剧情、3条支线 |
-| Outline | 六夜总纲、号码网络、6份分章合同、揭示账本、正文控制框架、重构方向与Sub-agent审计 |
-| Chapters | 6章旧正文已保留在Git历史中，工作区正按新框架全面重写 |
+| Outline | 六夜总纲、号码网络、6份分章合同、揭示账本、正文控制框架、重构方向、读者审计与分章Sub-agent审计 |
+| Chapters | 6章新版正文；包括跨夜失败、人物分支、四段创始史和7个互斥结局 |
 
 ## Current Boundary
 
-世界规则、核心人物、中央剧情、六夜因果和Sub-agent基线审计已经按新方向完成。下一步是逐章重写正文并更新故事账本；在第一目标验收与提交前，不改动`src/story/telephone.rules.json`。游戏数据迁移的完整顺序见[`TASKS.md`](TASKS.md)。
+世界规则、核心人物、中央剧情、六夜正文、故事账本、材料来源与读者审计已经按新方向完成，严格连续性检查为0错误、0警告，分章审计、全书盲读和定点复核均无blocker。`src/story/telephone.rules.json`仍保持旧版，下一目标将从新分支按Markdown实施源逐层迁移；完整顺序见[`TASKS.md`](TASKS.md)。
 
 ## Workspace Rules
 

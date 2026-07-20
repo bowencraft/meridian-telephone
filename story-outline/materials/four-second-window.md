@@ -9,9 +9,9 @@ canonical: true
 related_characters: ["char-evelyn-vale", "char-leonard-campbell", "char-alistair-wren"]
 related_macguffins: []
 plot_threads: ["plot-main", "plot-meridian-containment"]
-used_in_chapters: []
+used_in_chapters: ["chapter-003", "chapter-005", "chapter-006"]
 created: "2026-07-19"
-updated: "2026-07-19"
+updated: "2026-07-21"
 tags: ["时间窗口", "投诉", "总机", "高潮机制"]
 ---
 # 投诉线路的四秒人工窗口
@@ -22,7 +22,7 @@ tags: ["时间窗口", "投诉", "总机", "高潮机制"]
 
 ## Story Use
 
-前期以天气录音偶尔停顿四秒出现；中期伦纳德解释其用途；高潮中玩家必须先提交真实故障、保持沉默，再在窗口内切断或改接训练线。成功后整座城市安静四秒，兑现现有主成功结局。
+第三章由医院真实故障首次合法触发，Leonard在第四秒接入。第六章玩家必须先提交真实异议和技术条件，再以四秒沉默进入人工版本菜单；窗口只开放既有的队列延迟、签名撤销与安全附录操作，不会让整座城市停顿。
 
 ## Notes
 

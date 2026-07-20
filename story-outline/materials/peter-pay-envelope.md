@@ -1,7 +1,7 @@
 ---
 id: "material-peter-pay-envelope"
 type: "material"
-title: "彼得被扣款的工资袋"
+title: "Peter夜班调整摘要"
 category: "object"
 status: "outline"
 source: "第二章Peter代表支线与网页场景道具系统"
@@ -9,24 +9,24 @@ canonical: true
 related_characters: ["char-peter-ward", "char-alistair-wren", "char-evelyn-vale"]
 related_macguffins: []
 plot_threads: ["plot-main", "plot-independent-callers", "plot-meridian-containment"]
-used_in_chapters: []
+used_in_chapters: ["chapter-002", "chapter-005", "chapter-006"]
 created: "2026-07-19"
-updated: "2026-07-19"
-tags: ["工资", "员工", "场景道具", "无号码"]
+updated: "2026-07-21"
+tags: ["工资", "照护津贴", "纪律点", "无号码"]
 ---
-# 彼得被扣款的工资袋
+# Peter夜班调整摘要
 
 ## Idea
 
-一只薄薄的棕色工资袋，正面盖着Meridian代表227的工号，里面的扣款条把‘偏离开场白’、‘允许沉默’和‘客户未微笑’都列为培训损耗。袋内没有电话号码。
+一张由Meridian夜班楼层传真到MCE-0的员工调整摘要，列REP.227、本周纪律点、全组夜班津贴和家属居家照护补贴。保留未经认证来源、允许来电者沉默与未在早班前结案都会产生具体纪律点。
 
 ## Story Use
 
-第二章用普通工资、主管签字和扣款项目证明Meridian是现实机构。首次检查让玩家知道Peter为何不敢直接反抗；重复检查发现他用铅笔把‘客户’改成‘来电的人’，表现他仍保留自己的语言。第五章它可以作为Peter受害的具体记录，迫使Vale承认早期设计造成的后果。
+第二章用工资、照护责任、团队奖金与Wren批准码证明Peter的现实依赖。第五章回拨时，它成为员工安全条件的依据；第六章假代表路线后，摘要更新为暂停排班与当月津贴，不立即抹掉依法受程序保护的照护补贴。
 
 ## Notes
 
 - 网页映射：kind=paper-card；layer=counter；counterStyle=operator-docket；phoneRefs=[]。
-- printedLines建议：PAY WEEK 31 / REP. 227 / TRAINING DEDUCTION。
-- firstVariants给出三项扣款；repeatVariants给出铅笔改字。
+- printedLines建议：SHIFT ADJUSTMENT / REP. 227 / CARE ALLOWANCE ACTIVE。
+- firstVariants给出三项纪律规则；repeatVariants响应Peter当前调查或福利状态。
 - 不要在袋上再印电话，避免每件关键物品都变成拨号入口。
