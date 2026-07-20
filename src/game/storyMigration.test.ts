@@ -42,9 +42,9 @@ describe('Telephone story migration', () => {
     delete current.extensions.telephone.scene
 
     const migrated = migrateTelephoneStory(current)
-    expect(migrated.globals.phone.directory.find((entry) => entry.number === '9460264')?.id).toBe('weather-service')
+    expect(migrated.globals.phone.directory.find((entry) => entry.number === '9460264')?.id).toBe('road-status')
     expect(migrated.extensions.telephone.scene.slots[0]).toMatchObject({ id: 'old-note', spawnChance: 1 })
-    expect(migrated.extensions.telephone.scene.props[0].phoneRefs).toEqual(['weather-service'])
+    expect(migrated.extensions.telephone.scene.props[0].phoneRefs).toEqual(['road-status'])
     expect(migrated.extensions.telephone.scene.refreshPolicy).toBe('nightStart')
   })
 })

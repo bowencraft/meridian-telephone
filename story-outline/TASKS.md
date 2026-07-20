@@ -121,5 +121,9 @@ Status: active. 系统目标已创建，当前在 `codex/seedline-game-data` 分
 
 - Current branch: `codex/seedline-game-data`
 - Active system goal: Goal 2 — 游戏规则数据迁移、扩写、验证与盲玩
-- Last completed milestone: Goal 2实施源已在 `32b932f`提交；底层facts/durableState/lastEnding、alias规范化、单次审计币退款、三层物件、ring missedEffects、候选优先级、choice分组、柜台通话锁与验证测试已实现，当前14个测试文件57项全过，lint/build通过
-- Next work: 提交底层能力；迁移六章主干JSON与七结局，补齐详细variants/fallback、新闻广播、物件、电话簿和场景，再执行图可达性与盲玩
+- Completed Goal 2 commits: `32b932f docs: define Seedline game data migration`; `0bba5e0 feat: add replay-safe story graph primitives`.
+- Current milestone: 六章主干、七结局、14个电话条目、98个节点、243条边、33件场景材料、10个场景点位与3个来电事件已写入 `src/story/telephone.rules.json`。
+- Current verification: JSON可解析；规则校验0错误/0警告；14个测试文件61项全过；lint/build通过。路线测试已从同一六章证据链分别达成七结局，并覆盖磨损后三方修复、重复磨损不复用旧凭据、conditional签名重开、Maeve弱证据补强与跨周目改选结局。
+- Independent review: JSON可达性/恢复策略Sub-agent复审PASS；内容指标Sub-agent最终PASS。复评分数：易懂性8.8，人物动机9.1，转折衔接8.9，设定明确8.8，制度职场科幻悬疑9.4，科学家组织遗产感9.0。
+- Material sources: `materials/public-record-prop-docket.md` 已记录电话物件、无号码三层检查、离散支线、七类后果新闻与场景约束；`materials/scene-prop-catalog.md` 已同步。
+- Next work: 提交主干JSON与实施测试；继续做详细variants/fallback、空号/挂断/超时与场景实际交互检查；最后做未知设定的真正盲玩与迭代。

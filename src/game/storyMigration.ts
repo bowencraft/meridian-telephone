@@ -23,13 +23,19 @@ export const DEFAULT_SCENE_FIXTURES: SceneFixtureLayout = {
 
 const KNOWN_PHONE_IDS: Record<string, string> = {
   '999': 'emergency-services',
-  '9460264': 'weather-service',
+  '9460264': 'road-status',
+  '7350194': 'st-cyprian-transfer',
   '8714000': 'meridian-public',
   '8714003': 'meridian-complaints',
   '8714019': 'meridian-extension-19',
-  '8714127': 'meridian-switchboard',
-  '3011968': 'lost-property',
+  '8714227': 'meridian-team-227',
+  '8714036': 'founder-archive',
+  '8714127': 'meridian-release',
+  '3011968': 'records-escrow',
   '7941966': 'radio-nocturne',
+  '3372181': 'deptford-clinic',
+  '4051979': 'ashdown-inquiry',
+  '6621904': 'local-branch-help',
 }
 
 export const DEFAULT_SCENE_STYLE_PRESETS: SceneStylePreset[] = [

@@ -9,7 +9,6 @@ describe('night-shift scene randomization', () => {
     const openingSnapshot = resolveNightScene(story, engine.state)
 
     engine.dispatch({ type: 'dialNumber', value: '9460264' })
-    engine.dispatch({ type: 'choice', value: 'weather_who' })
     engine.markHangup()
 
     expect(resolveNightScene(story, { ...engine.state, sessionSeed: 8142 })).toEqual(openingSnapshot)
@@ -30,7 +29,7 @@ describe('night-shift scene randomization', () => {
     const slots = story.extensions.telephone.scene.slots
     expect(slots.every((slot) => slot.spawnChance > 0 && slot.spawnChance < 1)).toBe(true)
 
-    const slot = slots.find((item) => item.id === 'weather-card')!
+    const slot = slots.find((item) => item.id === 'public-number-wall')!
     const percentages = candidatePercentages(slot)
     expect(percentages.reduce((sum, item) => sum + item.absoluteChance, 0)).toBeCloseTo(slot.spawnChance)
     expect(percentages[0].absoluteChance).toBeGreaterThan(percentages.at(-1)!.absoluteChance)
@@ -38,18 +37,18 @@ describe('night-shift scene randomization', () => {
 
   it('lets several visual variants reveal one stable phone entry', () => {
     const story = defaultTelephoneStory()
-    const weatherProps = story.extensions.telephone.scene.props.filter((prop) => prop.phoneRefs?.includes('weather-service'))
-    expect(weatherProps.length).toBeGreaterThanOrEqual(3)
+    const meridianProps = story.extensions.telephone.scene.props.filter((prop) => prop.phoneRefs?.includes('meridian-public'))
+    expect(meridianProps.length).toBeGreaterThanOrEqual(2)
 
     const engine = new CallEngine(story, undefined, 9)
-    engine.discoverPhones(weatherProps[0].phoneRefs)
-    engine.discoverPhones(weatherProps[1].phoneRefs)
-    expect(engine.state.discoveredNumbers.filter((number) => number === '9460264')).toHaveLength(1)
+    engine.discoverPhones(meridianProps[0].phoneRefs)
+    engine.discoverPhones(meridianProps[1].phoneRefs)
+    expect(engine.state.discoveredNumbers.filter((number) => number === '8714000')).toHaveLength(1)
   })
 
   it('applies position jitter to the same forced preview used by the admin', () => {
     const story = defaultTelephoneStory()
-    const slot = story.extensions.telephone.scene.slots.find((item) => item.id === 'weather-card')!
+    const slot = story.extensions.telephone.scene.slots.find((item) => item.id === 'public-number-wall')!
     const preview = resolveSceneCandidatePreview(story, slot, slot.candidates[0], 42)!
 
     expect(preview.bounds.x).not.toBe(slot.bounds.x)
@@ -59,9 +58,9 @@ describe('night-shift scene randomization', () => {
 
   it('lets a candidate preset replace the original material palette', () => {
     const story = defaultTelephoneStory()
-    const slot = story.extensions.telephone.scene.slots.find((item) => item.id === 'weather-card')!
+    const slot = story.extensions.telephone.scene.slots.find((item) => item.id === 'public-number-wall')!
     const preview = resolveSceneCandidatePreview(story, slot, {
-      propId: 'weather-card',
+      propId: 'prop_road_card',
       weight: 1,
       appearanceOverrides: { presetId: 'carbon-ticket' },
     }, 42)!
@@ -76,7 +75,7 @@ describe('night-shift scene randomization', () => {
 
   it('selects only from the highest eligible candidate priority', () => {
     const story = defaultTelephoneStory()
-    const slot = story.extensions.telephone.scene.slots.find((item) => item.id === 'weather-card')!
+    const slot = story.extensions.telephone.scene.slots.find((item) => item.id === 'public-number-wall')!
     slot.spawnChance = 1
     slot.candidates = slot.candidates.slice(0, 2).map((candidate, index) => ({
       ...candidate,

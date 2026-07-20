@@ -5,7 +5,7 @@ import { validateStoryDefinition } from './storyValidation'
 describe('Telephone graph validation', () => {
   it('accepts the shipped story and its seven endings', () => {
     const story = defaultTelephoneStory()
-    expect(validateStoryDefinition(story).filter((issue) => issue.level === 'error')).toEqual([])
+    expect(validateStoryDefinition(story)).toEqual([])
     expect(new Set(story.nodes.map((node) => node.telephone?.ending).filter(Boolean)).size).toBe(7)
     expect(story.globals.phone.directory.length).toBeGreaterThanOrEqual(5)
     expect(story.globals.phone.idleRingSchedule.length).toBeGreaterThanOrEqual(3)
