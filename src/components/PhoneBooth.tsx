@@ -98,7 +98,7 @@ export function PhoneBooth({
           />
           <div className="instruction-card">
             <strong>TO CALL</strong>
-            <span>INSERT 3d · LIFT RECEIVER · DIAL</span>
+            <span>INSERT 3d · LIFT · CLICK OR TURN DIGITS</span>
             <small>INCOMING CALLS REQUIRE NO COIN</small>
           </div>
           <div className="service-stamp" aria-hidden="true"><span>GPO</span><small>INSPECTED<br />19·6·68</small></div>

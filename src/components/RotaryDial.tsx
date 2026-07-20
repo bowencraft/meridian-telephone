@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import {
   ROTARY_DIGITS,
   angleFromCenter,
@@ -32,9 +32,28 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
   const pendingTickRef = useRef(false)
   const moveCountRef = useRef(0)
   const renderFrameCountRef = useRef(0)
+  const returningRef = useRef(false)
+  const timerRefs = useRef<number[]>([])
   const [activeDigit, setActiveDigit] = useState<string | null>(null)
   const [rotation, setRotation] = useState(0)
   const [returning, setReturning] = useState(false)
+
+  const settleDial = useCallback((digit: string, complete: boolean) => {
+    returningRef.current = true
+    setReturning(true)
+    if (complete) {
+      setRotation(requiredRotationForDigit(digit))
+      onReturn?.(digit)
+    } else {
+      onError?.()
+    }
+    timerRefs.current.push(window.setTimeout(() => setRotation(0), 30))
+    timerRefs.current.push(window.setTimeout(() => {
+      returningRef.current = false
+      setReturning(false)
+      if (complete) onDigit(digit)
+    }, 560))
+  }, [onDigit, onError, onReturn])
 
   function flushDialFrame() {
     frameRef.current = null
@@ -51,7 +70,7 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
   }
 
   function begin(event: PointerEvent<HTMLButtonElement>, digit: string) {
-    if (disabled || activeDigit || returning || !dialRef.current) return
+    if (disabled || activeDigit || returningRef.current || !dialRef.current) return
     event.preventDefault()
     const rect = dialRef.current.getBoundingClientRect()
     const center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
@@ -98,45 +117,38 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
       dialRef.current.dataset.moveEvents = String(moveCountRef.current)
       dialRef.current.dataset.renderFrames = String(renderFrameCountRef.current)
     }
-    const complete = isDialComplete(digit, gesture.rotation)
+    // A press-and-release with no drag is an intentional accessible shortcut.
+    // Physical dragging remains available, but a first-time player can also
+    // click the printed hole once per digit without learning the gesture.
+    const complete = moveCountRef.current === 0 || isDialComplete(digit, gesture.rotation)
     setActiveDigit(null)
-    setReturning(true)
-    if (complete) {
-      setRotation(requiredRotationForDigit(digit))
-      onReturn?.(digit)
-    } else {
-      onError?.()
-    }
-    window.setTimeout(() => setRotation(0), 30)
-    window.setTimeout(() => {
-      setReturning(false)
-      if (complete) onDigit(digit)
-    }, 560)
+    settleDial(digit, complete)
   }
+
+  useEffect(() => {
+    function keyDial(event: KeyboardEvent) {
+      const target = event.target
+      const isTyping = target instanceof HTMLElement && Boolean(target.closest('input, textarea, select, [contenteditable="true"]'))
+      if (isTyping || disabled || returningRef.current || activeDigit || !/^\d$/.test(event.key)) return
+      event.preventDefault()
+      settleDial(event.key, true)
+    }
+    window.addEventListener('keydown', keyDial)
+    return () => window.removeEventListener('keydown', keyDial)
+  }, [activeDigit, disabled, settleDial])
 
   useEffect(() => () => {
     if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current)
+    timerRefs.current.forEach((timer) => window.clearTimeout(timer))
   }, [])
-
-  function keyDial(event: React.KeyboardEvent<HTMLDivElement>) {
-    if (disabled || returning || activeDigit || !/^\d$/.test(event.key)) return
-    event.preventDefault()
-    const digit = event.key
-    setReturning(true)
-    setRotation(requiredRotationForDigit(digit))
-    onReturn?.(digit)
-    window.setTimeout(() => setRotation(0), 50)
-    window.setTimeout(() => { setReturning(false); onDigit(digit) }, 560)
-  }
 
   return (
     <div
       ref={dialRef}
       className={`rotary-dial ${activeDigit ? 'is-dragging' : ''} ${returning ? 'is-returning' : ''} ${disabled ? 'is-disabled' : ''}`}
-      onKeyDown={keyDial}
       tabIndex={disabled ? -1 : 0}
       role="group"
-      aria-label="转盘拨号器。可拖动数字孔至挡片，也可使用数字键。"
+      aria-label="转盘拨号器。可单击数字孔、拖动数字孔至挡片，或直接使用数字键。"
     >
       <div className="dial-underplate">
         {ROTARY_DIGITS.map((digit) => {
