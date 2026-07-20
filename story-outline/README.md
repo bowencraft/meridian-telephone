@@ -30,6 +30,7 @@ tags: ["导航", "故事大纲", "Telephone"]
 11. [`outlines/040.manuscript-reader-audit.md`](outlines/040.manuscript-reader-audit.md)：六章读者理解、技术边界、人物独立性与七结局公平性审计。
 12. [`outlines/050.institutional-revision-direction.md`](outlines/050.institutional-revision-direction.md)至[`outlines/055.subagent-blind-draft-audit.md`](outlines/055.subagent-blind-draft-audit.md)：重构方向、基线、三轮分章审计与只看正文的全书盲读。
 13. [`chapters/001.rain-question.md`](chapters/001.rain-question.md)至[`chapters/006.four-second-silence.md`](chapters/006.four-second-silence.md)：已经按新框架完成的六章第二人称正文与七结局。
+14. [`implementation/060.game-data-execution-plan.md`](implementation/060.game-data-execution-plan.md)至[`implementation/064.alias-fallback-contract.md`](implementation/064.alias-fallback-contract.md)：Goal 2的节点执行、电话分支、公开记录、跨周目状态与防死路实施契约。
 
 ## Canon At A Glance
 
@@ -49,6 +50,7 @@ tags: ["导航", "故事大纲", "Telephone"]
 | Plot | 1条中央剧情、3条支线 |
 | Outline | 六夜总纲、号码网络、6份分章合同、揭示账本、正文控制框架、重构方向、读者审计与分章Sub-agent审计 |
 | Chapters | 6章新版正文；包括跨夜失败、人物分支、四段创始史和7个互斥结局 |
+| Implementation | 5份游戏数据实施源：节点、电话图、新闻广播、长期状态、alias/fallback |
 
 ## Current Boundary
 
