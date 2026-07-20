@@ -1,34 +1,34 @@
 ---
-id: "plot-independent-callers"
-type: "plot"
-title: "独立来电者：电话另一端的人"
-scope: "thread"
-status: "outline"
-starts_in: "sequence-1-rain-call"
-turns_in: ["sequence-2-peter-warning", "sequence-3-leonard-test", "sequence-4-callbacks", "sequence-5-coalition"]
-pays_off_in: "sequence-6-city-lines"
+id: plot-independent-callers
+type: plot
+title: "独立来电者：每个人先解决自己的夜班"
+scope: thread
+status: draft
+starts_in: "chapter-001"
+turns_in: ["chapter-002", "chapter-003", "chapter-004", "chapter-005"]
+pays_off_in: "chapter-006"
 characters: ["char-evelyn-vale", "char-maeve-donnelly", "char-peter-ward", "char-leonard-campbell", "char-dorothy-haines"]
-materials: ["material-rain-answer", "material-sales-call-card", "material-hospital-switch-slip", "material-nineteen-fault-slip"]
+materials: ["material-hospital-night-exchange-slip", "material-peter-pay-envelope", "material-leonard-carbon-log", "material-dorothy-claim-envelope"]
 macguffins: []
-created: "2026-07-19"
-updated: "2026-07-19"
-tags: ["独立人物", "关系", "来电", "后果"]
+created: 2026-07-19
+updated: 2026-07-21
+tags: ["独立人物", "职业动机", "来电", "关系后果"]
 ---
-# 独立来电者：电话另一端的人
+# 独立来电者：每个人先解决自己的夜班
 
 ## Promise
 
-玩家会逐步确认电话另一端大多是真实的人，并看到早期回答如何改变他们后来的选择。帮助、阻拦、误解和背叛都来自人物自身处境，而不是主角人格碎片。
+电话另一端的人拥有不依赖Vale的工作、家庭和风险。玩家只有先理解并改变他们的现实处境，才能获得证据与最终协助；他们也可以合理拒绝、上报或退出。
 
 ## Pressure
 
-封闭电话亭让玩家无法当面验证任何人；Meridian能截取和模仿部分话术；每个来电者又有工作、家庭和安全顾虑。玩家若只把他们当线索来源，就会失去他们的合作。
+所有人都在倒计时下工作：Maeve要在病人恶化前完成转运，Peter要在换班前完成配额，Leonard要在4.0发布前建立可采信工单，Dorothy要在公司返还令生效前完成托管核验。Vale的调查不是他们唯一的人生重点。
 
 ## Turns
 
-- Setup：梅芙询问雨况，玩家第一次选择相信现实中的陌生人还是权威录音。
-- Complication：彼得警告十九号，却可能在压力下上报MCE-0；他的摇摆有明确现实原因。
-- Test：伦纳德要求可验证故障而不是姓名，多萝西要求凭据而不是情感诉求。
-- Reversal：人物之间开始互相影响——彼得可警告梅芙，伦纳德的日志可说服多萝西，梅芙的便笺可证明四秒窗口。
-- Crisis：阿利斯泰尔以工作和安全威胁他们；玩家必须选择保护人物还是利用他们换取权限。
-- Payoff：若关系成立，四个人各提供自己能做到的一小部分，主角才有机会进入总机；若关系破裂，相应结局仍可达但代价更高。
+- **Maeve：** Vale先处理路线才获得时间记录；若说“天气很好”，Maeve下一夜只提供最低限度信息。
+- **Peter：** Vale必须在保留医院工单与降低Peter纪律风险之间承担选择；他提供投诉号，但不因此信任创始人。
+- **Leonard：** 只在具体工单进入四秒窗口后说明技术；Vale若破坏证据，他拒绝再次开放。
+- **Dorothy：** 按既定两项来源条件放行，不因Vale自白增加或减少门槛。
+- **Convergence：** 第五章Vale分别回拨，不是召集朋友，而是提出满足每个人目标的具体版本安排。
+- **Payoff：** 第六章人物只提供自己有资格提供的一项确认；任何缺失都改变可达结局和后续代价。

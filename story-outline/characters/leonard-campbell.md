@@ -1,62 +1,63 @@
 ---
-id: "char-leonard-campbell"
-type: "character"
+id: char-leonard-campbell
+type: character
 name: "伦纳德·坎贝尔"
 original_name: "Leonard Campbell"
 korean_reading: "레너드 캠벨"
-name_language: "en-GB"
-name_context: "1968年伦敦；牙买加出生、布里克斯顿定居的英国电话线路技术员"
-aliases: ["Len", "伦", "投诉线路技术员", "故障台值班员"]
-role: "独立盟友；Meridian内部仍在工作的投诉线路技术员"
-status: "outline"
-age: "43"
+name_language: en-GB
+name_context: "1989年伦敦；牙买加出生、布里克斯顿定居的电信安全工程师与Seedline原团队成员"
+aliases: ["Len", "坎贝尔工程师", "故障台值班员", "安全签字人"]
+role: "独立盟友；负责旧公共交换机安全审计并掌握四秒人工窗口"
+status: draft
+age: "47"
 gender: "男性"
-pronouns: "he/him；中文使用“他”"
-first_appearance: "玩家第一次让投诉线路转入人工故障台"
-last_seen: "最终总机行动前后，随其信任线变化"
-relationships: ["char-evelyn-vale：旧同事；既需要她的知识，也要求她承认责任", "char-alistair-wren：直属管理者；表面服从，暗中收集故障证据", "char-peter-ward：曾处理过他的线路投诉，知道他不是单纯的公司帮凶"]
-wants: ["把同事失去声音的证据送出Meridian", "让投诉通道继续保持人工判断", "在不牺牲家人的情况下阻止协议扩张"]
-needs: ["从只保存证据转向承担实际风险", "承认Vale可以改变，而不是永远等同于她过去的决定"]
-conflicts: ["公开帮助Vale会让自己的家人和同事被Meridian列入训练名单", "他掌握权限，却不知道协议的完整原理", "他必须判断电话里的Vale是本人、录音还是陷阱"]
-secrets: ["他藏有未被Meridian登记的四秒人工转接窗口", "他保留了一份证明Vale曾试图叫停实验的维修日志"]
-related_materials: ["material-nineteen-fault-slip", "material-four-second-window"]
+pronouns: "he/him；中文使用‘他’"
+first_appearance: "第三章正式故障工单通过四秒窗口进入人工台"
+last_seen: "第六章确认或拒绝最终版本操作"
+relationships: ["char-evelyn-vale：原始研究同事；尊重她的能力，却记得她曾要求再等一个版本", "char-alistair-wren：共同创始团队的运营负责人；双方争论谁有资格定义可接受风险", "char-peter-ward：提供过可验证员工投诉的夜班证人", "char-dorothy-haines：通过封存编号交换材料，不共享超出权限的内容"]
+wants: ["让医院异常与分区滥用进入外部可采信的调查记录", "避免未经记录的停机被Meridian备份恢复", "在退休前把Seedline安全规则交给不依赖个人英雄的程序"]
+needs: ["承认只保存证据也是一种延迟", "在证据足够时承担一次带姓名的公开签字"]
+conflicts: ["过早开放人工权限会毁掉证据资格，太晚则让4.0发布", "他帮助Vale也等于承认原团队共同失败", "家人不受直接绑架威胁，但他的执照、养老金和公共信誉都可被合法剥夺"]
+secrets: ["四秒窗口是他和Vale共同坚持写入的双人安全规则", "他保留了Ashdown最终调查中‘权力冲突而非措辞差异’的附件", "他曾在Vale要求立即停机时选择先完成一周工程验证"]
+related_materials: ["material-nineteen-fault-slip", "material-four-second-window", "material-leonard-carbon-log", "material-shift-handover-register"]
 related_macguffins: []
-plot_threads: ["plot-main", "plot-independent-callers", "plot-meridian-containment"]
-created: "2026-07-19"
-updated: "2026-07-19"
-tags: ["盟友", "投诉线路", "技术员", "独立人物"]
+plot_threads: ["plot-main", "plot-independent-callers", "plot-meridian-containment", "plot-identity-recovery"]
+created: 2026-07-19
+updated: 2026-07-21
+tags: ["安全工程师", "原团队", "证据", "四秒窗口"]
 ---
 # 伦纳德·坎贝尔
 
 ## Function
 
-- 把抽象的投诉权限变成一个有判断、有风险的人。
-- 提供现实证据和有限技术帮助，但不会无条件替主角开门。
-- 取代现有剧情里误标为E. Vale的活人线路员。
+- 让技术规则始终依附于证据、责任签字和可重复操作，而不是由一个万能黑客解决问题。
+- 解释MCE-0与工作记忆分区，但只在一份真实故障已经需要这些知识时解释。
+- 作为原始团队成员，他既能证明Vale曾反对，也能证明她和自己都拖延过。
 
 ## Surface
 
-- 公开身份：Meridian夜班故障台技术员。
-- 职业经历：曾维护GPO公共电话线路，因擅长排查串线被调入Meridian。
-- 文化与语言：牙买加出生，在伦敦生活二十年；工作时使用简洁标准英语，愤怒时语速变快。
-- 可见习惯：每次通话先确认故障现象，不接受含糊的求救；用铅笔敲三下表示线路可能被监听。
+- 公开身份：旧公共交换机安全工程师、Seedline原型线路负责人、工会安全代表。
+- 工作方式：先问具体故障、时间、可重复现象与谁留下记录，不接受“系统很可怕”作为停机依据。
+- 社会位置：在伦敦工作二十余年，拥有专业资历与养老金；Meridian无需威胁家人，只要质疑他的执照就足够。
+- 可见习惯：用铅笔敲三下表示线路正在录音；给每个口头结论补一个可复核编号。
 
 ## Interior
 
-- 欲望：让证据离开交换机，而不是只在档案里积灰。
-- 恐惧：反抗失败后，家人的声音也被拿去训练。
-- 矛盾：极度不信任Vale，却是唯一能证明Vale曾反抗的人。
-- 伤口：他曾按规定关闭一条求救线路，第二天那名同事从员工名册消失。
+- 欲望：做出一份几年后仍能证明发生过什么的停机记录。
+- 恐惧：一次情绪化越权会让Meridian把所有投诉归为个人破坏，并用备份恢复更严密版本。
+- 矛盾：他批评Vale拖延六周，自己当年也要求再做一周测试。
+- 私人伤口：Ashdown调查附件证明问题包含部门权力冲突，他却没有阻止Wren把事故简化成“人说得不一致”。
 
 ## Relationships
 
-- 他与Vale的关系从审问、有限合作，发展到是否愿意把四秒窗口交给她。
-- 他对阿利斯泰尔保持表面礼貌，每句话都尽量只陈述技术事实。
-- 他把彼得视为需要证词的受害者，不愿把他当作英雄。
+- 他对Vale的信任来自是否准确陈述自己的责任、保护工单并遵守证据边界。
+- 他不把Peter当英雄或懦夫，只把他当拥有一线知识和现实风险的证人。
+- 他与Wren仍能进行专业对话；这让冲突更危险，因为两边都能提出合理风险。
+- Dorothy负责材料来源，他负责线路现象；二人互不替代。
 
 ## Continuity
 
-- 伦纳德是真实、独立且仍活着的人，不是Vale回声。
-- 他只能从投诉线路提供帮助，不能直接控制中央交换机。
-- 他不会仅凭情感相信Vale；信任必须由维修日志、选择和行动建立。
-- 他的家人只作为风险背景，不应成为廉价绑架情节。
+- Leonard不能直接控制Meridian中央发布，也不能随意给Vale永久权限。
+- 四秒窗口必须由具体故障触发，每夜临时权限都要重新核验。
+- 他知道Vale是十九号和分区设计者，但第五章以前不替原声说明她为何拖延。
+- 最终帮助必须是带姓名的技术确认，因此对他有执照与声誉代价。

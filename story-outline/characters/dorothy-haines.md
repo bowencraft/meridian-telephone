@@ -1,62 +1,62 @@
 ---
-id: "char-dorothy-haines"
-type: "character"
+id: char-dorothy-haines
+type: character
 name: "多萝西·海恩斯"
 original_name: "Dorothy Haines"
 korean_reading: "도로시 헤인스"
-name_language: "en-GB"
-name_context: "1968年伦敦；伦敦交通失物招领处的资深文员"
-aliases: ["失物招领管理员", "Haines太太", "多萝西"]
-role: "立场暧昧的独立守门人；保管身份凭据并要求主角证明认领资格"
-status: "outline"
-age: "60"
+name_language: en-GB
+name_context: "1989年伦敦；独立记录托管处资深登记官，曾任公共交通档案文员"
+aliases: ["Haines女士", "记录托管人", "多萝西", "301档案线"]
+role: "独立守门人；保管创始人材料并验证来源、日期和放行权限"
+status: draft
+age: "58"
 gender: "女性"
-pronouns: "she/her；中文使用“她”"
-first_appearance: "玩家拨打失物招领号码并询问姓名或公用电话钥匙"
-last_seen: "主角提交足够凭据后，或最终拒绝承担Vale身份时"
-relationships: ["char-evelyn-vale：保管她的姓名认领卡；拒绝仅凭声音归还身份", "char-alistair-wren：多次试图让她销毁过期档案的机构代表", "char-leonard-campbell：通过正式维修单与她交换信息的可信联系人"]
-wants: ["把每件失物归还给能证明归属的人", "让外部档案不被Meridian接管", "平稳完成退休前最后一年"]
-needs: ["承认有些身份无法用普通凭据证明", "在程序公正与紧急救人之间作出一次例外"]
-conflicts: ["过早归还Vale身份可能帮助Meridian补全协议", "拒绝归还则会让主角永远无法面对完整责任", "她只有纸面档案，没有能力直接干预交换机"]
-secrets: ["Vale在被删除前亲自提交了空白姓名认领卡，并要求只有同时持有三项证据的人才能取回", "Meridian曾正式要求销毁这张卡，她把它误归档到公用电话钥匙名下"]
-related_materials: ["material-name-claim-card", "material-public-phone-key", "material-nineteen-fault-slip"]
+pronouns: "she/her；中文使用‘她’"
+first_appearance: "第四章拨打外部托管号码301 1968"
+last_seen: "第六章根据Vale是否保护证据决定确认或拒绝最终签名"
+relationships: ["char-evelyn-vale：保管她私人自我提交的材料；不把工作声纹视为完整身份", "char-alistair-wren：持续要求按合同返还创始人文件的公司运营总监", "char-leonard-campbell：提供技术封存编号的可信来源，但无权代替本人认领"]
+wants: ["只向满足托管条件的人放行材料", "确保任何版本争议都留下公司之外的来源记录", "完成职业生涯最后一件不会在法庭上崩溃的保管案"]
+needs: ["在程序明确允许的紧急条款内行动，而不是把谨慎变成无限拖延", "承认分区身份需要新的证明方式，但不能降低来源标准"]
+conflicts: ["过早放行可能帮助Meridian取得Vale签名，过晚则让4.0先发布", "声纹、记忆和姓名都可能被系统重放，传统身份验证不足", "Wren的返还要求有合同依据，但Vale的安全托管附录同样有效"]
+secrets: ["Vale的私人自我亲自提交一封给夜班自我的录音信", "托管条件不是猜谜，而是两项互相独立的来源证明与一句只有私人自我留下的行动说明", "Radio Nocturne持有其中一份公开时间戳副本"]
+related_materials: ["material-name-claim-card", "material-public-phone-key", "material-dorothy-claim-envelope", "material-radio-routing-postcard"]
 related_macguffins: []
-plot_threads: ["plot-main", "plot-identity-recovery", "plot-independent-callers"]
-created: "2026-07-19"
-updated: "2026-07-19"
-tags: ["守门人", "失物招领", "档案", "独立人物"]
+plot_threads: ["plot-main", "plot-identity-recovery", "plot-independent-callers", "plot-meridian-containment"]
+created: 2026-07-19
+updated: 2026-07-21
+tags: ["托管", "来源证明", "外部记录", "独立人物"]
 ---
 # 多萝西·海恩斯
 
 ## Function
 
-- 把‘找回身份’变成需要具体证据和责任承诺的认领过程。
-- 她既提供帮助又设置合理阻碍，避免失物招领线只负责直接公布答案。
-- 她代表Meridian控制之外仍存在的普通制度与职业伦理。
+- 把“找回姓名”改成更可信的来源验证：在可重放声纹和分区记忆存在的世界里，任何单一声音都不能证明完整身份。
+- 她的程序不是为了延迟剧情，而是防止Wren或任何复制声纹的人取得创始人签名。
+- 她代表一种与Meridian不同的制度可能：规则可以限制权力，也可以在预先写明的紧急条件下行动。
 
 ## Surface
 
-- 公开身份：伦敦交通失物招领处资深文员。
-- 阶层与语言：伦敦工薪文职阶层，措辞正式，能从表格编号判断物件流转。
-- 可见习惯：要求来电者重复日期而不是姓名；翻纸时会把每一页边缘对齐。
-- 工作边界：只认纸面凭据，不接受所谓‘我就是我’作为证明。
+- 公开身份：独立记录托管处资深登记官；早年在公共交通失物与档案部门工作。
+- 工作方式：询问来源、保管链、提交日期、封存编号和请求权限，不评价来电者是否听起来真诚。
+- 社会位置：临近退休，熟悉公司法务拖延方式，也知道一次错误放行会毁掉整套证据。
+- 可见习惯：通话中把每项口头信息复述成可核验字段；听见抽象忏悔会问“这改变我的哪一项权限”。
 
 ## Interior
 
-- 欲望：在混乱城市里维持一小块可以核对的秩序。
-- 恐惧：一次主观例外会让所有档案失去可信度。
-- 矛盾：她看得出Vale是失主，却仍要求Vale面对凭据背后的责任。
-- 伤口：战争期间一次错误认领让遗物交给了错误家庭，此后她不再凭同情判断。
+- 欲望：让创始人争议最终由可见证据而非最有权力的声音决定。
+- 恐惧：自己因同情提前放行，反而帮助Meridian完成4.0签名。
+- 矛盾：她最相信程序，却必须承认旧程序没有为一个人合法分成两种记忆访问状态做好准备。
+- 私人伤口：她早年曾凭一段电话描述返还错误遗物，此后坚持身份与物件必须由不同来源交叉证明。
 
 ## Relationships
 
-- 她对Vale的帮助从提供物件描述，发展到是否归还姓名认领卡。
-- 她用程序拖延阿利斯泰尔的销毁要求，而不是公开与他对抗。
-- 伦纳德的维修日志可以成为她接受的外部证明。
+- 对Vale：不要求她证明自己是好人，只要求证明电话中的工作自我与托管人的授权链一致。
+- 对Wren：不公开争论技术伦理，只用合同附录、送达时间和外部副本阻止他单方面取回。
+- 对Leonard：接受他的封存编号，不接受他替Vale作身份判断。
 
 ## Continuity
 
-- 多萝西是真实、独立的人，不是神秘档案意识。
-- 她知道档案流转，不知道礼仪协议的技术原理。
-- 她不会无条件归还姓名；认领至少需要声音录音、十九号故障单和公用电话钥匙线索中的两项。
-- 她的帮助必须通过真实文书、日期和物件实现。
+- Dorothy不懂Seedline内部代码，只掌握文书来源、外部时间戳和托管条件。
+- 她不会把材料藏在任意失物袋中；所有关键物件都来自明确的法律托管与旧公共档案转移。
+- 她的阻拦必须始终能用“谁可能借此取得何种权力”解释。
+- 达成条件后她必须按规则放行，不能为了制造悬念临时增加第三项谜题。

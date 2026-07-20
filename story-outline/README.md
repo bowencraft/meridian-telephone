@@ -4,7 +4,7 @@ type: documentation
 title: "电话亭完整互动叙事工作区"
 status: draft
 created: 2026-07-19
-updated: 2026-07-20
+updated: 2026-07-21
 tags: ["导航", "故事大纲", "Telephone"]
 ---
 # 电话亭完整互动叙事工作区
@@ -13,29 +13,30 @@ tags: ["导航", "故事大纲", "Telephone"]
 
 ## One-Sentence Story
 
-1968年的伦敦雨夜，一个没有姓名的人在一座不存在于地图上的电话亭里追查异常来电，最终发现自己是被Meridian删除的十九号接线员Evelyn Vale，并必须决定如何处理自己曾参与创造的身份改写系统。
+1989年的伦敦雨夜，Evelyn Vale被隔离的工作自我从一场医院转运错误追查到自己参与创造的Seedline，并必须在凌晨版本同步前决定谁有权管理一个已经扩散的公共通信工具。
 
 ## Recommended Reading Order
 
-1. [`project.md`](project.md)：故事承诺、核心问题和清晰度原则。
-2. [`world/meridian-rain-exchange.md`](world/meridian-rain-exchange.md)：1968年伦敦、Meridian、电话亭与世界规则。
-3. [`characters/`](characters/)：六名核心人物及其独立目标。
-4. [`materials/`](materials/)：母题、线索与可映射到网页字段的场景物件；总目录见[`scene-prop-catalog.md`](materials/scene-prop-catalog.md)。
-5. [`plot/000.master-plot.md`](plot/000.master-plot.md)：中央剧情、三幕推进、七结局与铺垫回收。
-6. [`outlines/000.master-outline.md`](outlines/000.master-outline.md)：六章总纲、非线性汇流规则和现有节点迁移表。
-7. [`outlines/010.chapter-number-network.md`](outlines/010.chapter-number-network.md)：主线号码脊柱、人物支线号码、重玩规则与网页映射。
-8. [`outlines/011.chapter-01-rain-question.md`](outlines/011.chapter-01-rain-question.md)至[`outlines/016.chapter-06-four-second-silence.md`](outlines/016.chapter-06-four-second-silence.md)：六章的入口、选择、道具、人物后果和章末交接合同。
-9. [`outlines/020.reveal-ledger.md`](outlines/020.reveal-ledger.md)：各章玩家知道、误读和仍待回答的内容。
-10. [`chapters/001.rain-question.md`](chapters/001.rain-question.md)至[`chapters/006.four-second-silence.md`](chapters/006.four-second-silence.md)：完整六章正文初稿；第六章含七个互斥结局。
-11. [`materials/000.story-ledger.md`](materials/000.story-ledger.md)与[`outlines/040.manuscript-reader-audit.md`](outlines/040.manuscript-reader-audit.md)：正文后的连续性账本与读者理解审计。
+1. [`TASKS.md`](TASKS.md)：两阶段长线目标、执行顺序、验收条件、分支与提交策略。
+2. [`project.md`](project.md)：故事承诺、核心问题和清晰度原则。
+3. [`world/meridian-rain-exchange.md`](world/meridian-rain-exchange.md)：1989年伦敦、Seedline、记忆分区、MCE-0与世界规则。
+4. [`characters/`](characters/)：六名核心人物及其独立目标。
+5. [`materials/`](materials/)：母题、线索与可映射到网页字段的场景物件；总目录见[`scene-prop-catalog.md`](materials/scene-prop-catalog.md)。
+6. [`plot/000.master-plot.md`](plot/000.master-plot.md)：中央剧情、隐藏真相时间线、七结局与铺垫回收。
+7. [`outlines/000.master-outline.md`](outlines/000.master-outline.md)：六夜因果总纲与人物状态轨道。
+8. [`outlines/010.chapter-number-network.md`](outlines/010.chapter-number-network.md)：主线号码、人物支线、恢复路径与章末交接。
+9. [`outlines/011.chapter-01-rain-question.md`](outlines/011.chapter-01-rain-question.md)至[`outlines/016.chapter-06-four-second-silence.md`](outlines/016.chapter-06-four-second-silence.md)：六章的现实任务、选择、人物后果和章末合同。
+10. [`outlines/020.reveal-ledger.md`](outlines/020.reveal-ledger.md)：各章读者知道、误读和仍待回答的内容。
+11. [`outlines/050.institutional-revision-direction.md`](outlines/050.institutional-revision-direction.md)与[`outlines/051.subagent-review-01.md`](outlines/051.subagent-review-01.md)：重构方向与Sub-agent第一轮审计。
+12. [`chapters/001.rain-question.md`](chapters/001.rain-question.md)至[`chapters/006.four-second-silence.md`](chapters/006.four-second-silence.md)：六章正文；当前正在按新框架逐章重写。
 
 ## Canon At A Glance
 
-- 主角是Evelyn Vale，曾参与设计礼仪协议，后来反抗并被删除。
-- Meridian是由人和自动设备维持的现实机构，不是超自然意识。
-- 大多数来电者都是独立人物；只有明确标记的旧录音和自我转接属于Vale回声。
-- 礼仪协议通过倾听、重复话术和多次接触逐步生效，不能瞬间控制人。
-- 最终行动依赖正式投诉、四秒人工窗口、公用电话钥匙和已建立的人物关系。
+- 主角是Evelyn Vale被工作记忆分区隔离的夜班自我，与私人自我共用同一具身体。
+- Seedline是原公共研究组创造的模块化电话路由工具，没有意识，也不能改变外部事实。
+- Meridian把礼仪话术、绩效分类和记忆分区绑定；它依靠组织权力，不靠一句话瞬间控制普通人。
+- MCE-0磁带只保存声学检索钥匙与口述交班，记忆仍在Vale同一大脑中；每次重开是后续夜班。
+- 最终行动围绕Wren运营签名、Vale安全签名、凌晨同步、外部托管与地方分支治理。
 
 ## Contents
 
@@ -45,12 +46,12 @@ tags: ["导航", "故事大纲", "Telephone"]
 | Characters | 6名核心人物 |
 | Materials | 22项母题、线索、物件、号码入口、交班机制与故事账本 |
 | Plot | 1条中央剧情、3条支线 |
-| Outline | 1份六章总纲、1份号码网络、6份分章合同、1份揭示账本、1份正文控制框架、1份读者审计 |
-| Chapters | 6章正文初稿，包含连续夜班、多分支与7个互斥结局 |
+| Outline | 六夜总纲、号码网络、6份分章合同、揭示账本、正文控制框架、重构方向与Sub-agent审计 |
+| Chapters | 6章旧正文已保留在Git历史中，工作区正按新框架全面重写 |
 
 ## Current Boundary
 
-六章故事正文已经完成并通过严格连续性检查；当前边界停在叙事源文件，不改动`src/story/telephone.rules.json`。后续实现可以依据分章合同与正文，把号码、选择、跨夜人物状态、永久物件后果和七个互斥结局迁移成可执行节点。场景素材已经标出`kind`、`layer`、`counterStyle`、`phoneRefs`和检查文本层级，可直接转成`extensions.telephone.scene`数据。
+世界规则、核心人物、中央剧情、六夜因果和Sub-agent基线审计已经按新方向完成。下一步是逐章重写正文并更新故事账本；在第一目标验收与提交前，不改动`src/story/telephone.rules.json`。游戏数据迁移的完整顺序见[`TASKS.md`](TASKS.md)。
 
 ## Workspace Rules
 
