@@ -77,6 +77,7 @@ export function TelephoneScene() {
   const recordSavedRef = useRef(false)
   const connectTimerRef = useRef<number | null>(null)
   const idleDeadlineRef = useRef<{ key: string; at: number } | null>(null)
+  const incomingRingCycleRef = useRef(0)
   const mechanicalTimerRef = useRef<number | null>(null)
   const refundableCallRef = useRef(false)
   const auditReturnSerialRef = useRef(0)
@@ -208,7 +209,9 @@ export function TelephoneScene() {
   useEffect(() => {
     if (machine.phase !== 'ringing' || !machine.incomingEventId) return
     const incomingId = machine.incomingEventId
+    const ringCycle = ++incomingRingCycleRef.current
     const id = window.setTimeout(() => {
+      if (incomingRingCycleRef.current !== ringCycle) return
       const missedRing = story.globals.phone.idleRingSchedule.find((ring) => ring.id === incomingId)
       engine.applyEffects(missedRing?.missedEffects)
       engine.markRingMissed(incomingId)
@@ -221,7 +224,10 @@ export function TelephoneScene() {
       machineDispatch({ type: 'HANG_UP' })
       window.setTimeout(() => machineDispatch({ type: 'RESET_IDLE' }), 420)
     }, 13500)
-    return () => window.clearTimeout(id)
+    return () => {
+      if (incomingRingCycleRef.current === ringCycle) incomingRingCycleRef.current += 1
+      window.clearTimeout(id)
+    }
   }, [engine, machine.incomingEventId, machine.phase, ringLabel, story.globals.phone.idleRingSchedule])
 
   useEffect(() => {
@@ -313,6 +319,9 @@ export function TelephoneScene() {
     audioRef.current.playLift()
     if (machine.phase === 'ringing' && machine.incomingEventId) {
       const id = machine.incomingEventId
+      // Invalidate the missed-call callback synchronously. React effect cleanup
+      // happens after this handler, which is too late at the 13.5s boundary.
+      incomingRingCycleRef.current += 1
       audioRef.current.stopLoop('ring')
       audioRef.current.startLineNoise()
       engine.markRingHandled(id)
@@ -342,6 +351,13 @@ export function TelephoneScene() {
     const known = phoneEntryForDial(story, number)
     connectTimerRef.current = window.setTimeout(() => {
       const transition = engine.dispatch({ type: 'dialNumber', value: number, createdAt: Date.now() })
+      const normalizedNumber = number.replace(/\D/g, '')
+      const visibleTransition = known && known.number !== normalizedNumber
+        ? {
+            ...transition,
+            text: `交换机识别出旧式别名${formatPhoneNumber(normalizedNumber)}，已转接至登记号码${formatPhoneNumber(known.number)}。\n\n${transition.text}`,
+          }
+        : transition
       setDialLog((items) => [...items, {
         number,
         ...(known ? { canonicalNumber: known.number, phoneId: known.id } : {}),
@@ -350,7 +366,7 @@ export function TelephoneScene() {
         createdAt: Date.now(),
       }])
       audioRef.current.startLineNoise()
-      applyTransition(transition, number)
+      applyTransition(visibleTransition, number)
     }, 880)
   }
 
@@ -662,12 +678,12 @@ export function TelephoneScene() {
           <div className="intro-card">
             <div className="intro-kicker"><span />LONDON · AFTER MIDNIGHT<span /></div>
             <h1>TELEPHONE</h1>
-            <p className="intro-subtitle">子午礼仪交换所</p>
-            <blockquote>“午夜以后，交换台不再记录姓名。它只记录你借用了谁的声音。”</blockquote>
-            <p className="intro-premise">雨把伦敦冲成一片模糊的黑。<br />街角这座不在地图上的电话亭，却像是一直在等你。</p>
+            <p className="intro-subtitle">MCE-0 · Seedline夜班复核站</p>
+            <blockquote>“纸带不替你决定。它只保留每个人为哪项后果签过字。”</blockquote>
+            <p className="intro-premise">雨把1989年的伦敦冲成一片模糊的黑。<br />旧公共电话亭里，MCE-0保留着六个连续夜班；你忘了回家的路，线路却还记得。</p>
             <p className="intro-protocol-copy">要拨出电话，先投入一枚硬币；若铃声先在雨里响起，只需拿起听筒。</p>
             <button type="button" className="enter-booth" onClick={startExperience}><span>进入电话亭</span><small>建议开启声音 · 线路正在等待</small></button>
-            <div className="intro-progress">第 {loadProgress().attempts + 1} 次夜班</div>
+            <div className="intro-progress">复核案卷 R{loadProgress().attempts + 1}</div>
           </div>
         </section>
       )}

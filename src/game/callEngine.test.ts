@@ -25,7 +25,7 @@ function reachReleaseMenu(engine: CallEngine, withPeterToken = false) {
   expect(engine.dispatch({ type: 'incomingAnswer', value: 'maeve_transfer' }).node.id).toBe('ch1_maeve_alert')
   choose(engine, 'maeve_triage', 'ch1_patient_status')
   choose(engine, 'patient_route', 'ch1_route_task')
-  choose(engine, 'route_note', 'ch1_route_task')
+  choose(engine, 'route_note', 'ch1_route_noted')
 
   idle(engine)
   dial(engine, '9460264', 'ch1_road_service')
@@ -120,6 +120,36 @@ describe('Telephone event graph engine', () => {
     expect(result.node.id).toBe('wrong_number')
     expect(result.fallback).toBe(true)
     expect(result.state.flags.wrongDials).toBe(1)
+  })
+
+  it('explains invalid choices and lets informational calls time out safely to idle', () => {
+    const engine = new CallEngine(defaultTelephoneStory(), undefined, 10)
+    engine.dispatch({ type: 'incomingAnswer', value: 'maeve_transfer' })
+    const invalid = engine.dispatch({ type: 'choice', value: 'not_an_authored_choice' })
+    expect(invalid.fallback).toBe(true)
+    expect(invalid.node.id).toBe('ch1_maeve_alert')
+    expect(invalid.text).toContain('当前选项')
+
+    idle(engine)
+    dial(engine, '9460264', 'ch1_road_service')
+    const timedOut = engine.dispatch({ type: 'timeout', value: 'call' })
+    expect(timedOut.fallback).toBe(false)
+    expect(timedOut.node.id).toBe('booth_idle')
+    expect(engine.state.facts).toContain('maeve-contacted')
+  })
+
+  it('leaves a complete recovery trail when Maeve is missed', () => {
+    const story = defaultTelephoneStory()
+    const engine = new CallEngine(story, undefined, 10)
+    const ring = story.globals.phone.idleRingSchedule.find((item) => item.id === 'maeve_transfer')!
+
+    engine.applyEffects(ring.missedEffects)
+    engine.markRingMissed(ring.id)
+
+    expect(engine.state.missedRings).toContain('maeve_transfer')
+    expect(engine.state.discoveredNumbers).toEqual(expect.arrayContaining(['7350194', '9460264']))
+    expect(engine.state.clues).toContain('未接来电：圣西普里安SC-441')
+    dial(engine, '7350194', 'ch1_maeve_missed_recovery')
   })
 
   it('exposes motivated chapter-one choices and applies durable evidence effects', () => {

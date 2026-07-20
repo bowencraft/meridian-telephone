@@ -90,16 +90,23 @@ export function resolveSceneLayout(
   generation: number,
 ): ResolvedSceneItem[] {
   const scene = story.extensions.telephone.scene
-  return scene.slots.flatMap((slot): ResolvedSceneItem[] => {
-    if (!conditionsMatch(slot.requires, state, progress, story)) return []
-    if (fraction(state.sessionSeed, generation, slot.id, 'spawn') >= Math.min(1, Math.max(0, slot.spawnChance))) return []
-    const eligible = slot.candidates.filter((candidate) => conditionsMatch(candidate.requires, state, progress, story))
+  const resolved: ResolvedSceneItem[] = []
+  const usedPropIds = new Set<string>()
+  for (const slot of scene.slots) {
+    if (!conditionsMatch(slot.requires, state, progress, story)) continue
+    if (fraction(state.sessionSeed, generation, slot.id, 'spawn') >= Math.min(1, Math.max(0, slot.spawnChance))) continue
+    const eligible = slot.candidates.filter((candidate) =>
+      !usedPropIds.has(candidate.propId)
+      && conditionsMatch(candidate.requires, state, progress, story),
+    )
     const candidate = chooseCandidate(eligible, fraction(state.sessionSeed, generation, slot.id, 'candidate'))
-    if (!candidate) return []
+    if (!candidate) continue
     const preview = resolveSceneCandidatePreview(story, slot, candidate, state.sessionSeed, generation)
-    if (!preview) return []
-    return [preview]
-  })
+    if (!preview) continue
+    usedPropIds.add(preview.prop.id)
+    resolved.push(preview)
+  }
+  return resolved
 }
 
 /** Runtime entry point: one immutable roll per night shift. */

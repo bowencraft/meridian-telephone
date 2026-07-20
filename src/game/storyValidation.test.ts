@@ -30,4 +30,44 @@ describe('Telephone graph validation', () => {
     expect(issues.some((issue) => issue.message.includes('alias'))).toBe(true)
     expect(issues.some((issue) => issue.message.includes('incomingAnswer'))).toBe(true)
   })
+
+  it('detects phone entries without routes, choice nodes without fallback, and orphan nodes', () => {
+    const story = defaultTelephoneStory()
+    const phone = story.globals.phone.directory.find((entry) => entry.id === 'road-status')!
+    story.edges = story.edges.filter((edge) => !(edge.trigger.type === 'dialNumber' && edge.trigger.value === phone.number))
+    const choiceNode = story.nodes.find((node) => node.id === 'ch1_maeve_alert')!
+    delete choiceNode.body.fallbackVariants
+    story.nodes.push({
+      id: 'orphan_probe',
+      label: '孤立节点',
+      kind: 'call',
+      position: { x: 0, y: 0 },
+      body: { variants: ['不应可达。'] },
+    })
+
+    const issues = validateStoryDefinition(story)
+
+    expect(issues.some((issue) => issue.path === 'globals.phone.directory.road-status')).toBe(true)
+    expect(issues.some((issue) => issue.path === 'nodes.ch1_maeve_alert.body.fallbackVariants')).toBe(true)
+    expect(issues.some((issue) => issue.path === 'nodes.orphan_probe')).toBe(true)
+  })
+
+  it('rejects a non-ending call node without a safe timeout to idle', () => {
+    const story = defaultTelephoneStory()
+    story.edges = story.edges.filter((edge) => !(edge.from === 'ch1_route_noted' && edge.trigger.type === 'timeout'))
+
+    const issues = validateStoryDefinition(story)
+
+    expect(issues.some((issue) => issue.path === 'nodes.ch1_route_noted.timeout')).toBe(true)
+  })
+
+  it('rejects a timeout that cannot unconditionally return a call to idle', () => {
+    const story = defaultTelephoneStory()
+    const timeout = story.edges.find((edge) => edge.from === 'ch1_route_noted' && edge.trigger.type === 'timeout')!
+    timeout.trigger.value = 'never'
+
+    const issues = validateStoryDefinition(story)
+
+    expect(issues.some((issue) => issue.path === 'nodes.ch1_route_noted.timeout')).toBe(true)
+  })
 })

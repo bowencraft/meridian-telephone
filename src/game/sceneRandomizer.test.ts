@@ -24,6 +24,14 @@ describe('night-shift scene randomization', () => {
     expect(signatures.size).toBeGreaterThan(8)
   })
 
+  it('never places two physical copies of one authored prop in the same night', () => {
+    const story = defaultTelephoneStory()
+    for (let seed = 1; seed <= 80; seed += 1) {
+      const propIds = resolveNightScene(story, new CallEngine(story, undefined, seed).state).map((item) => item.prop.id)
+      expect(new Set(propIds).size).toBe(propIds.length)
+    }
+  })
+
   it('supports absence at every authored point and exposes weighted absolute chances', () => {
     const story = defaultTelephoneStory()
     const slots = story.extensions.telephone.scene.slots

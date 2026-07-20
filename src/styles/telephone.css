@@ -1385,6 +1385,12 @@
   transform: none !important;
 }
 
+/* The metal case is visual scenery, while its controls remain interactive.
+   Let clicks through uncovered bodywork so counter props behind the lower
+   instruction plate can still be picked up. */
+.game-stage > .phone-assembly { pointer-events:none; }
+.game-stage > .phone-assembly :is(button, .rotary-dial) { pointer-events:auto; }
+
 :is(.game-stage, .scene-admin-fixture-stage) > .booth-counter {
   position: absolute;
   left: var(--fixture-counter-x);
@@ -1404,7 +1410,9 @@
   top: 18%;
   bottom: auto;
   height: 50%;
-  z-index: 7;
+  /* Loose objects sit on the counter in front of the phone's lower placard.
+     Keeping this below the phone made visible props impossible to click. */
+  z-index: 12;
 }
 
 .phone-assembly.is-fixture-preview,

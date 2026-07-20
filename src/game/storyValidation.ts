@@ -20,6 +20,7 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
   const slotIds = scene.slots.map((slot) => slot.id)
   const presetIds = scene.stylePresets.map((preset) => preset.id)
   const ringIds = story.globals.phone.idleRingSchedule.map((ring) => ring.id)
+  const globalNodeIds = new Set(story.nodes.filter((node) => node.kind === 'global').map((node) => node.id))
 
   function validateConditions(conditions: GraphCondition[] | undefined, path: string) {
     conditions?.forEach((condition, index) => {
@@ -62,6 +63,7 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
       if (!/^(\d{3}|\d{7})$/.test(alias)) issues.push({ level: 'error', path: `globals.phone.directory.${entry.id}.aliases.${aliasIndex}`, message: '号码 alias 必须是三位紧急号或七位本地号。' })
     })
     if (!entry.label.trim()) issues.push({ level: 'error', path: `globals.phone.directory.${entry.id}.label`, message: '电话名称不能为空。' })
+    if (!story.edges.some((edge) => globalNodeIds.has(edge.from) && edge.trigger.type === 'dialNumber' && edge.trigger.value === entry.number)) issues.push({ level: 'error', path: `globals.phone.directory.${entry.id}`, message: `号码 ${entry.number} 没有全局拨号转场。` })
   })
 
   scene.slots.forEach((slot) => {
@@ -98,6 +100,20 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
   story.nodes.forEach((node) => {
     if (!node.label.trim()) issues.push({ level: 'error', path: `nodes.${node.id}.label`, message: '节点名称不能为空。' })
     if (!node.body.variants.length && !node.body.fallbackVariants?.length) issues.push({ level: 'warning', path: `nodes.${node.id}.body`, message: '节点没有任何通话文本。' })
+    const hasChoices = story.edges.some((edge) => edge.from === node.id && edge.trigger.type === 'choice')
+    if (hasChoices && !node.body.fallbackVariants?.length) issues.push({ level: 'warning', path: `nodes.${node.id}.body.fallbackVariants`, message: '有选项的节点必须说明无效输入后如何继续。' })
+    const isImplicitFallback = node.id === story.globals.phone.wrongNumberNodeId || node.id === story.globals.phone.busyNumberNodeId
+    const hasIncomingEdge = story.edges.some((edge) => edge.to === node.id)
+    if (node.id !== story.entryNodeId && node.kind !== 'global' && !isImplicitFallback && !hasIncomingEdge) issues.push({ level: 'warning', path: `nodes.${node.id}`, message: '节点没有任何入边，正常玩法无法进入。' })
+    const needsSafeTimeout = node.id !== story.entryNodeId && node.kind !== 'global' && !node.telephone?.ending
+    const hasSafeTimeout = story.edges.some((edge) => (
+      edge.from === node.id
+      && edge.trigger.type === 'timeout'
+      && edge.trigger.value === 'call'
+      && !edge.conditions?.length
+      && edge.to === story.entryNodeId
+    ))
+    if (needsSafeTimeout && !hasSafeTimeout) issues.push({ level: 'error', path: `nodes.${node.id}.timeout`, message: '非结局通话节点必须有回到待机入口的安全 timeout。' })
   })
   story.edges.forEach((edge) => {
     if (!nodeSet.has(edge.from)) issues.push({ level: 'error', path: `edges.${edge.id}.from`, message: `来源节点 ${edge.from} 不存在。` })
@@ -122,7 +138,6 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
     const answerEdges = story.edges.filter((edge) => edge.trigger.type === 'incomingAnswer' && edge.trigger.value === ring.id)
     if (answerEdges.length !== 1) issues.push({ level: 'error', path: `globals.phone.idleRingSchedule.${ring.id}`, message: `来电 ${ring.id} 必须恰有一条 incomingAnswer 转场。` })
     if (answerEdges.length === 1 && answerEdges[0].to !== ring.nodeId) issues.push({ level: 'error', path: `globals.phone.idleRingSchedule.${ring.id}.nodeId`, message: `来电 ${ring.id} 的 nodeId 与 incomingAnswer 目标不一致。` })
-    const globalNodeIds = new Set(story.nodes.filter((node) => node.kind === 'global').map((node) => node.id))
     if (answerEdges.length === 1 && answerEdges[0].from !== story.entryNodeId && !globalNodeIds.has(answerEdges[0].from)) issues.push({ level: 'error', path: `globals.phone.idleRingSchedule.${ring.id}`, message: `来电 ${ring.id} 的接听转场必须来自global或入口节点。` })
   })
   if (!story.nodes.some((node) => node.telephone?.ending === 'disconnected')) issues.push({ level: 'error', path: 'nodes', message: '缺少“断线”成功结局。' })
