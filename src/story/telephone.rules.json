@@ -2566,6 +2566,34 @@
         "lcd": "SUPERVISOR CALL",
         "canHangUp": true
       }
+    },
+    {
+      "id": "ch5_integration_terms",
+      "label": "六周整合条款",
+      "kind": "call",
+      "position": {
+        "x": 930,
+        "y": 1880
+      },
+      "tags": [
+        "chapter-5",
+        "wren",
+        "contract"
+      ],
+      "body": {
+        "variants": [
+          "Wren逐条回答：六周内，临床组会从十秒交叉访问逐步增加到共同回忆、姓名与路线核验；成功时，你会重新认出Clara、蓝杯和完整回家路线。Meridian控制预约地点、每次时长、中止阈值与访问日志，并能以安全评估暂停下一次访问；Clara可以陪同和提出异议，却不能单独打开窗口。你可以撤回合同，但公司整合会随即停止，原来由你、Clara与独立医师共同同意的恢复方案仍须另行安排。"
+        ],
+        "fallbackVariants": [
+          "线路没有把这个回答登记为当前选项。请从屏幕列出的1项当前选项中选择；挂断不会清除已取得的号码或历史事实。"
+        ]
+      },
+      "telephone": {
+        "speaker": "operator",
+        "speakerLabel": "Alistair Wren",
+        "lcd": "6-WEEK TERMS",
+        "canHangUp": true
+      }
     }
   ],
   "edges": [
@@ -5533,7 +5561,7 @@
       "id": "ch5_wren_ask_integration",
       "label": "ch5_wren_ask_integration",
       "from": "ch5_wren_debate",
-      "to": "ch5_handoff",
+      "to": "ch5_integration_terms",
       "priority": 700,
       "trigger": {
         "type": "choice",
@@ -5543,15 +5571,32 @@
         {
           "type": "addFact",
           "fact": "integration-terms-known"
-        },
+        }
+      ],
+      "choice": {
+        "text": "询问六周记忆整合具体会给什么、控制什么。",
+        "tone": "warm"
+      }
+    },
+    {
+      "id": "ch5_integration_terms_continue",
+      "label": "ch5_integration_terms_continue",
+      "from": "ch5_integration_terms",
+      "to": "ch5_handoff",
+      "priority": 700,
+      "trigger": {
+        "type": "choice",
+        "value": "integration_terms_continue"
+      },
+      "effects": [
         {
           "type": "addFact",
           "fact": "chapter-5-complete"
         }
       ],
       "choice": {
-        "text": "询问六周记忆整合具体会给什么、控制什么。",
-        "tone": "warm"
+        "text": "条款已明；把收益与门禁一起写进交班。",
+        "tone": "plain"
       }
     },
     {
@@ -7426,6 +7471,17 @@
       "id": "timeout_incoming_wren_followup",
       "label": "timeout_incoming_wren_followup",
       "from": "incoming_wren_followup",
+      "to": "booth_idle",
+      "priority": 10,
+      "trigger": {
+        "type": "timeout",
+        "value": "call"
+      }
+    },
+    {
+      "id": "timeout_ch5_integration_terms",
+      "label": "timeout_ch5_integration_terms",
+      "from": "ch5_integration_terms",
       "to": "booth_idle",
       "priority": 10,
       "trigger": {

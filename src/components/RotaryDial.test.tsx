@@ -45,9 +45,8 @@ describe('RotaryDial accessible input', () => {
     render(<RotaryDial onDigit={onDigit} />)
 
     for (const digit of '8714000') fireEvent.keyDown(window, { key: digit })
-    act(() => vi.runAllTimers())
-
     expect(onDigit.mock.calls.map(([digit]) => digit).join('')).toBe('8714000')
+    act(() => vi.runAllTimers())
   })
 
   it('queues rapid clicks while the wheel is returning', () => {

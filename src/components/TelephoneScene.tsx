@@ -80,6 +80,7 @@ export function TelephoneScene() {
   const connectTimerRef = useRef<number | null>(null)
   const idleDeadlineRef = useRef<{ key: string; at: number } | null>(null)
   const incomingRingCycleRef = useRef(0)
+  const dialedNumberRef = useRef('')
   const mechanicalTimerRef = useRef<number | null>(null)
   const refundableCallRef = useRef(false)
   const auditReturnSerialRef = useRef(0)
@@ -153,6 +154,7 @@ export function TelephoneScene() {
       audioRef.current.playError()
       return
     }
+    dialedNumberRef.current = ''
     if (connectTimerRef.current) window.clearTimeout(connectTimerRef.current)
     refundAuditCoin()
     audioRef.current.stopCallLoops()
@@ -196,7 +198,7 @@ export function TelephoneScene() {
   }, [machine.callStartedAt])
 
   useEffect(() => {
-    if (!started || machine.phase !== 'idle' || clueCard || numberBookOpen) return
+    if (!started || machine.phase !== 'idle' || clueCard || numberBookOpen || heldItemId || coinCredit > 0) return
     const next = story.globals.phone.idleRingSchedule.find((ring) =>
       !engine.state.handledRings.includes(ring.id) && conditionsMatch(ring.requires, engine.state, progress, story),
     )
@@ -207,7 +209,7 @@ export function TelephoneScene() {
       audioRef.current.startRing()
     }, next.delayMs)
     return () => window.clearTimeout(id)
-  }, [clueCard, engine, machine.phase, numberBookOpen, progress, runtime, started, story])
+  }, [clueCard, coinCredit, engine, heldItemId, machine.phase, numberBookOpen, progress, runtime, started, story])
 
   useEffect(() => {
     if (machine.phase !== 'ringing' || !machine.incomingEventId) return
@@ -219,10 +221,14 @@ export function TelephoneScene() {
       engine.applyEffects(missedRing?.missedEffects)
       engine.markRingMissed(incomingId)
       setRuntime(structuredClone(engine.state))
+      setClueCard({
+        title: `未接来电：${ringLabel}`,
+        body: '线路已经恢复待机。新发现的回拨线会写入号码簿；若没有新增号码，请使用墙上仍保留的案卷号码继续当前复核。',
+      })
       audioRef.current.stopLoop('ring')
       setTranscript((items) => [...items, {
         id: nowId('missed'), speaker: 'system', speakerLabel: '未接来电',
-        text: `${ringLabel}在第七声铃后断开。`, createdAt: Date.now(),
+        text: `${ringLabel}在响铃窗口结束后断开。`, createdAt: Date.now(),
       }])
       machineDispatch({ type: 'HANG_UP' })
       window.setTimeout(() => machineDispatch({ type: 'RESET_IDLE' }), 420)
@@ -323,7 +329,7 @@ export function TelephoneScene() {
     if (machine.phase === 'ringing' && machine.incomingEventId) {
       const id = machine.incomingEventId
       // Invalidate the missed-call callback synchronously. React effect cleanup
-      // happens after this handler, which is too late at the 13.5s boundary.
+      // happens after this handler, which is too late at the ring deadline.
       incomingRingCycleRef.current += 1
       audioRef.current.stopLoop('ring')
       audioRef.current.startLineNoise()
@@ -333,6 +339,7 @@ export function TelephoneScene() {
       applyTransition(transition)
       return
     }
+    dialedNumberRef.current = ''
     machineDispatch({ type: 'LIFT', now: Date.now() })
     if (coinCredit) audioRef.current.startDialTone()
   }
@@ -380,10 +387,15 @@ export function TelephoneScene() {
       setClueCard({ title: 'NO CREDIT', body: '转盘仍会回弹，但交换机拒绝记录数字。台面上的三便士硬币可以投入右上方槽口。' })
       return
     }
-    const next = `${machine.dialedNumber}${digit}`
+    if (dialedNumberRef.current.length >= 7) return
+    const next = `${dialedNumberRef.current}${digit}`
+    dialedNumberRef.current = next
     machineDispatch({ type: 'DIGIT', digit })
     audioRef.current.playDigit()
-    if (shouldConnect(next, story.globals.phone.emergencyNumbers)) connectNumber(next)
+    if (shouldConnect(next, story.globals.phone.emergencyNumbers)) {
+      dialedNumberRef.current = ''
+      connectNumber(next)
+    }
   }
 
   function choose(choice: ChoiceView) {
@@ -419,7 +431,7 @@ export function TelephoneScene() {
       seenMechanicalHintsRef.current.add('coin-picked-up')
       setClueCard({
         title: '三便士硬币',
-        body: '边缘被磨得发亮，尺寸正好能通过电话机右上方的投币槽。以后拿取硬币不会重复打开这张说明。',
+        body: '边缘被磨得发亮，尺寸正好能通过电话机右上方的投币槽。本轮以后拿取硬币不会重复打开这张说明。',
       })
     }
   }
@@ -474,7 +486,7 @@ export function TelephoneScene() {
     if (['offHook', 'dialing', 'timeoutWarning'].includes(machine.phase)) audioRef.current.startDialTone()
     if (!seenMechanicalHintsRef.current.has('coin-inserted')) {
       seenMechanicalHintsRef.current.add('coin-inserted')
-      setClueCard({ title: 'CREDIT 3d', body: '硬币经过检验闸，绿色信用窗亮起。现在可以拨出一通电话；以后成功投币不会重复打开这张说明。' })
+      setClueCard({ title: 'CREDIT 3d', body: '硬币经过检验闸，绿色信用窗亮起。现在可以拨出一通电话；本轮以后成功投币不会重复打开这张说明。' })
     }
   }
 
@@ -540,6 +552,7 @@ export function TelephoneScene() {
     setCoinCredit(0)
     setSpentCoins(0)
     refundableCallRef.current = false
+    dialedNumberRef.current = ''
     setMechanicalPulse(null)
     setStartedAt(Date.now())
     recordSavedRef.current = false
@@ -625,7 +638,7 @@ export function TelephoneScene() {
           heldItemId={heldItemId}
           coinCredit={coinCredit}
           objects={counterItems}
-          disabled={machine.phase === 'ending'}
+          disabled={!(machine.phase === 'idle' || machine.phase === 'offHook' || machine.phase === 'dialing' || (machine.phase === 'timeoutWarning' && machine.warningKind === 'dial'))}
           objectsDisabled={machine.phase !== 'idle'}
           onToggleCoin={toggleCoin}
           onToggleObject={toggleBoothObject}

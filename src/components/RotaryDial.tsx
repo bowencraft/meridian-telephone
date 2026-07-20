@@ -35,14 +35,14 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
   const returningRef = useRef(false)
   const timerRefs = useRef<number[]>([])
   const digitQueueRef = useRef<string[]>([])
-  const settleDialRef = useRef<(digit: string, complete: boolean) => void>(() => undefined)
+  const settleDialRef = useRef<(digit: string, complete: boolean, commitOnReturn?: boolean) => void>(() => undefined)
   const suppressClickRef = useRef<string | null>(null)
   const disabledRef = useRef(Boolean(disabled))
   const [activeDigit, setActiveDigit] = useState<string | null>(null)
   const [rotation, setRotation] = useState(0)
   const [returning, setReturning] = useState(false)
 
-  const settleDial = useCallback((digit: string, complete: boolean) => {
+  const settleDial = useCallback((digit: string, complete: boolean, commitOnReturn = true) => {
     returningRef.current = true
     setReturning(true)
     if (complete) {
@@ -55,9 +55,9 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
     timerRefs.current.push(window.setTimeout(() => {
       returningRef.current = false
       setReturning(false)
-      if (complete) onDigit(digit)
+      if (complete && commitOnReturn) onDigit(digit)
       const queued = digitQueueRef.current.shift()
-      if (queued && !disabledRef.current) settleDialRef.current(queued, true)
+      if (queued && !disabledRef.current) settleDialRef.current(queued, true, true)
     }, 560))
   }, [onDigit, onError, onReturn])
 
@@ -72,7 +72,7 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
       if (digitQueueRef.current.length < 10) digitQueueRef.current.push(digit)
       return
     }
-    settleDialRef.current(digit, true)
+    settleDialRef.current(digit, true, true)
   }, [])
 
   function flushDialFrame() {
@@ -152,11 +152,15 @@ export function RotaryDial({ disabled, onDigit, onTick, onReturn, onError }: Rot
       const isTyping = target instanceof HTMLElement && Boolean(target.closest('input, textarea, select, [contenteditable="true"]'))
       if (isTyping || disabled || activeDigit || !/^\d$/.test(event.key)) return
       event.preventDefault()
-      queueDigit(event.key)
+      // Keyboard input is recorded immediately, while the first digit still
+      // animates the physical wheel. This keeps normal typing responsive and
+      // avoids making players wait four seconds before seeing seven digits.
+      onDigit(event.key)
+      if (!returningRef.current && !gestureRef.current) settleDialRef.current(event.key, true, false)
     }
     window.addEventListener('keydown', keyDial)
     return () => window.removeEventListener('keydown', keyDial)
-  }, [activeDigit, disabled, queueDigit])
+  }, [activeDigit, disabled, onDigit])
 
   useEffect(() => {
     if (disabled) digitQueueRef.current = []

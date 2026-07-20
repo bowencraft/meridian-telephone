@@ -21,7 +21,7 @@ function dial(engine: CallEngine, value: string, expectedNode?: string) {
 }
 
 /** Drives the six-chapter evidence route to the chapter-six decision menu. */
-function reachReleaseMenu(engine: CallEngine, withPeterToken = false) {
+function reachReleaseMenu(engine: CallEngine, withPeterToken = false, wrenChoice = 'wren_note_benefit') {
   expect(engine.dispatch({ type: 'incomingAnswer', value: 'maeve_transfer' }).node.id).toBe('ch1_maeve_alert')
   choose(engine, 'maeve_triage', 'ch1_patient_status')
   choose(engine, 'patient_route', 'ch1_route_task')
@@ -64,7 +64,13 @@ function reachReleaseMenu(engine: CallEngine, withPeterToken = false) {
   }
   choose(engine, 'archive_handover', 'ch5_vale_handover')
   choose(engine, 'hear_wren_proposal', 'ch5_wren_debate')
-  choose(engine, 'wren_note_benefit', 'ch5_handoff')
+  const wrenResponse = choose(engine, wrenChoice)
+  if (wrenChoice === 'wren_ask_integration') {
+    expect(wrenResponse.node.id).toBe('ch5_integration_terms')
+    choose(engine, 'integration_terms_continue', 'ch5_handoff')
+  } else {
+    expect(wrenResponse.node.id).toBe('ch5_handoff')
+  }
 
   if (withPeterToken) {
     idle(engine)
@@ -150,6 +156,13 @@ describe('Telephone event graph engine', () => {
     expect(engine.state.discoveredNumbers).toEqual(expect.arrayContaining(['7350194', '9460264']))
     expect(engine.state.clues).toContain('未接来电：圣西普里安SC-441')
     dial(engine, '7350194', 'ch1_maeve_missed_recovery')
+  })
+
+  it('answers the six-week integration question before the chapter-six handoff', () => {
+    const engine = reachReleaseMenu(new CallEngine(defaultTelephoneStory(), undefined, 104), false, 'wren_ask_integration')
+
+    expect(engine.state.facts).toContain('integration-terms-known')
+    expect(engine.state.facts).toContain('chapter-5-complete')
   })
 
   it('exposes motivated chapter-one choices and applies durable evidence effects', () => {
