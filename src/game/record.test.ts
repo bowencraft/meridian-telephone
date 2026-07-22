@@ -35,11 +35,13 @@ describe('call archive persistence', () => {
     expect(loadProgress(storage)).toMatchObject({ attempts: 2, facts: [], durableState: {} })
   })
 
-  it('does not import progress from the pre-Seedline story', () => {
+  it('does not import progress from Seedline or earlier stories', () => {
     const storage = new MemoryStorage()
+    storage.setItem('telephone.seedline.progress.v1', JSON.stringify({ attempts: 7, seenEndings: ['worn'] }))
     storage.setItem('telephone.progress.v1', JSON.stringify({ attempts: 9, seenEndings: ['operator'] }))
 
     expect(loadProgress(storage)).toMatchObject({ attempts: 0, seenEndings: [] })
     expect(createSessionId(storage)).toBe('MCE-0001')
+    expect(storage.getItem('telephone.seedline.progress.v1')).toBeNull()
   })
 })

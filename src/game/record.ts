@@ -1,8 +1,14 @@
 import type { CallRecordData, EndingType, ProgressData } from './types'
 
-export const LAST_RECORD_KEY = 'telephone.seedline.lastRecord.v1'
-export const RECORD_ARCHIVE_KEY = 'telephone.seedline.recordArchive.v1'
-export const PROGRESS_KEY = 'telephone.seedline.progress.v1'
+export const LAST_RECORD_KEY = 'telephone.meridian-remote.lastRecord.v1'
+export const RECORD_ARCHIVE_KEY = 'telephone.meridian-remote.recordArchive.v1'
+export const PROGRESS_KEY = 'telephone.meridian-remote.progress.v1'
+
+const LEGACY_SEEDLINE_KEYS = [
+  'telephone.seedline.lastRecord.v1',
+  'telephone.seedline.recordArchive.v1',
+  'telephone.seedline.progress.v1',
+] as const
 
 const EMPTY_PROGRESS: ProgressData = { discoveredNumbers: [], seenEndings: [], clues: [], facts: [], durableState: {}, attempts: 0 }
 
@@ -15,6 +21,10 @@ function readJson<T>(storage: Storage, key: string, fallback: T): T {
   }
 }
 
+function discardSeedlineProgress(storage: Storage) {
+  LEGACY_SEEDLINE_KEYS.forEach((key) => storage.removeItem(key))
+}
+
 export function createSessionId(storage: Storage = window.localStorage) {
   const progress = loadProgress(storage)
   const sequence = progress.attempts + 1
@@ -22,6 +32,7 @@ export function createSessionId(storage: Storage = window.localStorage) {
 }
 
 export function loadProgress(storage: Storage = window.localStorage): ProgressData {
+  discardSeedlineProgress(storage)
   const stored = readJson<Partial<ProgressData>>(storage, PROGRESS_KEY, structuredClone(EMPTY_PROGRESS))
   return {
     discoveredNumbers: stored.discoveredNumbers ?? [],
@@ -52,10 +63,12 @@ export function saveRecord(record: CallRecordData, storage: Storage = window.loc
 }
 
 export function loadLastRecord(storage: Storage = window.localStorage): CallRecordData | null {
+  discardSeedlineProgress(storage)
   return readJson<CallRecordData | null>(storage, LAST_RECORD_KEY, null)
 }
 
 export function loadRecordArchive(storage: Storage = window.localStorage): CallRecordData[] {
+  discardSeedlineProgress(storage)
   return readJson<CallRecordData[]>(storage, RECORD_ARCHIVE_KEY, [])
 }
 
@@ -63,4 +76,5 @@ export function clearProgress(storage: Storage = window.localStorage) {
   storage.removeItem(LAST_RECORD_KEY)
   storage.removeItem(RECORD_ARCHIVE_KEY)
   storage.removeItem(PROGRESS_KEY)
+  discardSeedlineProgress(storage)
 }
