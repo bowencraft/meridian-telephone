@@ -1,0 +1,379 @@
+@use "./variables.scss" as *;
+
+:root {
+  --handbook-ink: #231f19;
+  --handbook-faded-ink: #6d6252;
+  --handbook-paper: #e7dcc5;
+  --handbook-paper-dark: #c9b993;
+  --handbook-brass: #b79450;
+  --handbook-red: #6f2522;
+  --handbook-green: #23342a;
+  --handbook-shadow: rgba(18, 16, 12, 0.32);
+}
+
+html {
+  background: #121713;
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(184, 148, 75, 0.08), transparent 30rem),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 5px), #172019;
+}
+
+#quartz-root {
+  min-height: 100vh;
+}
+
+.center,
+.sidebar {
+  position: relative;
+}
+
+.center {
+  background:
+    linear-gradient(rgba(246, 238, 218, 0.93), rgba(229, 218, 194, 0.96)),
+    repeating-linear-gradient(0deg, transparent 0 27px, rgba(86, 77, 58, 0.045) 27px 28px);
+  border: 1px solid rgba(82, 66, 39, 0.42);
+  border-radius: 4px;
+  box-shadow:
+    0 24px 70px var(--handbook-shadow),
+    inset 0 0 70px rgba(94, 73, 37, 0.08);
+  color: var(--handbook-ink);
+  margin-block: 1.4rem;
+  padding-inline: clamp(1.25rem, 3.8vw, 3.25rem);
+}
+
+.center::before {
+  background: linear-gradient(90deg, #6a2320, #933b31 48%, #55201d);
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.18),
+    0 5px 12px rgba(48, 24, 16, 0.24);
+  content: "";
+  height: 7px;
+  left: -1px;
+  position: absolute;
+  right: -1px;
+  top: -1px;
+}
+
+.handbook-masthead {
+  align-items: center;
+  border-bottom: 1px solid rgba(65, 53, 35, 0.32);
+  display: grid;
+  gap: 0.85rem 1.25rem;
+  grid-template-columns: minmax(13rem, 1fr) auto;
+  margin: 0 -0.15rem 1.75rem;
+  padding: 1.75rem 0.15rem 1.1rem;
+  position: relative;
+}
+
+.handbook-brand {
+  align-items: center;
+  color: var(--handbook-ink);
+  display: inline-flex;
+  gap: 0.8rem;
+  text-decoration: none;
+}
+
+.handbook-brand:hover {
+  color: var(--handbook-red);
+}
+
+.handbook-brand-mark {
+  align-items: center;
+  background: var(--handbook-red);
+  border: 2px solid #d4bb78;
+  border-radius: 50%;
+  box-shadow:
+    0 2px 0 #3b1715,
+    inset 0 0 0 3px rgba(255, 255, 255, 0.08);
+  color: #f4e7c7;
+  display: inline-flex;
+  flex: 0 0 2.65rem;
+  font-family: "Courier New", monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  height: 2.65rem;
+  justify-content: center;
+  letter-spacing: -0.06em;
+}
+
+.handbook-brand strong,
+.handbook-brand small {
+  display: block;
+}
+
+.handbook-brand strong {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: clamp(1.05rem, 2vw, 1.36rem);
+  letter-spacing: 0.08em;
+}
+
+.handbook-brand small {
+  color: var(--handbook-faded-ink);
+  font-family: "Courier New", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  margin-top: 0.16rem;
+}
+
+.handbook-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  justify-content: flex-end;
+}
+
+.handbook-nav a {
+  color: #51493e;
+  font-size: 0.82rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+
+.handbook-nav a:hover,
+.handbook-nav .return-to-booth {
+  color: var(--handbook-red);
+}
+
+.canon-stamp {
+  bottom: -0.82rem;
+  font-family: "Courier New", monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.24rem 0.48rem;
+  position: absolute;
+  right: 0.1rem;
+  transform: rotate(-1deg);
+}
+
+.canon-stamp.deployed {
+  background: #f1e6cd;
+  border: 2px solid #31593f;
+  color: #31593f;
+}
+
+.canon-stamp.expanded {
+  background: #f0dfc5;
+  border: 2px solid #8a342e;
+  color: #8a342e;
+}
+
+.center article,
+.center .popover-hint {
+  color: var(--handbook-ink);
+}
+
+.center article {
+  line-height: 1.78;
+}
+
+.center article h1,
+.center article h2,
+.center article h3,
+.article-title {
+  color: #2a2923;
+  font-family: Georgia, "Songti SC", serif;
+  letter-spacing: 0.025em;
+}
+
+.center article h2 {
+  border-bottom: 1px solid rgba(87, 69, 41, 0.27);
+  padding-bottom: 0.28rem;
+}
+
+.center article a {
+  color: #6f2522;
+  text-decoration-color: rgba(111, 37, 34, 0.35);
+  text-underline-offset: 0.18em;
+}
+
+.center article table {
+  background: rgba(250, 245, 231, 0.55);
+  border: 1px solid rgba(75, 65, 46, 0.28);
+  box-shadow: 0 8px 24px rgba(54, 43, 28, 0.08);
+}
+
+.center article th {
+  background: rgba(113, 70, 45, 0.1);
+  color: #3c3429;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.04em;
+}
+
+.callout {
+  background: rgba(255, 249, 233, 0.52);
+  border-color: rgba(97, 67, 39, 0.4);
+  box-shadow: 3px 4px 0 rgba(76, 57, 34, 0.08);
+}
+
+.callout[data-callout="warning"] {
+  background: rgba(141, 55, 43, 0.08);
+  border-color: rgba(135, 48, 42, 0.55);
+}
+
+.left.sidebar,
+.right.sidebar {
+  color: #ddd1b8;
+}
+
+.left.sidebar a,
+.right.sidebar a,
+.left.sidebar button,
+.right.sidebar button {
+  color: #ddd1b8;
+}
+
+.left.sidebar .page-title a {
+  color: #eadbb7;
+  font-family: Georgia, serif;
+  letter-spacing: 0.04em;
+}
+
+.explorer,
+.graph,
+.backlinks,
+.toc {
+  border-color: rgba(204, 179, 121, 0.2);
+}
+
+.graph > .graph-outer {
+  background: radial-gradient(circle at center, rgba(171, 133, 66, 0.08), transparent 68%);
+  border: 1px solid rgba(188, 158, 95, 0.24);
+  border-radius: 3px;
+}
+
+.graph .global-graph-icon,
+.graph .global-graph-outer {
+  display: none;
+}
+
+footer {
+  color: #a89b80;
+}
+
+footer a {
+  color: #d3ba7d;
+}
+
+html[data-handbook-surface="story"] body {
+  background: #2a241d;
+}
+
+html[data-handbook-surface="story"] .center {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(98, 68, 38, 0.06),
+      transparent 8%,
+      transparent 92%,
+      rgba(98, 68, 38, 0.06)
+    ),
+    #f0e7d4;
+  box-shadow:
+    0 25px 75px rgba(0, 0, 0, 0.42),
+    inset 28px 0 34px -32px rgba(64, 42, 24, 0.7);
+  max-width: 50rem;
+}
+
+html[data-handbook-surface="story"] .center::before {
+  background: #7d2c27;
+}
+
+html[data-handbook-surface="story"] .center article {
+  font-family: "Gill Sans", "PingFang SC", sans-serif;
+  font-size: 1.01rem;
+  line-height: 1.9;
+  margin-inline: auto;
+  max-width: 70ch;
+}
+
+html[data-handbook-surface="story"] .center article em {
+  font-family: Georgia, "Songti SC", serif;
+  letter-spacing: 0.015em;
+}
+
+.chapter-navigation {
+  border-bottom: 1px solid rgba(92, 72, 46, 0.28);
+  color: #75634e;
+  font-family: "Courier New", monospace;
+  font-size: 0.76rem;
+  margin: 1rem 0 2.2rem;
+  padding-bottom: 0.75rem;
+  text-align: center;
+}
+
+.chapter-navigation-bottom {
+  border-bottom: 0;
+  border-top: 1px solid rgba(92, 72, 46, 0.28);
+  margin: 2.2rem 0 1rem;
+  padding-bottom: 0;
+  padding-top: 0.75rem;
+}
+
+html[data-handbook-surface="archive"] body {
+  background:
+    repeating-linear-gradient(0deg, rgba(209, 189, 142, 0.025) 0 1px, transparent 1px 24px), #252a23;
+}
+
+html[data-handbook-surface="archive"] .center {
+  background:
+    linear-gradient(90deg, rgba(125, 70, 38, 0.07) 0 3px, transparent 3px),
+    repeating-linear-gradient(0deg, transparent 0 27px, rgba(64, 81, 91, 0.1) 27px 28px), #e6d8b8;
+  background-position:
+    2rem 0,
+    0 0,
+    0 0;
+}
+
+html[data-handbook-surface="archive"] .center::before {
+  background: linear-gradient(90deg, #5d4b32, #907549, #51402b);
+}
+
+html[data-handbook-surface="archive"] .center article {
+  font-family: "Courier New", "Songti SC", monospace;
+  font-size: 0.92rem;
+}
+
+html[data-handbook-surface="archive"] .article-title,
+html[data-handbook-surface="archive"] .center article h1,
+html[data-handbook-surface="archive"] .center article h2,
+html[data-handbook-surface="archive"] .center article h3 {
+  font-family: "Courier New", "Songti SC", monospace;
+}
+
+@media (max-width: 800px) {
+  .center {
+    border-inline: 0;
+    border-radius: 0;
+    margin-block: 0;
+    padding-inline: 1.1rem;
+  }
+
+  .handbook-masthead {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: 1.35rem;
+  }
+
+  .handbook-nav {
+    justify-content: flex-start;
+  }
+
+  .canon-stamp {
+    bottom: -0.78rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
