@@ -4,7 +4,7 @@ type: documentation
 title: "Telephone长线重构与游戏数据实施任务书"
 status: draft
 created: 2026-07-21
-updated: 2026-07-21
+updated: 2026-07-23
 tags: ["任务书", "目标", "提交", "游戏数据", "盲测"]
 ---
 # Telephone长线重构与游戏数据实施任务书
@@ -128,3 +128,14 @@ Status: completed. 已在 `codex/seedline-game-data` 分支完成规则迁移、
 - Blind UI playtest: 第一轮误载旧覆盖的结果已作废。第二轮从真正空白的Seedline档案走完六章，并取得《夜班接线员》《入职》《天气很好》；章节号码链、人物动机、记忆机制、Clara私人目标和跨周目后果均通过。第三轮定点复测最终PASS（5/5）：30ms浏览器级逐键输入完整连接；漏接恢复卡可见；持币与有信用时不被来电抢占；教学文案限定“本轮”；Wren先逐条回答六周整合条款，再由玩家确认交班。盲测范围内无剩余问题。
 - Material sources: `materials/public-record-prop-docket.md` 已记录电话物件、无号码三层检查、离散支线、七类后果新闻与场景约束；`materials/scene-prop-catalog.md` 已同步。
 - Next work: 本任务无剩余实施项。不要继续扩写故事正文；作者下一次提出新目标后再开始。
+
+## Goal 3 — Quartz Handbook
+
+Status: active. 详细执行契约见 `implementation/070.quartz-courtesy-handbook-plan.md`。
+
+- 公开入口固定为 `/handbook/`。
+- 远端恢复版40节点、74条边、8号码、3来电、10物件和7结局是公开Wiki最高正史。
+- Seedline扩写与历史实施稿在网页统一标注 `[网页未实装]`。
+- Quartz内容排除模板、`AGENTS.md`、`style/`、`styles/`、`published/`和内部人物对照。
+- 人物角色crosswalk只保存在 `handbook-site/internal/`，不生成网页。
+- 完成本地构建和内部浏览器验收后，使用作者已打开的宝塔页面部署并验证。
