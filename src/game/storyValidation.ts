@@ -113,7 +113,7 @@ export function validateStoryDefinition(story: TelephoneStory): StoryValidationI
       && !edge.conditions?.length
       && edge.to === story.entryNodeId
     ))
-    if (needsSafeTimeout && !hasSafeTimeout) issues.push({ level: 'error', path: `nodes.${node.id}.timeout`, message: '非结局通话节点必须有回到待机入口的安全 timeout。' })
+    if (needsSafeTimeout && !hasSafeTimeout) issues.push({ level: 'warning', path: `nodes.${node.id}.timeout`, message: '建议为非结局通话节点增加回到待机入口的安全 timeout。' })
   })
   story.edges.forEach((edge) => {
     if (!nodeSet.has(edge.from)) issues.push({ level: 'error', path: `edges.${edge.id}.from`, message: `来源节点 ${edge.from} 不存在。` })

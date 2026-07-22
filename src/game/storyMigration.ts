@@ -9,6 +9,7 @@ import type {
   SceneStylePreset,
   TelephoneStory,
 } from './types'
+import { BOOTH_OBJECTS } from './boothItems'
 
 export const DEFAULT_SCENE_FIXTURES: SceneFixtureLayout = {
   phone: {
@@ -23,15 +24,15 @@ export const DEFAULT_SCENE_FIXTURES: SceneFixtureLayout = {
 
 const KNOWN_PHONE_IDS: Record<string, string> = {
   '999': 'emergency-services',
-  '9460264': 'road-status',
+  '9460264': 'weather-service',
   '7350194': 'st-cyprian-transfer',
   '8714000': 'meridian-public',
   '8714003': 'meridian-complaints',
   '8714019': 'meridian-extension-19',
   '8714227': 'meridian-team-227',
   '8714036': 'founder-archive',
-  '8714127': 'meridian-release',
-  '3011968': 'records-escrow',
+  '8714127': 'meridian-switchboard',
+  '3011968': 'lost-property',
   '7941966': 'radio-nocturne',
   '3372181': 'deptford-clinic',
   '4051979': 'ashdown-inquiry',
@@ -88,6 +89,47 @@ function migrateDirectory(entries: Array<Partial<PhoneDirectoryEntry> & { number
   })) as PhoneDirectoryEntry[]
 }
 
+const LEGACY_COUNTER_LAYOUTS = [
+  { id: 'meridian-matches', bounds: { x: 5, y: 19, width: 14, height: 30 }, mobileBounds: { x: 3, y: 19, width: 17, height: 34 }, kind: 'sticker', presetId: 'meridian-black-gold', printedLines: ['MERIDIAN', 'COURTESY'], style: '暗红火柴盒只剩一根火柴，金色旧标与受潮划痕仍可辨认。' },
+  { id: 'operator-docket', bounds: { x: 29, y: 22, width: 17, height: 28 }, mobileBounds: { x: 26, y: 22, width: 19, height: 31 }, kind: 'ticket', presetId: 'carbon-ticket', printedLines: ['GPO TOLL DESK', 'TRANSFER 03', 'INITIAL ______'], style: '蓝灰回执从交换台撕下，纸边浸水，铅笔字晕开。' },
+  { id: 'locker-key', bounds: { x: 56, y: 16, width: 15, height: 25 }, mobileBounds: { x: 55, y: 17, width: 17, height: 28 }, kind: 'brass-plate', presetId: 'official-brass', printedLines: ['19'], style: '黄铜钥匙带着十九号牌，齿槽粘有黑色电话线胶皮碎屑。' },
+  { id: 'night-ticket', bounds: { x: 77, y: 25, width: 19, height: 28 }, mobileBounds: { x: 76, y: 25, width: 21, height: 31 }, kind: 'ticket', presetId: 'damp-service-card', printedLines: ['15 · NIGHT BUS', 'PUNCH 23:47'], style: '末班车票被雨水泡软，票角和打孔都已磨损。' },
+] as const
+
+function migrateLegacyCounterScene() {
+  return LEGACY_COUNTER_LAYOUTS.map((layout) => {
+    const object = BOOTH_OBJECTS.find((item) => item.id === layout.id)
+    if (!object) throw new Error(`Missing legacy counter object: ${layout.id}`)
+    const prop: ScenePropDefinition = {
+      id: object.id,
+      kind: layout.kind,
+      label: object.label,
+      ariaLabel: `拿起并查看${object.label}`,
+      printedLines: [...layout.printedLines],
+      copy: {
+        summary: object.label,
+        style: layout.style,
+        firstVariants: [object.description],
+        repeatVariants: [object.description],
+      },
+      counterStyle: layout.id,
+      appearance: { presetId: layout.presetId },
+    }
+    return {
+      prop,
+      slot: {
+        id: object.id,
+        label: object.label,
+        layer: 'counter' as const,
+        bounds: { ...layout.bounds },
+        mobileBounds: { ...layout.mobileBounds },
+        spawnChance: 1,
+        candidates: [{ propId: object.id, weight: 1 }],
+      },
+    }
+  })
+}
+
 function migrateLegacyScene(hotspots: SceneHotspot[], directory: PhoneDirectoryEntry[]): SceneDefinition {
   const props: ScenePropDefinition[] = hotspots.map((hotspot) => {
     const kind = kindForHotspot(hotspot.id)
@@ -109,13 +151,14 @@ function migrateLegacyScene(hotspots: SceneHotspot[], directory: PhoneDirectoryE
       appearance: { presetId: presetForKind(kind) },
     }
   })
+  const counterScene = migrateLegacyCounterScene()
   return {
     refreshPolicy: 'nightStart',
     initialRoll: true,
     fixtures: structuredClone(DEFAULT_SCENE_FIXTURES),
     stylePresets: structuredClone(DEFAULT_SCENE_STYLE_PRESETS),
-    props,
-    slots: hotspots.map((hotspot) => ({
+    props: [...props, ...counterScene.map((item) => item.prop)],
+    slots: [...hotspots.map((hotspot) => ({
       id: hotspot.id,
       label: hotspot.label,
       bounds: { x: hotspot.x, y: hotspot.y, width: hotspot.width, height: hotspot.height },
@@ -123,7 +166,7 @@ function migrateLegacyScene(hotspots: SceneHotspot[], directory: PhoneDirectoryE
       requires: hotspot.requires,
       candidates: [{ propId: hotspot.id, weight: 1 }],
       jitter: { rotation: 1.2, scale: .025 },
-    })),
+    })), ...counterScene.map((item) => item.slot)],
   }
 }
 

@@ -15,8 +15,8 @@ import type {
   TelephoneStory,
 } from './types'
 
-export const STORY_OVERRIDE_KEY = 'telephone.storyOverride.seedline.v1'
-export const LEGACY_STORY_OVERRIDE_KEYS = ['telephone.storyOverride.v3', 'telephone.storyOverride.v2', 'telephone.storyOverride.v1'] as const
+export const STORY_OVERRIDE_KEY = 'telephone.storyOverride.meridian-remote.v1'
+export const LEGACY_STORY_OVERRIDE_KEYS = ['telephone.storyOverride.seedline.v1', 'telephone.storyOverride.v3', 'telephone.storyOverride.v2', 'telephone.storyOverride.v1'] as const
 
 export function normalizeDialNumber(value: string) {
   return value.replace(/\D/g, '')

@@ -18,22 +18,22 @@ export const BOOTH_OBJECTS: BoothObjectDefinition[] = [
   {
     id: 'night-ticket',
     label: '末班车票',
-    description: '一张被雨打湿的 15 路末班车票。背面写着Maeve的升级条件：病人意识改变时直接999。',
+    description: '一张被雨打湿的 15 路末班车票。背面写着：如果电话响了两次，不要报出你的名字。',
   },
   {
     id: 'meridian-matches',
     label: 'Meridian 火柴盒',
-    description: '火柴只剩一根。盒底印着Meridian Courtesy Exchange的旧标志，公共合同台号码被铅笔改过一次。',
+    description: '火柴只剩一根。盒底印着子午礼仪交换所的旧标志，地址一栏被蓝墨水涂黑。',
   },
   {
     id: 'locker-key',
     label: '黄铜钥匙',
-    description: '细小的黄铜钥匙只能打开MCE-0本地语音柜，齿槽里有黑色电话线胶皮留下的碎屑。',
+    description: '细小的黄铜钥匙挂着 19 号牌，齿槽里有黑色电话线胶皮留下的碎屑。',
   },
   {
     id: 'operator-docket',
     label: '交换台回执',
-    description: '一张从交换台撕下的蓝灰色回执。上面同时写着故障号、开窗时间和责任工号，没有神秘密码。',
+    description: '一张从交换台撕下的蓝灰色回执。接线员姓名被水浸开，只剩一句铅笔字：不要相信第三次转接。',
   },
 ]
 
