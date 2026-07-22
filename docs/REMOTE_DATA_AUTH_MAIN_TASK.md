@@ -39,21 +39,21 @@
 
 ### B. 服务端鉴权
 
-- [ ] 删除 `VITE_ADMIN_PASSWORD_HASH`、浏览器 SHA-256 验证和 sessionStorage 解锁标记。
-- [ ] `POST /api/admin/login` 仅在服务器读取 `ADMIN_PASSWORD` 并做恒定时间校验。
-- [ ] 服务器签发 `HttpOnly`、`SameSite=Strict` 会话 cookie；生产环境使用 `Secure`。
-- [ ] 提供 session 查询和 logout；前端按异步 session 状态显示门禁。
-- [ ] `/api/story-definition` 的读取和写入均要求有效服务器会话。
-- [ ] 修改请求校验同源；登录失败具备限速；响应不泄漏密码、摘要或会话签名密钥。
-- [ ] 生产服务只监听回环地址，并记录宝塔需要的 HTTPS 跳转/代理头配置。
+- [x] 删除 `VITE_ADMIN_PASSWORD_HASH`、浏览器 SHA-256 验证和 sessionStorage 解锁标记。
+- [x] `POST /api/admin/login` 仅在服务器读取 `ADMIN_PASSWORD` 并做恒定时间校验。
+- [x] 服务器签发 `HttpOnly`、`SameSite=Strict` 会话 cookie；生产环境使用 `Secure`。
+- [x] 提供 session 查询和 logout；前端按异步 session 状态显示门禁。
+- [x] `/api/story-definition` 的读取和写入均要求有效服务器会话。
+- [x] 修改请求校验同源；登录失败具备限速；响应不泄漏密码、摘要或会话签名密钥。
+- [x] Preview 默认只监听回环地址，并在 README 记录宝塔需要的 HTTPS 跳转/代理头配置。
 
 ### C. 验证、提交与 main
 
-- [ ] 数据、迁移、场景概率和鉴权覆盖自动化测试。
-- [ ] `npm test`、`npm run lint`、`npm run build` 全部通过。
-- [ ] 子代理分别复核场景语义、鉴权边界和 Git 收口方式。
-- [ ] 使用路径级暂存，保护既有未跟踪文件与 stash。
-- [ ] 至少拆分为“数据回归”和“服务端鉴权”两个提交。
+- [x] 数据、迁移、场景概率和鉴权覆盖自动化测试。
+- [x] `npm test`、`npm run lint`、`npm run build` 全部通过。
+- [x] 子代理分别复核场景语义、鉴权边界和 Git 收口方式；终审发现的 Host 白名单、注销确认和 Seedline 进度污染已修正。
+- [x] 使用路径级暂存，保护既有未跟踪文件与 stash。
+- [x] 拆分为“数据/场景回归”“进度隔离”“服务端鉴权”三个独立提交。
 - [ ] 获取最新 `origin/main`；无远端新提交时将本地 `main` fast-forward 到完成分支。
 - [ ] 不在本任务中 push 或部署，除非用户另行授权。
 

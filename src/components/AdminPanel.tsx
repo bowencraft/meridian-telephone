@@ -1,7 +1,7 @@
 import { AlertTriangle, ArrowLeft, Check, Download, LockKeyhole, RotateCcw, Save, Upload } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { defaultTelephoneStory, loadStoryDefinition } from '../game/callEngine'
-import { clearAdminUnlock } from '../game/adminAuth'
+import { logoutAdmin } from '../game/adminAuth'
 import { clearStoryOverride, saveStoryDefinitionFallback, saveStoryDefinitionToLocalApi } from '../game/storyPersistence'
 import { migrateTelephoneStory } from '../game/storyMigration'
 import { validateStoryDefinition } from '../game/storyValidation'
@@ -12,6 +12,7 @@ import { GraphEditor } from './GraphEditor'
 export function AdminPanel() {
   const [story, setStory] = useState<TelephoneStory>(loadStoryDefinition)
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'fallback' | 'error'>('idle')
+  const [locking, setLocking] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const issues = useMemo(() => validateStoryDefinition(story), [story])
   const errors = issues.filter((issue) => issue.level === 'error')
@@ -56,8 +57,15 @@ export function AdminPanel() {
     setStory(defaultTelephoneStory())
   }
 
-  function lockPanel() {
-    clearAdminUnlock()
+  async function lockPanel() {
+    if (locking) return
+    setLocking(true)
+    const locked = await logoutAdmin()
+    if (!locked) {
+      setLocking(false)
+      window.alert('服务器未确认注销，后台仍保持打开。请检查网络后重试。')
+      return
+    }
     window.location.assign('/admin')
   }
 
@@ -75,7 +83,7 @@ export function AdminPanel() {
           <input ref={fileRef} hidden type="file" accept="application/json,.json" onChange={(event) => importStory(event.target.files?.[0])} />
           <button type="button" onClick={exportStory}><Download size={15} />导出</button>
           <button type="button" onClick={reset}><RotateCcw size={15} />恢复源码</button>
-          <button type="button" onClick={lockPanel}><LockKeyhole size={15} />锁定后台</button>
+          <button type="button" disabled={locking} onClick={() => void lockPanel()}><LockKeyhole size={15} />{locking ? '正在锁定' : '锁定后台'}</button>
           <button className="save-button" type="button" disabled={saveState === 'saving' || errors.length > 0} onClick={save}><Save size={15} />{saveState === 'saving' ? '保存中' : saveState === 'saved' ? '已写入源码' : saveState === 'fallback' ? '已保存到浏览器' : '保存剧情'}</button>
         </nav>
       </header>

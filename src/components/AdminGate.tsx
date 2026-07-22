@@ -1,35 +1,53 @@
 import { ArrowLeft, Eye, EyeOff, KeyRound, LockKeyhole, ShieldCheck } from 'lucide-react'
 import { type FormEvent, useEffect, useRef, useState } from 'react'
-import { adminPasswordConfigured, rememberAdminUnlock, verifyAdminPassword } from '../game/adminAuth'
+import { loginAdmin, type AdminLoginResult, type AdminSessionState } from '../game/adminAuth'
 import '../styles/admin-gate.css'
 
 interface AdminGateProps {
+  session: AdminSessionState
   onUnlock: () => void
 }
 
-export function AdminGate({ onUnlock }: AdminGateProps) {
+type GateStatus = 'idle' | 'checking' | Exclude<AdminLoginResult, 'ok'>
+
+const STATUS_COPY: Record<Exclude<GateStatus, 'idle' | 'checking'>, string> = {
+  invalid: '密钥不正确，交换台拒绝接入。',
+  'rate-limited': '失败次数过多，请稍后再试。',
+  unconfigured: '服务器尚未配置值班密钥。',
+  insecure: '后台只允许通过 HTTPS 接入。',
+  unavailable: '无法连接后台验证服务，请检查服务器状态。',
+}
+
+export function AdminGate({ session, onUnlock }: AdminGateProps) {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [status, setStatus] = useState<'idle' | 'checking' | 'invalid'>('idle')
+  const [status, setStatus] = useState<GateStatus>('idle')
   const inputRef = useRef<HTMLInputElement>(null)
-  const configured = adminPasswordConfigured()
+  const canSubmit = session.available && session.configured && session.loginAllowed
 
-  useEffect(() => inputRef.current?.focus(), [])
+  useEffect(() => {
+    if (canSubmit) inputRef.current?.focus()
+  }, [canSubmit])
 
   async function submit(event: FormEvent) {
     event.preventDefault()
-    if (!configured || status === 'checking') return
+    if (!canSubmit || status === 'checking') return
     setStatus('checking')
-    const accepted = await verifyAdminPassword(password)
-    if (accepted) {
-      rememberAdminUnlock()
+    const result = await loginAdmin(password)
+    if (result === 'ok') {
       onUnlock()
       return
     }
-    setStatus('invalid')
-    setPassword('')
+    setStatus(result)
+    if (result === 'invalid') setPassword('')
     window.setTimeout(() => inputRef.current?.focus(), 0)
   }
+
+  const unavailableCopy = !session.available
+    ? ['验证服务不可用', '当前页面没有取得服务器会话状态；前端不会执行离线密码验证。']
+    : !session.loginAllowed
+      ? ['需要安全连接', '请通过 HTTPS 打开后台。当前连接不会发送值班密钥。']
+      : ['值班密钥尚未配置', '请在服务器 .env 中设置 ADMIN_PASSWORD，然后重新启动服务。']
 
   return (
     <main className="admin-gate-shell">
@@ -47,10 +65,10 @@ export function AdminGate({ onUnlock }: AdminGateProps) {
         <div className="admin-gate-copy">
           <span className="admin-gate-eyebrow">MERIDIAN · AUTHORIZED LINES ONLY</span>
           <h1 id="admin-gate-title">交换台值班室</h1>
-          <p>这条线路不对公众开放。请输入本夜值班密钥，方可接入剧情交换台。</p>
+          <p>这条线路不对公众开放。值班密钥会发送至服务器核验，不会写入浏览器存储。</p>
         </div>
 
-        {configured ? (
+        {canSubmit ? (
           <form className="admin-gate-form" onSubmit={submit}>
             <label htmlFor="admin-password"><KeyRound size={14} />值班密钥</label>
             <div className="admin-password-field">
@@ -72,7 +90,7 @@ export function AdminGate({ onUnlock }: AdminGateProps) {
               </button>
             </div>
             <div className="admin-gate-status" id="admin-gate-status" aria-live="polite">
-              {status === 'invalid' ? '密钥不正确，交换台拒绝接入。' : '验证仅在当前浏览器会话内有效。'}
+              {status === 'idle' ? '认证由服务器完成，仅在当前 HttpOnly 会话内有效。' : status === 'checking' ? '正在核验线路…' : STATUS_COPY[status]}
             </div>
             <button className="admin-gate-submit" type="submit" disabled={!password || status === 'checking'}>
               <ShieldCheck size={16} />{status === 'checking' ? '正在核验线路…' : '接入交换台'}
@@ -81,11 +99,11 @@ export function AdminGate({ onUnlock }: AdminGateProps) {
         ) : (
           <div className="admin-gate-unconfigured" role="status">
             <LockKeyhole size={18} />
-            <div><strong>值班密钥尚未配置</strong><p>请在本地 <code>.env</code> 中设置 <code>ADMIN_PASSWORD</code>，然后重新启动服务。</p></div>
+            <div><strong>{unavailableCopy[0]}</strong><p>{unavailableCopy[1]}</p></div>
           </div>
         )}
 
-        <footer><span>GPO / MCE–07</span><span>LINE ACCESS CONTROL</span></footer>
+        <footer><span>GPO / MCE–07</span><span>SERVER SESSION CONTROL</span></footer>
       </section>
     </main>
   )

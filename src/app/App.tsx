@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { AdminGate } from '../components/AdminGate'
 import { TelephoneScene } from '../components/TelephoneScene'
-import { isAdminUnlocked } from '../game/adminAuth'
+import { checkAdminSession, type AdminSessionState } from '../game/adminAuth'
 import '../styles/telephone.css'
 
 const AdminPanel = lazy(() => import('../components/AdminPanel').then((module) => ({ default: module.AdminPanel })))
@@ -18,12 +18,12 @@ function readRoute(): Route {
 
 export function App() {
   const [route, setRoute] = useState(readRoute)
-  const [adminUnlocked, setAdminUnlocked] = useState(isAdminUnlocked)
+  const [adminSession, setAdminSession] = useState<AdminSessionState | null>(null)
 
   useEffect(() => {
     const sync = () => {
       setRoute(readRoute())
-      setAdminUnlocked(isAdminUnlocked())
+      setAdminSession(null)
     }
     const navigate = (event: MouseEvent) => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
@@ -41,8 +41,18 @@ export function App() {
     }
   }, [])
 
+  useEffect(() => {
+    if (route !== 'admin') return
+    let active = true
+    void checkAdminSession().then((session) => {
+      if (active) setAdminSession(session)
+    })
+    return () => { active = false }
+  }, [route])
+
   if (route === 'admin') {
-    if (!adminUnlocked) return <AdminGate onUnlock={() => setAdminUnlocked(true)} />
+    if (!adminSession) return <RouteLoading />
+    if (!adminSession.authenticated) return <AdminGate session={adminSession} onUnlock={() => setAdminSession({ ...adminSession, authenticated: true })} />
     return <Suspense fallback={<RouteLoading />}><AdminPanel /></Suspense>
   }
   if (route === 'record') return <Suspense fallback={<RouteLoading />}><CallRecord /></Suspense>

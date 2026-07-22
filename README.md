@@ -110,7 +110,7 @@ cp .env.example .env
 npm run dev
 ```
 
-在 `.env` 中将 `ADMIN_PASSWORD` 改为私有值班密钥。Vite 默认会输出本地访问地址；游戏、后台和档案分别使用 `/`、`/admin` 和 `/record`。
+在 `.env` 中将 `ADMIN_PASSWORD` 改为私有值班密钥。它只由 Vite/Preview 服务器读取，不会注入浏览器 bundle。Vite 默认会输出本地访问地址；游戏、后台和档案分别使用 `/`、`/admin` 和 `/record`。
 
 ### 生产构建
 
@@ -119,9 +119,9 @@ npm run build
 npm run preview
 ```
 
-后台和档案页按路由懒加载，因此游戏首页不会同步加载图编辑器依赖。
+后台和档案页按路由懒加载，因此游戏首页不会同步加载图编辑器依赖。`npm run preview` 默认只监听 `127.0.0.1:5184`，应由同机的 Nginx 通过 HTTPS 反向代理。
 
-生产环境使用 History API 路由，Web 服务器需要把 `/admin`、`/record` 和 `/print` 等前端路径回退到 `index.html`。后台门禁只在浏览器侧提供基础访问隔离：构建产物仅包含密钥的 SHA-256 摘要，不包含 `.env` 中的明文；若部署到公网并需要强安全边界，应在服务端另外启用身份认证。
+生产环境使用 History API 路由，Web 服务器需要把 `/admin`、`/record` 和 `/print` 等前端路径回退到 `index.html`。后台门禁由服务器验证密码并签发短期、`HttpOnly`、`SameSite=Strict`、`Secure` 会话 cookie；浏览器 bundle 和 Web Storage 均不保存密码摘要或可伪造的解锁标记。生产反向代理必须把 HTTP 301 跳转到 HTTPS，并传递 `Host`、`X-Real-IP` 以及 `X-Forwarded-Proto $scheme`（现有宝塔配置的 `X-Scheme $scheme` 也兼容）；否则后台会拒绝发送密钥。后台地址使用 HTTPS 路径 `/admin`，不使用 hash 路由。
 
 ## 游戏操作
 
@@ -354,14 +354,14 @@ interface ScenePropDefinition {
 
 ## 剧情后台工作流
 
-1. 在 `.env` 设置 `ADMIN_PASSWORD`，重启开发服务后打开 `/admin` 并输入值班密钥。
+1. 在服务器 `.env` 设置 `ADMIN_PASSWORD`，重启开发或 Preview 服务后打开 `/admin` 并输入值班密钥。密码由服务器核验；连续失败会按来源地址限速。
 2. 在剧情图中编辑节点、转场和运行预览。
 3. 在“线路与超时”配置主动来电；在“电话簿”维护稳定线路 ID。
 4. 打开“夜班场景”，用种子、概率刷、候选池和 16:9 / 手机画布配置随机物品。
 5. 结构校验会实时报告缺失电话、物品、预设、节点和越界坐标。
 6. 使用“导出”保存独立 JSON 备份，或点击“保存剧情”：
-   - 本地 Vite 开发环境通过 `/api/story-definition` 写回源码。
-   - 静态或生产环境回退保存到 `localStorage` 覆盖层。
+   - 本地 Vite 开发环境在有效服务器会话与 CSRF 校验后，通过 `/api/story-definition` 原子写回源码。
+   - 生产 Preview 禁止直接改写仓库源码，保存会回退到当前浏览器的 `localStorage` 覆盖层；需要共享线上编辑时，应另设 Git 目录外的运行时数据存储。
 7. 使用“恢复源码”清除覆盖层，重新读取仓库中的唯一剧情文件。v1 导入文件会自动迁移到 v2。
 
 修改数据结构后应同步更新：

@@ -1,57 +1,76 @@
-const ADMIN_SESSION_KEY = 'telephone-admin-unlocked-v1'
-
-function configuredHash() {
-  return import.meta.env.VITE_ADMIN_PASSWORD_HASH ?? ''
+export interface AdminSessionState {
+  available: boolean
+  configured: boolean
+  authenticated: boolean
+  loginAllowed: boolean
 }
 
-export function adminPasswordConfigured() {
-  return configuredHash().length === 64
+export type AdminLoginResult = 'ok' | 'invalid' | 'rate-limited' | 'unconfigured' | 'insecure' | 'unavailable'
+
+let csrfToken = ''
+
+function unavailableSession(): AdminSessionState {
+  return { available: false, configured: false, authenticated: false, loginAllowed: false }
 }
 
-export async function sha256Hex(value: string) {
-  const bytes = new TextEncoder().encode(value)
-  const digest = await crypto.subtle.digest('SHA-256', bytes)
-  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('')
-}
-
-export async function matchesAdminPassword(password: string, expectedHash: string) {
-  if (!password || expectedHash.length !== 64) return false
-  const actualHash = await sha256Hex(password)
-  let difference = 0
-  for (let index = 0; index < expectedHash.length; index += 1) {
-    difference |= actualHash.charCodeAt(index) ^ expectedHash.charCodeAt(index)
-  }
-  return difference === 0
-}
-
-export function isAdminUnlocked() {
-  const expectedHash = configuredHash()
-  if (!expectedHash) return false
+export async function checkAdminSession(): Promise<AdminSessionState> {
   try {
-    return window.sessionStorage.getItem(ADMIN_SESSION_KEY) === expectedHash
+    const response = await fetch('/api/admin/session', {
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json' },
+    })
+    if (!response.ok) return unavailableSession()
+    const value = await response.json() as Partial<AdminSessionState> & { csrfToken?: string }
+    csrfToken = value.authenticated && typeof value.csrfToken === 'string' ? value.csrfToken : ''
+    return {
+      available: value.available === true,
+      configured: value.configured === true,
+      authenticated: value.authenticated === true,
+      loginAllowed: value.loginAllowed === true,
+    }
+  } catch {
+    csrfToken = ''
+    return unavailableSession()
+  }
+}
+
+export async function loginAdmin(password: string): Promise<AdminLoginResult> {
+  try {
+    const response = await fetch('/api/admin/login', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    })
+    if (response.status === 401) return 'invalid'
+    if (response.status === 429) return 'rate-limited'
+    if (response.status === 503) return 'unconfigured'
+    if (response.status === 426) return 'insecure'
+    if (!response.ok) return 'unavailable'
+    const value = await response.json() as { authenticated?: boolean; csrfToken?: string }
+    if (value.authenticated !== true || typeof value.csrfToken !== 'string') return 'unavailable'
+    csrfToken = value.csrfToken
+    return 'ok'
+  } catch {
+    return 'unavailable'
+  }
+}
+
+export function adminMutationHeaders(): Record<string, string> {
+  return csrfToken ? { 'X-Telephone-CSRF': csrfToken } : {}
+}
+
+export async function logoutAdmin() {
+  try {
+    const response = await fetch('/api/admin/logout', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json', ...adminMutationHeaders() },
+    })
+    if (!response.ok) return false
+    csrfToken = ''
+    return true
   } catch {
     return false
-  }
-}
-
-export async function verifyAdminPassword(password: string) {
-  return matchesAdminPassword(password, configuredHash())
-}
-
-export function rememberAdminUnlock() {
-  const expectedHash = configuredHash()
-  if (!expectedHash) return
-  try {
-    window.sessionStorage.setItem(ADMIN_SESSION_KEY, expectedHash)
-  } catch {
-    // The panel remains available for this render when storage is unavailable.
-  }
-}
-
-export function clearAdminUnlock() {
-  try {
-    window.sessionStorage.removeItem(ADMIN_SESSION_KEY)
-  } catch {
-    // Storage can be unavailable in privacy modes; a reload still resets access.
   }
 }

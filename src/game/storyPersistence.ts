@@ -1,10 +1,11 @@
 import { LEGACY_STORY_OVERRIDE_KEYS, STORY_OVERRIDE_KEY } from './callEngine'
+import { adminMutationHeaders } from './adminAuth'
 import { migrateTelephoneStory } from './storyMigration'
 import type { TelephoneStory } from './types'
 
 export async function fetchStoryDefinitionFromLocalApi(): Promise<TelephoneStory | null> {
   try {
-    const response = await fetch('/api/story-definition', { headers: { Accept: 'application/json' } })
+    const response = await fetch('/api/story-definition', { credentials: 'same-origin', headers: { Accept: 'application/json' } })
     return response.ok ? migrateTelephoneStory(await response.json()) : null
   } catch {
     return null
@@ -15,7 +16,8 @@ export async function saveStoryDefinitionToLocalApi(story: TelephoneStory): Prom
   try {
     const response = await fetch('/api/story-definition', {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', ...adminMutationHeaders() },
       body: JSON.stringify(story),
     })
     return response.ok
