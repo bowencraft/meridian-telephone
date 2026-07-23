@@ -67,7 +67,7 @@ function renderDocument({ frontmatter, body }, extras, notice) {
     })
     .join("\n")
   const injected = Object.entries(extras).map(([key, value]) => `${key}: ${value}`)
-  const warning = notice ? `> [!warning] [网页未实装]\n> ${notice}\n\n` : ""
+  const warning = notice ? `> [!warning] 开发记录\n> **[网页未实装]** ${notice}\n\n` : ""
   return `---\n${cleanedFrontmatter}\n${injected.join("\n")}\n---\n${warning}${body.trimEnd()}\n`
 }
 
@@ -168,18 +168,20 @@ for (let index = 0; index < chapterFiles.length; index += 1) {
   const slug = filename.replace(/\.md$/, "")
   const previous = chapterFiles[index - 1]
   const next = chapterFiles[index + 1]
-  const nav = [
-    previous ? `[← 上一章](./${path.basename(previous.relativePath, ".md")})` : "← 已到开篇",
-    "[小说目录](./)",
-    next ? `[下一章 →](./${path.basename(next.relativePath, ".md")})` : "已到终章 →",
-  ].join(" · ")
+  const previousLink = previous
+    ? `[[story/${path.basename(previous.relativePath, ".md")}|← 上一章]]`
+    : "← 已到开篇"
+  const nextLink = next
+    ? `[[story/${path.basename(next.relativePath, ".md")}|下一章 →]]`
+    : "已到终章 →"
+  const nav = `###### ${previousLink} · [[story/index|小说目录]] · ${nextLink}`
 
   const contents = `${pageFrontmatter({
     title,
     surface: "story",
     tier: "expanded",
     tags: ["网页小说", "网页未实装"],
-  })}> [!warning] [网页未实装]\n> 本章是Telephone的长篇扩写正文，不代表当前40节点网页游戏已经实现其中人物、号码或Seedline设定。\n\n<div class="chapter-navigation">${nav}</div>\n\n${chapterDraft(raw, source.relativePath)}\n\n<div class="chapter-navigation chapter-navigation-bottom">${nav}</div>\n`
+  })}# ${title}\n\n> [!warning] 开发稿\n> **[网页未实装]** 本章是Telephone的长篇扩写正文，不代表当前40节点网页游戏已经实现其中人物、号码或Seedline设定。\n\n${nav}\n\n${chapterDraft(raw, source.relativePath)}\n\n${nav}\n`
 
   await write(`story/${slug}.md`, contents)
   storyLinks.push(`- [[story/${slug}|${title}]]`)
@@ -192,12 +194,12 @@ await write(
 
 await write(
   "story/index.md",
-  `${pageFrontmatter({ title: "网页小说", surface: "story", tier: "expanded", tags: ["网页小说", "网页未实装"] })}# 网页小说\n\n> [!warning] [网页未实装]\n> 六章正文是围绕当前电话亭创作的长篇扩写；人物、额外号码和Seedline设定尚未进入当前游戏。\n\n${storyLinks.join("\n")}\n`,
+  `${pageFrontmatter({ title: "网页小说", surface: "story", tier: "expanded", tags: ["网页小说", "网页未实装"] })}# 网页小说\n\n> [!warning] 开发稿\n> **[网页未实装]** 六章正文是围绕当前电话亭创作的长篇扩写；人物、额外号码和Seedline设定尚未进入当前游戏。\n\n${storyLinks.join("\n")}\n`,
 )
 
 await write(
   "archive/index.md",
-  `${pageFrontmatter({ title: "幕后档案", surface: "archive", tier: "development", tags: ["幕后", "网页未实装"] })}# 幕后档案\n\n> [!warning] [网页未实装]\n> 这里保存完整扩写源、大纲与开发记录。它们可以解释创作方向，但不等于当前游戏实现。\n\n- [[archive/project|项目说明]]\n- [[archive/README|工作区导航]]\n- [[archive/TASKS|任务书]]\n- [[archive/characters/index|人物档案]]\n- [[archive/materials/index|素材与线索]]\n- [[archive/plot/index|剧情设计]]\n- [[archive/world/index|世界设定]]\n- [[archive/chapters/index|章节编辑容器]]\n- [[archive/outlines/index|章节大纲与审计]]\n- [[archive/implementation/index|实施与盲测记录]]\n`,
+  `${pageFrontmatter({ title: "幕后档案", surface: "archive", tier: "development", tags: ["幕后", "网页未实装"] })}# 幕后档案\n\n> [!warning] 开发记录\n> **[网页未实装]** 这里保存完整扩写源、大纲与开发记录。它们可以解释创作方向，但不等于当前游戏实现。\n\n- [[archive/project|项目说明]]\n- [[archive/README|工作区导航]]\n- [[archive/TASKS|任务书]]\n- [[archive/characters/index|人物档案]]\n- [[archive/materials/index|素材与线索]]\n- [[archive/plot/index|剧情设计]]\n- [[archive/world/index|世界设定]]\n- [[archive/chapters/index|章节编辑容器]]\n- [[archive/outlines/index|章节大纲与审计]]\n- [[archive/implementation/index|实施与盲测记录]]\n`,
 )
 
 const story = JSON.parse(await fs.readFile(storyJsonPath, "utf8"))

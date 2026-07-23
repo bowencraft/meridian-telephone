@@ -36,6 +36,7 @@ body {
     repeating-linear-gradient(0deg, transparent 0 27px, rgba(86, 77, 58, 0.045) 27px 28px);
   border: 1px solid rgba(82, 66, 39, 0.42);
   border-radius: 4px;
+  box-sizing: border-box;
   box-shadow:
     0 24px 70px var(--handbook-shadow),
     inset 0 0 70px rgba(94, 73, 37, 0.08);
@@ -55,6 +56,10 @@ body {
   position: absolute;
   right: -1px;
   top: -1px;
+}
+
+.center article strong {
+  color: var(--handbook-ink);
 }
 
 .handbook-masthead {
@@ -171,6 +176,17 @@ body {
   line-height: 1.78;
 }
 
+.center article :where(p, li, td, th, blockquote),
+.center .content-meta,
+.center .breadcrumbs {
+  color: var(--handbook-ink);
+}
+
+.center .content-meta,
+.center .breadcrumbs {
+  color: var(--handbook-faded-ink);
+}
+
 .center article h1,
 .center article h2,
 .center article h3,
@@ -202,6 +218,10 @@ body {
   color: #3c3429;
   font-family: "Courier New", monospace;
   letter-spacing: 0.04em;
+}
+
+.center article table :where(th, td):first-child {
+  white-space: nowrap;
 }
 
 .callout {
@@ -296,22 +316,20 @@ html[data-handbook-surface="story"] .center article em {
   letter-spacing: 0.015em;
 }
 
-.chapter-navigation {
+html[data-handbook-surface="story"] .center article h6 {
   border-bottom: 1px solid rgba(92, 72, 46, 0.28);
+  border-top: 1px solid rgba(92, 72, 46, 0.28);
   color: #75634e;
   font-family: "Courier New", monospace;
   font-size: 0.76rem;
-  margin: 1rem 0 2.2rem;
-  padding-bottom: 0.75rem;
+  font-weight: 400;
+  margin: 1.4rem 0 2.2rem;
+  padding: 0.75rem 0;
   text-align: center;
 }
 
-.chapter-navigation-bottom {
-  border-bottom: 0;
-  border-top: 1px solid rgba(92, 72, 46, 0.28);
-  margin: 2.2rem 0 1rem;
-  padding-bottom: 0;
-  padding-top: 0.75rem;
+html[data-handbook-surface="story"] .center article h6 > a[role="anchor"] {
+  display: none;
 }
 
 html[data-handbook-surface="archive"] body {
