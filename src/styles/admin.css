@@ -1,6 +1,9 @@
 .admin-shell { min-height: 100vh; color: #292b26; background: #dfe2da; }
 .admin-topbar { display: flex; min-height: 68px; align-items: center; gap: 18px; padding: 9px 16px; color: #e7e5db; border-bottom: 1px solid #090b09; background: #20241f; box-shadow: inset 0 -1px rgba(255,255,255,.04); }
-.admin-back { display:flex; align-items:center; gap:6px; color:#c9cabe; text-decoration:none; font-size:10px; }
+.admin-primary-links { display:flex; align-items:center; gap:6px; }
+.admin-back,.admin-handbook { display:flex; min-height:33px; align-items:center; gap:6px; padding:0 9px; color:#c9cabe; border:1px solid #484f46; border-radius:3px; background:#2a2f29; text-decoration:none; font-size:9px; white-space:nowrap; }
+.admin-back:hover,.admin-handbook:hover { color:#fff; border-color:#778074; }
+.admin-handbook { color:#e0c988; border-color:#665b3e; background:#302f25; }
 .admin-brand { min-width: 240px; }
 .admin-brand span,.admin-list-heading span { color:#939b90; font:7px/1 "Courier New",monospace; letter-spacing:.12em; }
 .admin-brand h1 { margin:5px 0 0; color:#f0eee5; font-size:15px; }
@@ -141,4 +144,4 @@
 .directory-reference-list { display:grid; gap:6px; }.directory-reference-list>div{display:grid;grid-template-columns:minmax(90px,1fr) auto;gap:3px 8px;padding:8px;border:1px solid #d1d6ce;background:#f0f3ed}.directory-reference-list strong{font-size:9px}.directory-reference-list code{color:#71674d;font:7px/1 "Courier New",monospace}.directory-reference-list span{grid-column:1/-1;color:#727a70;font:7px/1.45 "Courier New","Songti SC",monospace}.directory-empty-ref{margin:0;color:#858c82;font:8px/1.5 "Courier New","Songti SC",monospace}
 
 @media(max-width:1050px){.admin-topbar{flex-wrap:wrap}.admin-brand{min-width:200px}.admin-topbar nav{width:100%;order:4;overflow-x:auto}.graph-editor-shell{grid-template-columns:minmax(460px,1fr) 410px;height:calc(100vh - 110px)}}
-@media(max-width:790px){.graph-editor-shell{display:block;height:auto}.graph-canvas-pane{height:620px}.graph-inspector{height:780px}.validation-summary{display:none}.admin-topbar{align-items:flex-start}.admin-brand{flex:1}.scene-drag-hint{display:none}.phone-directory-workspace{height:auto;min-height:calc(100vh - 110px)}.directory-workspace-header{grid-template-columns:auto 1fr;gap:10px;padding:12px}.directory-workspace-header>strong{display:none}.directory-workspace-header .directory-add{grid-column:2;justify-self:start}.directory-workspace-scroll{padding:10px}.directory-card-grid{grid-template-columns:1fr}}
+@media(max-width:790px){.graph-editor-shell{display:block;height:auto}.graph-canvas-pane{height:620px}.graph-inspector{height:780px}.validation-summary{display:none}.admin-topbar{align-items:flex-start}.admin-primary-links{width:100%;order:-2}.admin-brand{flex:1}.scene-drag-hint{display:none}.phone-directory-workspace{height:auto;min-height:calc(100vh - 110px)}.directory-workspace-header{grid-template-columns:auto 1fr;gap:10px;padding:12px}.directory-workspace-header>strong{display:none}.directory-workspace-header .directory-add{grid-column:2;justify-self:start}.directory-workspace-scroll{padding:10px}.directory-card-grid{grid-template-columns:1fr}}

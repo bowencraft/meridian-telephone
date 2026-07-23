@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, Check, Download, LockKeyhole, RotateCcw, Save, Upload } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, BookOpenText, Check, Download, LockKeyhole, RotateCcw, Save, Upload } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { defaultTelephoneStory, loadStoryDefinition } from '../game/callEngine'
 import { logoutAdmin } from '../game/adminAuth'
@@ -72,7 +72,10 @@ export function AdminPanel() {
   return (
     <main className="admin-shell">
       <header className="admin-topbar">
-        <a className="admin-back" href="/" data-app-route><ArrowLeft size={16} />返回电话亭</a>
+        <div className="admin-primary-links">
+          <a className="admin-back" href="/" data-app-route><ArrowLeft size={16} />返回电话亭</a>
+          <a className="admin-handbook" href="/handbook/"><BookOpenText size={16} />员工手册</a>
+        </div>
         <div className="admin-brand"><span>INTERACTIVE NARRATIVE SWITCHBOARD</span><h1>Telephone 剧情交换台</h1></div>
         <div className={`validation-summary ${errors.length ? 'invalid' : ''}`}>
           {errors.length ? <AlertTriangle size={14} /> : <Check size={14} />}

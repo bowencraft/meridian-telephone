@@ -364,9 +364,180 @@ html[data-handbook-surface="archive"] .center article h3 {
 }
 
 @media (max-width: 800px) {
-  .left.sidebar {
+  .page > #quartz-body > :not(.sidebar.left:has(.explorer)),
+  .page > #quartz-body.lock-scroll > :not(.sidebar.left:has(.explorer)) {
+    transform: none;
+    transition: none;
+  }
+
+  .page > #quartz-body .left.sidebar {
+    align-items: center;
     background: #101512;
+    box-sizing: border-box;
     box-shadow: 0 3px 0 var(--handbook-red);
+    gap: 0.42rem;
+    height: 3.85rem;
+    min-height: 3.85rem;
+    padding: 0.55rem 0.75rem;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+  }
+
+  .left.sidebar .page-title {
+    flex: 1 1 auto;
+    line-height: 1;
+    min-width: 0;
+  }
+
+  .left.sidebar .page-title a {
+    color: #eadfc6;
+    display: block;
+    font-size: 0.98rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 4px #000;
+    white-space: nowrap;
+  }
+
+  .left.sidebar .search {
+    flex: 0 0 2rem !important;
+    min-width: 2rem;
+  }
+
+  .left.sidebar .search-button,
+  .left.sidebar .darkmode,
+  .left.sidebar .readermode {
+    align-items: center;
+    border: 1px solid rgba(226, 210, 178, 0.2);
+    border-radius: 3px;
+    box-sizing: border-box;
+    color: #d8ccb2;
+    display: inline-flex;
+    height: 2rem;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    width: 2rem;
+  }
+
+  .left.sidebar .search-button p {
+    display: none;
+  }
+
+  .left.sidebar .search-button svg,
+  .left.sidebar .darkmode svg,
+  .left.sidebar .readermode svg {
+    height: 1rem;
+    width: 1rem;
+  }
+
+  .left.sidebar .explorer {
+    align-self: center;
+    flex: 0 0 3.65rem;
+    margin: 0;
+    order: -1;
+    overflow: visible;
+  }
+
+  .left.sidebar .explorer .mobile-explorer {
+    align-items: center;
+    border: 1px solid rgba(226, 210, 178, 0.22);
+    border-radius: 3px;
+    box-sizing: border-box;
+    color: #eadfc6;
+    display: inline-flex;
+    gap: 0.28rem;
+    height: 2rem;
+    justify-content: center;
+    padding: 0 0.42rem;
+    width: 3.65rem;
+  }
+
+  .left.sidebar .explorer .mobile-explorer::after {
+    content: "目录";
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+  }
+
+  .left.sidebar .explorer .mobile-explorer svg {
+    height: 0.95rem;
+    width: 0.95rem;
+  }
+
+  html.mobile-no-scroll,
+  html.mobile-no-scroll body {
+    overflow: hidden;
+  }
+
+  html.mobile-no-scroll body::after {
+    background: rgba(4, 7, 5, 0.62);
+    content: "";
+    inset: 0;
+    position: fixed;
+    z-index: 210;
+  }
+
+  .left.sidebar .explorer .explorer-content {
+    background:
+      linear-gradient(rgba(16, 23, 18, 0.98), rgba(12, 18, 14, 0.99)),
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 5px);
+    border-right: 1px solid rgba(202, 173, 108, 0.38);
+    box-shadow: 18px 0 42px rgba(0, 0, 0, 0.48);
+    color: #e5d9bf;
+    height: 100dvh;
+    max-height: 100dvh;
+    max-width: 22rem;
+    padding: 4.85rem 1rem 1.4rem;
+    width: min(88vw, 22rem);
+    z-index: 220;
+  }
+
+  .left.sidebar .explorer:not(.collapsed) .mobile-explorer {
+    background: var(--handbook-red);
+    border-color: #b89354;
+    left: 0.75rem;
+    position: fixed;
+    top: 0.58rem;
+    width: 6.4rem;
+    z-index: 230;
+  }
+
+  .left.sidebar .explorer:not(.collapsed) .mobile-explorer::after {
+    content: "关闭目录";
+  }
+
+  .left.sidebar .explorer .explorer-content > .explorer-ul {
+    height: calc(100dvh - 6.4rem);
+    overflow-y: auto;
+    padding: 0 0.15rem 2rem;
+    scrollbar-color: #786b4b transparent;
+  }
+
+  .left.sidebar .explorer-content ul li > a,
+  .left.sidebar .folder-container div > a,
+  .left.sidebar .folder-container div > button span {
+    color: #d9ceb8;
+  }
+
+  .left.sidebar .explorer-content ul li > a {
+    display: block;
+    line-height: 1.4;
+    padding: 0.38rem 0.15rem;
+  }
+
+  .left.sidebar .explorer-content ul li > a.active {
+    color: #e2bc68;
+  }
+
+  .left.sidebar .folder-container {
+    border-top: 1px solid rgba(225, 209, 176, 0.09);
+    min-height: 2.25rem;
+  }
+
+  .left.sidebar .folder-icon {
+    color: #b99a58;
   }
 
   .center {
@@ -380,15 +551,61 @@ html[data-handbook-surface="archive"] .center article h3 {
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
     padding-top: 1.35rem;
   }
 
+  .handbook-brand-mark {
+    flex-basis: 2.3rem;
+    height: 2.3rem;
+  }
+
+  .handbook-brand strong {
+    font-size: 1rem;
+  }
+
+  .handbook-brand small {
+    font-size: 0.54rem;
+  }
+
   .handbook-nav {
+    flex-wrap: nowrap;
+    gap: 0.42rem;
     justify-content: flex-start;
+    margin-inline: -0.2rem;
+    overflow-x: auto;
+    padding: 0.1rem 0.2rem 0.45rem;
+    scrollbar-width: none;
+  }
+
+  .handbook-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .handbook-nav a {
+    background: rgba(255, 249, 233, 0.36);
+    border: 1px solid rgba(93, 72, 43, 0.28);
+    border-radius: 2px;
+    flex: 0 0 auto;
+    padding: 0.42rem 0.58rem;
+    white-space: nowrap;
   }
 
   .canon-stamp {
-    bottom: -0.78rem;
+    align-self: flex-end;
+    bottom: auto;
+    margin-top: -0.42rem;
+    position: static;
+  }
+
+  .center .breadcrumbs {
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+    scrollbar-width: none;
+    white-space: nowrap;
   }
 }
 
