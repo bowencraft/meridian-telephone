@@ -1,4 +1,4 @@
-import { Headphones, NotebookTabs, RotateCcw, Settings2, Volume2, VolumeX, X } from 'lucide-react'
+import { BookOpenText, Headphones, NotebookTabs, RotateCcw, Settings2, Volume2, VolumeX, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type CSSProperties } from 'react'
 import { CallEngine, conditionsMatch, loadStoryDefinition, phoneEntryForDial } from '../game/callEngine'
 import { elapsedSeconds } from '../game/callTimer'
@@ -614,6 +614,10 @@ export function TelephoneScene() {
           <button type="button" onClick={() => setNumberBookOpen((open) => !open)}><NotebookTabs size={16} /><span>号码簿</span></button>
           <button type="button" onClick={toggleMute}>{muted ? <VolumeX size={16} /> : <Volume2 size={16} />}<span>{muted ? '开启声音' : '静音'}</span></button>
           <a href="/record" data-app-route><Headphones size={16} /><span>通话档案</span></a>
+          <a className="game-handbook-shortcut" href="/handbook/" aria-label="员工手册" title="员工手册">
+            <BookOpenText size={16} />
+            <span>员工手册</span>
+          </a>
           <a className="game-admin-shortcut" href="/admin" data-app-route aria-label="剧情后台" title="剧情后台">
             <Settings2 size={16} />
             <span>剧情后台</span>

@@ -70,6 +70,7 @@
 .game-masthead nav { display: flex; gap: 6px; }
 .game-masthead nav a, .game-masthead nav button { display: inline-flex; height: 34px; align-items: center; gap: 7px; padding: 0 11px; color: #c9c0ad; border: 1px solid rgba(225, 208, 172, 0.18); border-radius: 3px; background: rgba(11, 12, 11, 0.55); box-shadow: inset 0 1px rgba(255,255,255,0.04); backdrop-filter: blur(8px); text-decoration: none; font-size: 10px; letter-spacing: .04em; }
 .game-masthead nav a:hover, .game-masthead nav button:hover { color: #fff5db; border-color: rgba(226, 190, 112, 0.52); background: rgba(48, 31, 23, 0.74); }
+.game-masthead nav .game-handbook-shortcut { color: #dfcc94; border-color: rgba(215, 181, 105, 0.34); background: rgba(39, 33, 22, 0.66); }
 .game-masthead nav .game-admin-shortcut { width: 34px; justify-content: center; padding: 0; }
 .game-admin-shortcut span { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
@@ -1285,6 +1286,10 @@
 }
 
 @media (max-width: 360px) {
+  .game-masthead { left: 12px; right: 12px; gap: 6px; }
+  .game-wordmark span { display: none; }
+  .game-wordmark strong { font-size: 13px; letter-spacing: .08em; }
+  .game-masthead nav { gap: 3px; }
   .phone-assembly {
     width: min(72vw, 240px, calc((100dvh - 220px) * .72));
   }
