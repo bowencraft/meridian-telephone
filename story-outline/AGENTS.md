@@ -22,6 +22,7 @@ The canonical manuscript source is `chapters/`. Rendered output belongs in `publ
 - `outlines/`: novel, act, sequence, and chapter outlines.
 - `world/`: settings, locations, timelines, rules, institutions, and world-state continuity.
 - `style/`: voice, point of view, tense, prose conventions, recurring terms, and revision preferences.
+- `wiki/`: reader-facing indexes for the Quartz handbook. These pages organize deployed facts and links but do not replace manuscript or runtime canon.
 - `assets/`: project-bound cover and illustration image assets.
 - `chapters/`: actual chapter manuscript files, sorted by filename.
 - `published/`: generated render output only. Do not treat this as canonical source.
@@ -42,6 +43,11 @@ Required frontmatter keys for source material:
 - `updated`: ISO date, `YYYY-MM-DD`.
 
 Keep long prose, summaries, and draft text in the Markdown body. Use frontmatter for indexing, sorting, filtering, and references.
+
+For the Quartz handbook, the active runtime JSON outranks expansion notes. Any
+Seedline or manuscript-only statement rendered on the website must carry the
+exact reader-facing marker `[网页未实装]`. Local role-crosswalk material belongs
+under `handbook-site/internal/` and must never be copied into Quartz content.
 
 Use YAML arrays for links between files, for example:
 

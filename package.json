@@ -7,9 +7,13 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "preview": "vite preview"
+    "test": "vitest run src server",
+    "test:watch": "vitest src server",
+    "preview": "vite preview",
+    "handbook:sync": "npm --prefix handbook-site run sync",
+    "handbook:check": "npm --prefix handbook-site run validate",
+    "handbook:build": "npm --prefix handbook-site run build",
+    "handbook:dev": "npm --prefix handbook-site run dev"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",

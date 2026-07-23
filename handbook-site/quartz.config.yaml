@@ -1,0 +1,211 @@
+# yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
+configuration:
+  pageTitle: "十九号夜班手册"
+  pageTitleSuffix: " · TELEPHONE"
+  enableSPA: true
+  enablePopovers: true
+  analytics: null
+  locale: zh-CN
+  baseUrl: 05-telephone.seeds100.bowen.wang/handbook
+  ignorePatterns:
+    - private
+    - templates
+    - "**/_template.md"
+    - "**/*-template.md"
+    - "**/AGENTS.md"
+    - "**/style"
+    - "**/styles"
+    - "**/published"
+    - "**/internal"
+  theme:
+    fontOrigin: local
+    cdnCaching: false
+    typography:
+      title: Georgia
+      header: Georgia
+      body: Gill Sans
+      code: Courier New
+    colors:
+      lightMode:
+        light: "#e5dcc8"
+        lightgray: "#cfc3aa"
+        gray: "#8c826e"
+        darkgray: "#302d27"
+        dark: "#151711"
+        secondary: "#6b2320"
+        tertiary: "#8f6b31"
+        highlight: "rgba(139, 96, 48, 0.16)"
+        textHighlight: "#d6b96866"
+      darkMode:
+        light: "#101512"
+        lightgray: "#222820"
+        gray: "#7f806e"
+        darkgray: "#d9d0ba"
+        dark: "#f0e6cf"
+        secondary: "#d1ae65"
+        tertiary: "#a8c98f"
+        highlight: "rgba(198, 165, 91, 0.14)"
+        textHighlight: "#5e4f2f88"
+plugins:
+  - source: github:quartz-community/created-modified-date
+    enabled: true
+    options:
+      defaultDateType: modified
+      priority: [frontmatter, filesystem]
+    order: 10
+  - source: github:quartz-community/syntax-highlighting
+    enabled: true
+    options:
+      theme:
+        light: github-light
+        dark: github-dark
+      keepBackground: false
+    order: 20
+  - source: github:quartz-community/obsidian-flavored-markdown
+    enabled: true
+    options:
+      enableInHtmlEmbed: false
+      enableCheckbox: true
+    order: 30
+  - source: github:quartz-community/github-flavored-markdown
+    enabled: true
+    order: 40
+  - source: github:quartz-community/table-of-contents
+    enabled: true
+    order: 50
+    layout:
+      position: right
+      priority: 30
+  - source: github:quartz-community/crawl-links
+    enabled: true
+    options:
+      markdownLinkResolution: shortest
+    order: 60
+  - source: github:quartz-community/description
+    enabled: true
+    order: 70
+  - source: github:quartz-community/remove-draft
+    enabled: false
+  - source: github:quartz-community/explicit-publish
+    enabled: true
+  - source: github:quartz-community/alias-redirects
+    enabled: true
+  - source: github:quartz-community/content-index
+    enabled: true
+    options:
+      enableSiteMap: true
+      enableRSS: false
+  - source: github:quartz-community/favicon
+    enabled: true
+  - source: github:quartz-community/content-page
+    enabled: true
+  - source: github:quartz-community/folder-page
+    enabled: true
+  - source: github:quartz-community/tag-page
+    enabled: true
+  - source: github:quartz-community/explorer
+    enabled: true
+    layout:
+      position: left
+      priority: 50
+  - source: github:quartz-community/graph
+    enabled: true
+    options:
+      localGraph:
+        depth: 1
+        scale: 1.1
+        repelForce: 0.7
+        linkDistance: 42
+        fontSize: 0.7
+        showTags: false
+      globalGraph:
+        depth: -1
+        scale: 0.75
+        repelForce: 0.8
+        linkDistance: 38
+        fontSize: 0.55
+        showTags: false
+    layout:
+      position: right
+      priority: 10
+      condition: handbook-wiki
+  - source: github:quartz-community/search
+    enabled: true
+    layout:
+      position: left
+      priority: 20
+      group: toolbar
+      groupOptions:
+        grow: true
+  - source: github:quartz-community/backlinks
+    enabled: true
+    layout:
+      position: right
+      priority: 50
+  - source: github:quartz-community/article-title
+    enabled: false
+  - source: github:quartz-community/content-meta
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 20
+  - source: github:quartz-community/page-title
+    enabled: true
+    layout:
+      position: left
+      priority: 10
+  - source: github:quartz-community/darkmode
+    enabled: true
+    layout:
+      position: left
+      priority: 30
+      group: toolbar
+  - source: github:quartz-community/reader-mode
+    enabled: true
+    layout:
+      position: left
+      priority: 35
+      group: toolbar
+  - source: github:quartz-community/breadcrumbs
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 5
+      condition: not-index
+  - source: github:quartz-community/footer
+    enabled: true
+    options:
+      links:
+        返回电话亭: https://05-telephone.seeds100.bowen.wang/
+        活动Wiki: /handbook/wiki/
+        网页小说: /handbook/story/
+        幕后档案: /handbook/archive/
+  - source: github:quartz-community/spacer
+    enabled: true
+    options: {}
+    order: 25
+    layout:
+      position: left
+      priority: 25
+      display: mobile-only
+layout:
+  groups:
+    toolbar:
+      priority: 35
+      direction: row
+      gap: 0.5rem
+  byPageType:
+    "404":
+      positions:
+        beforeBody: []
+        left: []
+        right: []
+    content: {}
+    folder:
+      exclude: [reader-mode]
+      positions:
+        right: []
+    tag:
+      exclude: [reader-mode]
+      positions:
+        right: []
