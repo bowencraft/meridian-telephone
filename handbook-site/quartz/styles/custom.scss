@@ -364,6 +364,11 @@ html[data-handbook-surface="archive"] .center article h3 {
 }
 
 @media (max-width: 800px) {
+  .left.sidebar {
+    background: #101512;
+    box-shadow: 0 3px 0 var(--handbook-red);
+  }
+
   .center {
     border-inline: 0;
     border-radius: 0;
